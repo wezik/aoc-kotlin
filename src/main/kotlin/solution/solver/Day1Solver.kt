@@ -1,7 +1,7 @@
 package org.example.solution.solver
 
-import org.example.solution.InputSolver
-import org.example.solution.Result
+import org.example.solution.time
+import org.example.solution.toNanoDuration
 import kotlin.math.abs
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -17,67 +17,43 @@ class Day1Solver : InputSolver {
 
         var distance = 0
         val distanceTime = time {
-            distance = input.toDistance()
+            distance = input.getDistance()
         }
+        val distanceResult = Result(distance.toString(), distanceTime.toNanoDuration())
 
         var similarity = 0
         val similarityTime = time {
-            similarity = input.toSimilarity()
+            similarity = input.getSimilarity()
         }
+        var similarityResult = Result(similarity.toString(), similarityTime.toNanoDuration())
 
-        return Result(distance.toString(), distanceTime.toDuration(DurationUnit.NANOSECONDS)) to
-                Result(similarity.toString(), similarityTime.toDuration(DurationUnit.NANOSECONDS))
-
+        return distanceResult to similarityResult
     }
 
-    private fun time(block: () -> Unit): Long {
-        val start = System.nanoTime()
-        block()
-        return System.nanoTime() - start
-    }
-
-    private fun List<String>.toSimilarity(): Int {
-        val pairs = this.toPairs()
-
-        val split = pairs.split()
-
+    private fun List<String>.getSimilarity(): Int {
+        val split = this.toSeparate()
         val cache = mutableMapOf<Int, Int>()
-
         return split.first.map { a ->
-            // Early return if cached
-            if (cache.containsKey(a)) return@map cache[a]!!
-
-            val weight = split.second.count { b -> a == b }
-
-            val result = a * weight
-            // Cache it
-            cache[a] = result
-            result
+            cache.getOrPut(a) { a * split.second.count { b -> a == b } }
         }.sum()
     }
 
-    private fun List<String>.toDistance(): Int {
-        val pairs = this.toPairs()
-
-        val split = pairs.split()
-
-        return split.sortedZip().map {
-            abs(it.first - it.second)
-        }.sum()
+    private fun List<String>.getDistance(): Int {
+        return this.toSeparate()
+            .sortedZip()
+            .map { abs(it.first - it.second) }
+            .sum()
     }
 
     private fun Pair<List<Int>, List<Int>>.sortedZip(): List<Pair<Int, Int>> {
         return this.first.sorted().zip(this.second.sorted())
     }
 
-    private fun List<String>.toPairs(): List<Pair<Int, Int>> {
-        return this.map { line ->
-            val parts = line.split(' ').filter { it.isNotBlank() }
-            Pair(parts[0].toInt(), parts[1].toInt())
+    private fun List<String>.toSeparate(): Pair<List<Int>, List<Int>> {
+        this.map { line ->
+            line.split(' ').filter { it.isNotBlank() }.map { it.toInt() }
+        }.let {
+            return Pair(it.map { it[0] }, it.map { it[1] })
         }
-    }
-
-    private fun List<Pair<Int, Int>>.split(): Pair<List<Int>, List<Int>> {
-        return Pair(this.map { it.first }, this.map { it.second })
     }
 }

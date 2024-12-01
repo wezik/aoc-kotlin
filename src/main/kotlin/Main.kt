@@ -1,7 +1,11 @@
 package org.example
 
+import org.example.solution.solver.InputSolver
 import org.example.solution.readFrom
 import org.example.solution.solver.Day1Solver
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 fun main(args: Array<String>) {
 
@@ -16,26 +20,32 @@ fun main(args: Array<String>) {
         else -> throw IllegalArgumentException("Day $day not supported")
     }
 
-    val isBenchmark = System.getenv("AOC_BENCHMARK") ?: "false"
-    if (isBenchmark == "true") {
-        println("Running benchmark mode")
-        val p1Times = mutableListOf<Long>()
-        val p2Times = mutableListOf<Long>()
-        (1..1000).forEach {
-            val solution = solver.solve(readFrom(path))
-            p1Times.add(solution.first.time.inWholeMicroseconds)
-            p2Times.add(solution.second.time.inWholeMicroseconds)
-        }
-        val solution = solver.solve(readFrom(path))
-        println("Part 1: \"${solution.first.value}\" in ${p1Times.average().toMs()} average for ${p1Times.size} runs")
-        println("Part 2: \"${solution.second.value}\" in ${p2Times.average().toMs()} average for ${p2Times.size} runs")
+    val solution = solver.solve(readFrom(path))
+
+    val benchmarkValue = System.getenv("AOC_BENCHMARK") ?: "false"
+    val isBenchmark = benchmarkValue == "true"
+
+    val (p1Time, p2Time) = if (!isBenchmark) {
+        Pair(solution.first.time.formatToMs(), solution.second.time.formatToMs())
     } else {
-        val solution = solver.solve(readFrom(path))
-        println("Part 1: \"${solution.first.value}\" in ${solution.first.time.inWholeMicroseconds.toDouble().toMs()}")
-        println("Part 2: \"${solution.second.value}\" in ${solution.second.time.inWholeMicroseconds.toDouble().toMs()}")
+        runBenchmark(solver, path)
     }
+    println("Part 1: \"${solution.first.value}\" generated in $p1Time")
+    println("Part 2: \"${solution.second.value}\" generated in $p2Time")
 }
 
-private fun Double.toMs(): String {
-    return String.format("%.3f ms", this / 1000.0)
+private fun Duration.formatToMs() = this.toString(DurationUnit.MILLISECONDS, 3)
+
+private fun runBenchmark(solver: InputSolver, path: String): Pair<String, String> {
+    val p1Times = mutableListOf<Long>()
+    val p2Times = mutableListOf<Long>()
+    (1..1000).forEach {
+        solver.solve(readFrom(path)).let {
+            p1Times.add(it.first.time.inWholeNanoseconds)
+            p2Times.add(it.second.time.inWholeNanoseconds)
+        }
+    }
+    val p1Time = p1Times.average().toDuration(DurationUnit.NANOSECONDS).formatToMs() + " for ${p1Times.size} runs"
+    val p2Time = p2Times.average().toDuration(DurationUnit.NANOSECONDS).formatToMs() + " for ${p2Times.size} runs"
+    return p1Time to p2Time
 }

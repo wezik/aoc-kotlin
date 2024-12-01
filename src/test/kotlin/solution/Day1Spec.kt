@@ -1,7 +1,6 @@
 package solution
 
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import org.example.solution.solver.Day1Solver
 import kotlin.time.Duration.Companion.milliseconds
@@ -15,8 +14,8 @@ class Day1Spec : DescribeSpec({
             val input: List<String> = emptyList()
 
             // Expect
-            solver.solve(input).first shouldBe "0"
-            solver.solve(input).second shouldBe "0"
+            solver.solve(input).first.value shouldBe "0"
+            solver.solve(input).second.value shouldBe "0"
         }
 
         it("distance") {
@@ -35,7 +34,7 @@ class Day1Spec : DescribeSpec({
             val result = solver.solve(input)
 
             // Then
-            result.first shouldBe "11"
+            result.first.value shouldBe "11"
         }
 
         it("distance alt") {
@@ -54,7 +53,7 @@ class Day1Spec : DescribeSpec({
             val result = solver.solve(input)
 
             // Then
-            result.first shouldBe "13"
+            result.first.value shouldBe "13"
         }
 
         it("similarity") {
@@ -73,7 +72,7 @@ class Day1Spec : DescribeSpec({
             val result = solver.solve(input)
 
             // Then
-            result.second shouldBe "31"
+            result.second.value shouldBe "31"
         }
 
         it("similarity big input").config(timeout = 500.milliseconds) {
@@ -95,7 +94,7 @@ class Day1Spec : DescribeSpec({
             val result = solver.solve(input)
 
             // Then
-            result.second shouldBe "2080374784"
+            result.second.value shouldBe "2080374784"
 
         }
 
