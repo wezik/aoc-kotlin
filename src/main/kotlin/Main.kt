@@ -1,25 +1,40 @@
 package org.example
 
-import org.example.solution.solver.InputSolver
+import org.example.solution.StaticSolverSelector
 import org.example.solution.readFrom
-import org.example.solution.solver.Day1Solver
+import org.example.solution.solver.Solver
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 fun main(args: Array<String>) {
 
+    val runAllValue = System.getenv("AOC_RUN_ALL") ?: "false"
+
+    if (runAllValue == "true") {
+        val solvers = StaticSolverSelector().selectAll()
+        solvers.forEachIndexed { index, solver ->
+            println("Running solver for day ${index + 1}")
+            printSolution(solver.solver, solver.path)
+        }
+        // exit early
+        return
+    }
+
     if (args.size != 2) {
         println("Usage: kotlin Main.kt <day> <path>")
+        // exit early
         return
     }
     val (day, path) = args
 
-    val solver = when (day) {
-        "1" -> Day1Solver()
-        else -> throw IllegalArgumentException("Day $day not supported")
-    }
+    val solver = StaticSolverSelector().select(day)
 
+    printSolution(solver, path)
+
+}
+
+private fun printSolution(solver: Solver, path: String) {
     val solution = solver.solve(readFrom(path))
 
     val benchmarkValue = System.getenv("AOC_BENCHMARK") ?: "false"
@@ -36,7 +51,7 @@ fun main(args: Array<String>) {
 
 private fun Duration.formatToMs() = this.toString(DurationUnit.MILLISECONDS, 3)
 
-private fun runBenchmark(solver: InputSolver, path: String): Pair<String, String> {
+private fun runBenchmark(solver: Solver, path: String): Pair<String, String> {
     val p1Times = mutableListOf<Long>()
     val p2Times = mutableListOf<Long>()
     (1..1000).forEach {

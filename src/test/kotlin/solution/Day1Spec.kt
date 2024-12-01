@@ -2,7 +2,7 @@ package solution
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import org.example.solution.solver.Day1Solver
+import org.example.solution.solver.days.Day1Solver
 import kotlin.time.Duration.Companion.milliseconds
 
 class Day1Spec : DescribeSpec({

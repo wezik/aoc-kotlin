@@ -2,7 +2,7 @@ package org.example.solution.solver
 
 import kotlin.time.Duration
 
-interface InputSolver {
+interface Solver {
     fun solve(input: List<String>): Pair<Result, Result>
 }
 

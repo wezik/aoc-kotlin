@@ -1,12 +1,14 @@
-package org.example.solution.solver
+package org.example.solution.solver.days
 
+import org.example.solution.solver.Solver
+import org.example.solution.solver.Result
 import org.example.solution.time
 import org.example.solution.toNanoDuration
 import kotlin.math.abs
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-class Day1Solver : InputSolver {
+class Day1Solver : Solver {
 
     override fun solve(input: List<String>): Pair<Result, Result> {
         // Early return on empty input
