@@ -1,5 +1,6 @@
 package org.example
 
+import org.example.solution.reader.Day1Reader
 import org.example.solution.solver.Day1Solver
 
 fun main(args: Array<String>) {
@@ -10,10 +11,10 @@ fun main(args: Array<String>) {
     }
     val (day, path) = args
 
-    val solver = when (day) {
-        "1" -> Day1Solver()
+    val (solver, reader) = when (day) {
+        "1" -> Pair(Day1Solver(), Day1Reader())
         else -> throw IllegalArgumentException("Day $day not supported")
     }
 
-    println("Result: ${solver.solve(path)}")
+    println("Result: ${solver.solve(reader.read(path))}")
 }
