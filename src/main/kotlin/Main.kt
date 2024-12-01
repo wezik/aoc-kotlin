@@ -16,22 +16,26 @@ fun main(args: Array<String>) {
         else -> throw IllegalArgumentException("Day $day not supported")
     }
 
-    val p1Times = mutableListOf<Long>()
-    val p2Times = mutableListOf<Long>()
-    (0 until 100).forEach {
-        val solution = solver.solve(readFrom(path))
-        if (solution.first.time.inWholeMicroseconds > 1) {
+    val isBenchmark = System.getenv("AOC_BENCHMARK") ?: "false"
+    if (isBenchmark == "true") {
+        println("Running benchmark mode")
+        val p1Times = mutableListOf<Long>()
+        val p2Times = mutableListOf<Long>()
+        (1..1000).forEach {
+            val solution = solver.solve(readFrom(path))
             p1Times.add(solution.first.time.inWholeMicroseconds)
-        }
-        if (solution.second.time.inWholeMicroseconds > 1) {
             p2Times.add(solution.second.time.inWholeMicroseconds)
         }
+        val solution = solver.solve(readFrom(path))
+        println("Part 1: \"${solution.first.value}\" in ${p1Times.average().toMs()} average for ${p1Times.size} runs")
+        println("Part 2: \"${solution.second.value}\" in ${p2Times.average().toMs()} average for ${p2Times.size} runs")
+    } else {
+        val solution = solver.solve(readFrom(path))
+        println("Part 1: \"${solution.first.value}\" in ${solution.first.time.inWholeMicroseconds.toDouble().toMs()}")
+        println("Part 2: \"${solution.second.value}\" in ${solution.second.time.inWholeMicroseconds.toDouble().toMs()}")
     }
-    val solution = solver.solve(readFrom(path))
-    println("Part 1: ${solution.first.value} in ${p1Times.average().toMs()} for ${p1Times.size} runs")
-    println("Part 2: ${solution.second.value} in ${p2Times.average().toMs()} for ${p2Times.size} runs")
 }
 
 private fun Double.toMs(): String {
-    return String.format("%.3f ms average", this / 1000.0)
+    return String.format("%.3f ms", this / 1000.0)
 }

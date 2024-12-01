@@ -2,7 +2,6 @@ package org.example.solution.solver
 
 import org.example.solution.InputSolver
 import org.example.solution.Result
-import java.time.Instant
 import kotlin.math.abs
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -16,19 +15,25 @@ class Day1Solver : InputSolver {
             Result("0", 0.toDuration(DurationUnit.MICROSECONDS))
         )
 
-        val startPart1 = Instant.now()
-        val distance = input.toDistance()
-        val part1Time = Instant.now().toEpochMilli() - startPart1.toEpochMilli()
+        var distance = 0
+        val distanceTime = time {
+            distance = input.toDistance()
+        }
 
-        val part1Result = Result(distance.toString(), part1Time.toDuration(DurationUnit.MICROSECONDS))
+        var similarity = 0
+        val similarityTime = time {
+            similarity = input.toSimilarity()
+        }
 
-        val startPart2 = Instant.now()
-        val similarity = input.toSimilarity()
-        val part2Time = Instant.now().toEpochMilli() - startPart2.toEpochMilli()
+        return Result(distance.toString(), distanceTime.toDuration(DurationUnit.NANOSECONDS)) to
+                Result(similarity.toString(), similarityTime.toDuration(DurationUnit.NANOSECONDS))
 
-        val part2Result = Result(similarity.toString(), part2Time.toDuration(DurationUnit.MICROSECONDS))
+    }
 
-        return part1Result to part2Result
+    private fun time(block: () -> Unit): Long {
+        val start = System.nanoTime()
+        block()
+        return System.nanoTime() - start
     }
 
     private fun List<String>.toSimilarity(): Int {
