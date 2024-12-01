@@ -6,7 +6,7 @@ import org.example.solution.solver.Day1Solver
 fun main(args: Array<String>) {
 
     if (args.size != 2) {
-        println("Usage: kotlin Main.kt <day> <url>")
+        println("Usage: kotlin Main.kt <day> <path>")
         return
     }
     val (day, path) = args
