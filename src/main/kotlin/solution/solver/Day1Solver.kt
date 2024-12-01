@@ -5,21 +5,41 @@ import kotlin.math.abs
 
 class Day1Solver : InputSolver {
 
-    override fun solve(input: List<String>): String {
+    override fun solve(input: List<String>): Pair<String, String> {
         // Early return on empty input
-        if (input.isEmpty()) return "0"
+        if (input.isEmpty()) return Pair("0", "0")
 
-        val pairs = input.toPairs(input)
+        val pairs = input.toPairs()
 
-        val (a, b) = pairs.split()
+        val split = pairs.split()
 
-        return a.sorted().zip(b.sorted()).map {
+        val distance = split.sortedZip().map {
             abs(it.first - it.second)
-        }.sum().toString()
+        }.sum()
+
+        val cache = mutableMapOf<Int, Int>()
+
+        val similarity = split.first.map { a ->
+            // Early return if cached
+            if (cache.containsKey(a)) return@map cache[a]!!
+
+            val weight = split.second.count { b -> a == b }
+
+            val result = a * weight
+            // Cache it
+            cache[a] = result
+            result
+        }.sum()
+
+        return Pair("$distance", "$similarity")
     }
 
-    private fun List<String>.toPairs(input: List<String>): List<Pair<Int, Int>> {
-        return input.map { line ->
+    private fun Pair<List<Int>, List<Int>>.sortedZip(): List<Pair<Int, Int>> {
+        return this.first.sorted().zip(this.second.sorted())
+    }
+
+    private fun List<String>.toPairs(): List<Pair<Int, Int>> {
+        return this.map { line ->
             val parts = line.split(' ').filter { it.isNotBlank() }
             Pair(parts[0].toInt(), parts[1].toInt())
         }

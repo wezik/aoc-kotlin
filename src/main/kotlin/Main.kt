@@ -16,5 +16,6 @@ fun main(args: Array<String>) {
         else -> throw IllegalArgumentException("Day $day not supported")
     }
 
-    println("Result: ${solver.solve(reader.read(path))}")
+    val solution = solver.solve(reader.read(path))
+    println("Result: ${solution.first} and ${solution.second}")
 }
