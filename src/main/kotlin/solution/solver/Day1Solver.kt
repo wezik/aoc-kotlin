@@ -1,25 +1,44 @@
 package org.example.solution.solver
 
 import org.example.solution.InputSolver
+import org.example.solution.Result
+import java.time.Instant
 import kotlin.math.abs
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 class Day1Solver : InputSolver {
 
-    override fun solve(input: List<String>): Pair<String, String> {
+    override fun solve(input: List<String>): Pair<Result, Result> {
         // Early return on empty input
-        if (input.isEmpty()) return Pair("0", "0")
+        if (input.isEmpty()) return Pair(
+            Result("0", 0.toDuration(DurationUnit.MICROSECONDS)),
+            Result("0", 0.toDuration(DurationUnit.MICROSECONDS))
+        )
 
-        val pairs = input.toPairs()
+        val startPart1 = Instant.now()
+        val distance = input.toDistance()
+        val part1Time = Instant.now().toEpochMilli() - startPart1.toEpochMilli()
+
+        val part1Result = Result(distance.toString(), part1Time.toDuration(DurationUnit.MICROSECONDS))
+
+        val startPart2 = Instant.now()
+        val similarity = input.toSimilarity()
+        val part2Time = Instant.now().toEpochMilli() - startPart2.toEpochMilli()
+
+        val part2Result = Result(similarity.toString(), part2Time.toDuration(DurationUnit.MICROSECONDS))
+
+        return part1Result to part2Result
+    }
+
+    private fun List<String>.toSimilarity(): Int {
+        val pairs = this.toPairs()
 
         val split = pairs.split()
 
-        val distance = split.sortedZip().map {
-            abs(it.first - it.second)
-        }.sum()
-
         val cache = mutableMapOf<Int, Int>()
 
-        val similarity = split.first.map { a ->
+        return split.first.map { a ->
             // Early return if cached
             if (cache.containsKey(a)) return@map cache[a]!!
 
@@ -30,8 +49,16 @@ class Day1Solver : InputSolver {
             cache[a] = result
             result
         }.sum()
+    }
 
-        return Pair("$distance", "$similarity")
+    private fun List<String>.toDistance(): Int {
+        val pairs = this.toPairs()
+
+        val split = pairs.split()
+
+        return split.sortedZip().map {
+            abs(it.first - it.second)
+        }.sum()
     }
 
     private fun Pair<List<Int>, List<Int>>.sortedZip(): List<Pair<Int, Int>> {
