@@ -28,7 +28,7 @@ fun main(args: Array<String>) {
     }
     val (day, path) = args
 
-    val solver = StaticSolverSelector().select(day)
+    val solver = StaticSolverSelector().select(day.toInt())
 
     printSolution(solver, path)
 
