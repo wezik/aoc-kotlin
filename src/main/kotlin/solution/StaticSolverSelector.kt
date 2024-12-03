@@ -1,8 +1,7 @@
 package org.example.solution
 
 import org.example.solution.solver.Solver
-import org.example.solution.solver.days.Day1Solver
-import org.example.solution.solver.days.Day2Solver
+import org.example.solution.solver.days.*
 
 class StaticSolverSelector {
 
@@ -11,6 +10,7 @@ class StaticSolverSelector {
     private val solvers = listOf(
         SolverSource(Day1Solver(), "inputs/day1"),
         SolverSource(Day2Solver(), "inputs/day2"),
+        SolverSource(Day3Solver(), "inputs/day3"),
     )
 
     fun select(day: Int): Solver {

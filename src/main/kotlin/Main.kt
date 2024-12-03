@@ -60,7 +60,9 @@ private fun runBenchmark(solver: Solver, path: String): Pair<String, String> {
             p2Times.add(it.second.time.inWholeNanoseconds)
         }
     }
-    val p1Time = p1Times.average().toDuration(DurationUnit.NANOSECONDS).formatToMs() + " for ${p1Times.size} runs"
-    val p2Time = p2Times.average().toDuration(DurationUnit.NANOSECONDS).formatToMs() + " for ${p2Times.size} runs"
+    val p1Time =
+        p1Times.average().toDuration(DurationUnit.NANOSECONDS).formatToMs() + " average for ${p1Times.size} runs"
+    val p2Time =
+        p2Times.average().toDuration(DurationUnit.NANOSECONDS).formatToMs() + " average for ${p2Times.size} runs"
     return p1Time to p2Time
 }
