@@ -27,5 +27,26 @@ class Day3Spec : DescribeSpec({
             // Expect
             solver.solve(input).first.value shouldBe "161"
         }
+
+        it("example mul calculation with do instructions") {
+            // Given
+            val input: List<String> =
+                listOf("xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))")
+
+            // Expect
+            solver.solve(input).second.value.shouldBe("48")
+        }
+
+        it("do instructions persisting between lines") {
+            // Given
+            val input: List<String> =
+                listOf(
+                    "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undon't()?mul(8,5))",
+                    "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(5,5))",
+                    )
+
+            // Expect
+            solver.solve(input).second.value.shouldBe("33")
+        }
     }
 })

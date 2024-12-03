@@ -8,60 +8,92 @@ import kotlin.text.isDigit
 
 class Day3Solver : Solver {
 
-    data class Slider(val value: String) {
+    data class Slider(private val value: List<String>) {
 
         private var index = 0
+        private val chars = value.joinToString("").lowercase().toCharArray()
 
         fun next(): Char? {
-            if (index >= value.length) return null
-            return value[index++]
+            if (index >= chars.size) return null
+            return chars[index++]
+        }
+
+        fun peek(): Char? {
+            if (index >= chars.size) return null
+            return chars[index]
         }
 
         fun previous() {
             index--
         }
-
-        fun jumpTo(char: Char): Char? {
-            var c = next()
-            while (c != null && c != char) {
-                c = next()
-            }
-            return c
-        }
     }
 
+    interface InstructionResult
+    data class MutInstructionResult(val sum: Int) : InstructionResult
+    data class DoInstructionResult(val block: Boolean) : InstructionResult
+
+    private companion object {
+        private var isBlocked = false
+    }
+
+    // YES, this is NO REGEX solution, I hate regex
     override fun solve(input: List<String>): Pair<Result, Result> {
         var part1Sum = 0
         val part1Time = time {
-            val sliders = input.map { it -> Slider(it.lowercase()) }
-            part1Sum = sliders.map { collectAndSumMuls(it) }.sum()
-        }
-        val part1Result = Result(part1Sum.toString(), part1Time.toNanoDuration())
+            part1Sum = runSolution(input)
+        }.toNanoDuration()
+        val part1Result = Result(part1Sum.toString(), part1Time)
 
-        return part1Result to part1Result
+        var part2Sum = 0
+        val part2Time = time {
+            part2Sum = runSolution(input, allowBlocking = true)
+        }.toNanoDuration()
+        val part2Result = Result(part2Sum.toString(), part2Time)
+
+        return part1Result to part2Result
     }
 
-    private fun collectAndSumMuls(slider: Slider): Int {
+
+    private fun runSolution(input: List<String>, allowBlocking: Boolean = false): Int {
         var sum = 0
-        var mChar = slider.jumpTo('m')
-        while (mChar != null) {
-            if (!slider.nextAndIsOnString("ul(")) {
-                mChar = slider.jumpTo('m')
-                continue
+
+        val slider = Slider(input)
+
+        while (slider.peek() != null) {
+            val instruction = slider.check(allowBlocking)
+            when (instruction) {
+                is MutInstructionResult -> sum += instruction.sum
+                is DoInstructionResult -> isBlocked = instruction.block
+                else -> {}
             }
-            val (a, b) = slider.getNumbers()
-            if (a == null || b == null) {
-                mChar = slider.jumpTo('m')
-                continue
-            }
-            if (!slider.nextAndIs(')')) {
-                mChar = slider.jumpTo('m')
-                continue
-            }
-            sum += a.toInt() * b.toInt()
-            mChar = slider.jumpTo('m')
         }
+
         return sum
+    }
+
+    private fun Slider.check(allowBlocking: Boolean = false): InstructionResult? {
+        val c = this.next()!! // This is safe, because we're checking for null in main loop
+        return when {
+            c == 'm' && !isBlocked -> this.readMut()
+            c == 'd' && allowBlocking -> this.readDo()
+            else -> null
+        }
+    }
+
+    private fun Slider.readMut(): MutInstructionResult? {
+        if (!this.nextAndIsOnString("ul(")) return null
+        val (a, b) = this.getNumbers()
+        if (a == null || b == null) return null
+        if (!this.nextAndIs(')')) return null
+        return MutInstructionResult(a * b)
+    }
+
+    private fun Slider.readDo(): DoInstructionResult? {
+        if (this.nextAndIsOnString("o()")) return DoInstructionResult(block = false)
+        while (this.peek() != 'd') this.previous()
+        this.next()
+        if (this.nextAndIsOnString("on't()")) return DoInstructionResult(block = true)
+        return null
     }
 
     private fun Slider.nextAndIs(char: Char): Boolean {
