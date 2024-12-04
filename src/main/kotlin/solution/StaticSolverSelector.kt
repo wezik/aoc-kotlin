@@ -11,6 +11,7 @@ class StaticSolverSelector {
         SolverSource(Day1Solver(), "inputs/day1"),
         SolverSource(Day2Solver(), "inputs/day2"),
         SolverSource(Day3Solver(), "inputs/day3"),
+        SolverSource(Day4Solver(), "inputs/day4"),
     )
 
     fun select(day: Int): Solver {

@@ -22,7 +22,7 @@ tasks.test {
     useJUnitPlatform()
     testLogging {
         events("passed", "skipped", "failed") // Log test results
-        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL // Show full exception stack traces
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.SHORT // Show full exception stack traces
         showStandardStreams = true // Print standard output and error streams
     }
 }
