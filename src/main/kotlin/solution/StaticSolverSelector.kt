@@ -16,6 +16,7 @@ class StaticSolverSelector {
     )
 
     fun select(day: Int): Solver {
+        val day = day - 1
         return if (day < solvers.size) {
             solvers[day].solver
         } else {
