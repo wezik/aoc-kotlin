@@ -10,20 +10,20 @@ class Day4Solver : Solver {
     override fun solve(input: List<String>): Pair<Result, Result> {
         var part1Sum = 0
         val part1Time = time {
-            part1Sum = runSolution(input)
+            part1Sum = part1(input)
         }.toNanoDuration()
         val part1Result = Result(part1Sum.toString(), part1Time)
 
         var part2Sum = 0
         val part2Time = time {
-            part2Sum = runSolution(input)
+            part2Sum = part2(input)
         }.toNanoDuration()
         val part2Result = Result(part2Sum.toString(), part2Time)
 
         return part1Result to part2Result
     }
 
-    private fun runSolution(input: List<String>): Int {
+    private fun part1(input: List<String>): Int {
         var sum = 0
         for (y in 0 until input.size) {
             for (x in 0 until input[y].length) {
@@ -35,41 +35,57 @@ class Day4Solver : Solver {
         return sum
     }
 
+    private fun part2(input: List<String>): Int {
+        var sum = 0
+        // We can start from index 1 since 'A' has to be in the middle of the cross
+        // Same rule applies to maximum value
+        for (y in 1 until input.size - 1) {
+            // Same here, as above
+            for (x in 1 until input[y].length - 1) {
+                if (input[y][x] == 'A') {
+                    sum += findCrossMas(x, y, input)
+                }
+            }
+        }
+        return sum
+
+    }
+
     // Pass the location of 'X' to find all "XMAS's"
     private fun findXmas(x: Int, y: Int, input: List<String>): Int {
         var sum = 0
 
         // Left
         if (!input.isOutOfBounds(x = x - 3)) {
-            sum += input.checkRange(x - 1 downTo x - 3, y..y)
+            sum += input.checkRangeForXmas(x - 1 downTo x - 3, y..y)
         }
         // Up
         if (!input.isOutOfBounds(y = y - 3)) {
-            sum += input.checkRange(x..x, y - 1 downTo y - 3)
+            sum += input.checkRangeForXmas(x..x, y - 1 downTo y - 3)
         }
         // Right
         if (!input.isOutOfBounds(x = x + 3)) {
-            sum += input.checkRange(x + 1..x + 3, y..y)
+            sum += input.checkRangeForXmas(x + 1..x + 3, y..y)
         }
         // Down
         if (!input.isOutOfBounds(y = y + 3)) {
-            sum += input.checkRange(x..x, y + 1..y + 3)
+            sum += input.checkRangeForXmas(x..x, y + 1..y + 3)
         }
         // Left-Up
         if (!input.isOutOfBounds(x = x - 3, y = y - 3)) {
-            sum += input.checkRange(x - 1 downTo x - 3, y - 1 downTo y - 3)
+            sum += input.checkRangeForXmas(x - 1 downTo x - 3, y - 1 downTo y - 3)
         }
         // Right-Up
         if (!input.isOutOfBounds(x = x + 3, y = y - 3)) {
-            sum += input.checkRange(x + 1..x + 3, y - 1 downTo y - 3)
+            sum += input.checkRangeForXmas(x + 1..x + 3, y - 1 downTo y - 3)
         }
         // Left-Down
         if (!input.isOutOfBounds(x = x - 3, y = y + 3)) {
-            sum += input.checkRange(x - 1 downTo x - 3, y + 1..y + 3)
+            sum += input.checkRangeForXmas(x - 1 downTo x - 3, y + 1..y + 3)
         }
         // Right-Down
         if (!input.isOutOfBounds(x = x + 3, y = y + 3)) {
-            sum += input.checkRange(x + 1..x + 3, y + 1..y + 3)
+            sum += input.checkRangeForXmas(x + 1..x + 3, y + 1..y + 3)
         }
 
         return sum
@@ -80,7 +96,7 @@ class Day4Solver : Solver {
     }
 
     // Don't pass possible out of bounds values and ranges other than 3!!!
-    private fun List<String>.checkRange(xRange: IntProgression, yRange: IntProgression): Int {
+    private fun List<String>.checkRangeForXmas(xRange: IntProgression, yRange: IntProgression): Int {
         val xDefault = xRange.first
         val yDefault = yRange.first
 
@@ -96,6 +112,23 @@ class Day4Solver : Solver {
             ++xmasIndex
         }
         return 1
+    }
+
+    private fun findCrossMas(x: Int, y: Int, input: List<String>): Int {
+        // Dont need to check out of bounds since the values can't reach that point
+        val ltrCase1 = input[y - 1][x - 1] == 'S' && input[y + 1][x + 1] == 'M'
+        val ltrCase2 = input[y - 1][x - 1] == 'M' && input[y + 1][x + 1] == 'S'
+        val leftToRightCross = ltrCase1 || ltrCase2
+
+        // Early return if not present
+        if (!leftToRightCross) return 0
+
+        val rtlCase1 = input[y - 1][x + 1] == 'S' && input[y + 1][x - 1] == 'M'
+        val rtlCase2 = input[y - 1][x + 1] == 'M' && input[y + 1][x - 1] == 'S'
+        val rightToLeftCross = rtlCase1 || rtlCase2
+
+        // Only rightToLeftCross since leftToRightCross is already checked and true at this point
+        return if (rightToLeftCross) 1 else 0
     }
 
     private fun List<String>.isOutOfBounds(x: Int? = null, y: Int? = null): Boolean {

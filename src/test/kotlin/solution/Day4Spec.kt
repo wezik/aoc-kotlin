@@ -138,6 +138,45 @@ class Day4Spec : FreeSpec({
             }
         }
 
+        "part 2" - {
+            "tiniest MAS search" {
+                //given
+                val input = listOf(
+                    "M.S",
+                    ".A.",
+                    "M.S",
+                )
+                // expect
+                solver.solve(input).second.value shouldBe "1"
+            }
+            "small input MAS search" {
+                // given
+                val input = listOf(
+                    "MMMSXXMASM",
+                    "MSAMXMSMSA",
+                    "AMXSXMAAMM",
+                    "MSAMASMSMX",
+                    "XMASAMXAMM",
+                    "XXAMMXXAMA",
+                    "SMSMSASXSS",
+                    "SAXAMASAAA",
+                    "MAMMMXMMMM",
+                    "MXMXAXMASX",
+                )
+                // expect
+                solver.solve(input).second.value shouldBe "9"
+            }
+            "correctly handles double characters" {
+                // given
+                val input = listOf(
+                    "M.S",
+                    ".A.",
+                    "S.M",
+                )
+                // expect
+                solver.solve(input).second.value shouldBe "0"
+            }
+        }
 
     }
 })
