@@ -78,7 +78,34 @@ class Day5Solver : Solver {
     }
 
     private fun part2(input: List<String>): Int {
-        return 0
+        var sum = 0
+        val (rules, updates) = input.split()
+        for (update in updates) {
+            if (!rules.isUpdateValid(update)) {
+                val fixedUpdate = update.fix(rules)
+                sum += fixedUpdate.pages[fixedUpdate.pages.size / 2]
+            }
+        }
+        return sum
+    }
+
+    private fun Update.fix(rules: Rules): Update {
+
+        val newPages = ArrayList<Int>()
+        val oldPages = pages.toMutableList()
+
+        for (i in pages.size - 1 downTo 0) {
+            val fixedPage = oldPages.find { page ->
+                val rule = rules[page] ?: return@find true
+
+                val trimmedRules = rule.before.filter { oldPages.contains(it) }
+
+                return@find trimmedRules.isEmpty()
+            }
+            oldPages.remove(fixedPage)
+            newPages.add(fixedPage ?: pages[i])
+        }
+        return Update(newPages.reversed())
     }
 
 }
