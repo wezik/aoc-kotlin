@@ -11,9 +11,6 @@ class Day4Solver : Solver {
         var part1Sum = 0
         val part1Time = time {
             part1Sum = runSolution(input)
-//            for (y in 0..newList.size - 1) {
-//                println(newList[y].joinToString("") { "[$it]" })
-//            }
         }.toNanoDuration()
         val part1Result = Result(part1Sum.toString(), part1Time)
 
@@ -26,98 +23,91 @@ class Day4Solver : Solver {
         return part1Result to part2Result
     }
 
-    companion object {
-        private var newList: MutableList<MutableList<String>> = mutableListOf()
-    }
-
     private fun runSolution(input: List<String>): Int {
-        input.forEachIndexed { indexY, it ->
-            newList.add(mutableListOf())
-            it.forEach { it ->
-                newList[indexY].add(". ")
-            }
-        }
-
         var sum = 0
-        for (y in 0..input.size - 1) {
-            for (x in 0..input[y].length - 1) {
-                val c = input[y][x]
-                if (c == 'X') {
-                    newList[y][x] = newList[y][x].replace(".", "X")
-                    // Right
-                    if (x + 3 < input[y].length) {
-                        sum += input.findXmas(x + 1..x + 3, y..y)
-                    }
-                    // Left
-                    if (x - 3 >= 0) {
-                        sum += input.findXmas(x - 1..x - 3, y..y)
-                    }
-                    // Up
-                    if (y - 3 >= 0) {
-                        sum += input.findXmas(x..x, y - 1..y - 3)
-                    }
-                    // Down
-                    if (y + 3 < input.size) {
-                        sum += input.findXmas(x..x, y + 1..y + 3)
-                    }
-                    // Up-Left
-                    if (x - 3 >= 0 && y - 3 >= 0) {
-                        sum += input.findXmas((x - 1..x - 3), y - 1..y - 3)
-                    }
-                    // Up-Right
-                    if (x + 3 < input[y].length && y - 3 >= 0) {
-                        sum += input.findXmas(x + 1..x + 3, y - 1..y - 3)
-                    }
-                    // Down-Left
-                    if (x - 3 >= 0 && y + 3 < input.size) {
-                        sum += input.findXmas(x - 1..x - 3, y + 1..y + 3)
-                    }
-                    // Down-Right
-                    if (x + 3 < input[y].length && y + 3 < input.size) {
-                        sum += input.findXmas(x + 1..x + 3, y + 1..y + 3)
-                    }
+        for (y in 0 until input.size) {
+            for (x in 0 until input[y].length) {
+                if (input[y][x] == 'X') {
+                    sum += findXmas(x, y, input)
                 }
             }
         }
         return sum
     }
 
-    // Don't pass possible out of bounds values
-    private fun List<String>.findXmas(xRange: IntRange, yRange: IntRange): Int {
-        var xmasIndex = 1 // No need to check for 'X' at index 0
-        var xmasString = "XMAS"
+    // Pass the location of 'X' to find all "XMAS's"
+    private fun findXmas(x: Int, y: Int, input: List<String>): Int {
+        var sum = 0
 
+        // Left
+        if (!input.isOutOfBounds(x = x - 3)) {
+            sum += input.checkRange(x - 1 downTo x - 3, y..y)
+        }
+        // Up
+        if (!input.isOutOfBounds(y = y - 3)) {
+            sum += input.checkRange(x..x, y - 1 downTo y - 3)
+        }
+        // Right
+        if (!input.isOutOfBounds(x = x + 3)) {
+            sum += input.checkRange(x + 1..x + 3, y..y)
+        }
+        // Down
+        if (!input.isOutOfBounds(y = y + 3)) {
+            sum += input.checkRange(x..x, y + 1..y + 3)
+        }
+        // Left-Up
+        if (!input.isOutOfBounds(x = x - 3, y = y - 3)) {
+            sum += input.checkRange(x - 1 downTo x - 3, y - 1 downTo y - 3)
+        }
+        // Right-Up
+        if (!input.isOutOfBounds(x = x + 3, y = y - 3)) {
+            sum += input.checkRange(x + 1..x + 3, y - 1 downTo y - 3)
+        }
+        // Left-Down
+        if (!input.isOutOfBounds(x = x - 3, y = y + 3)) {
+            sum += input.checkRange(x - 1 downTo x - 3, y + 1..y + 3)
+        }
+        // Right-Down
+        if (!input.isOutOfBounds(x = x + 3, y = y + 3)) {
+            sum += input.checkRange(x + 1..x + 3, y + 1..y + 3)
+        }
+
+        return sum
+    }
+
+    companion object {
+        private const val XMAS = "XMAS"
+    }
+
+    // Don't pass possible out of bounds values and ranges other than 3!!!
+    private fun List<String>.checkRange(xRange: IntProgression, yRange: IntProgression): Int {
         val xDefault = xRange.first
         val yDefault = yRange.first
 
-        val xRangeList = xRange.toList()
-        val yRangeList = yRange.toList()
+        val xRangeI = xRange.iterator()
+        val yRangeI = yRange.iterator()
 
-        println("xRangeList: $xRangeList")
-        println("yRangeList: $yRangeList")
+        var xmasIndex = 1
 
-        var xRangeI = 0
-        var yRangeI = 0
-
-        while (xmasIndex < xmasString.length) {
-            var x = xDefault
-            if (xRangeI < xRangeList.size) {
-                x = xRangeList[xRangeI++]
-            }
-            var y = yDefault
-            if (yRangeI < yRangeList.size) {
-                y = yRangeList[yRangeI++]
-            }
-            val c = this[y][x]
-            newList[y][x] = newList[y][x].replace(" ", "*")
-            if (c != xmasString[xmasIndex]) {
-                return 0
-            }
-            newList[y][x] = newList[y][x].replace('.', xmasString[xmasIndex])
+        while (xmasIndex < XMAS.length) {
+            var xIndex = if (xRangeI.hasNext()) xRangeI.next() else xDefault
+            var yIndex = if (yRangeI.hasNext()) yRangeI.next() else yDefault
+            if (this[yIndex][xIndex] != XMAS[xmasIndex]) return 0
             ++xmasIndex
         }
         return 1
     }
 
+    private fun List<String>.isOutOfBounds(x: Int? = null, y: Int? = null): Boolean {
+        var expression = false
+        if (x != null) {
+            // Checking on length of the first line, they all should be the same length
+            expression = expression || (x < 0 || x >= this[0].length)
+        }
+        if (y != null) {
+            expression = expression || (y < 0 || y >= this.size)
+        }
+        return expression
+    }
 
 }
