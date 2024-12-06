@@ -41,12 +41,12 @@ private fun printSolution(solver: Solver, path: String) {
     val isBenchmark = benchmarkValue == "true"
 
     val (p1Time, p2Time) = if (!isBenchmark) {
-        Pair(solution.first.time.formatToMs(), solution.second.time.formatToMs())
+        Pair(solution.part1.time.formatToMs(), solution.part2.time.formatToMs())
     } else {
         runBenchmark(solver, path)
     }
-    println("Part 1: \"${solution.first.value}\" generated in $p1Time")
-    println("Part 2: \"${solution.second.value}\" generated in $p2Time")
+    println("Part 1: \"${solution.part1.result}\" generated in $p1Time")
+    println("Part 2: \"${solution.part2.result}\" generated in $p2Time")
 }
 
 private fun Duration.formatToMs() = this.toString(DurationUnit.MILLISECONDS, 3)
@@ -56,8 +56,8 @@ private fun runBenchmark(solver: Solver, path: String): Pair<String, String> {
     val p2Times = mutableListOf<Long>()
     (1..1000).forEach {
         solver.solve(readFrom(path)).let {
-            p1Times.add(it.first.time.inWholeNanoseconds)
-            p2Times.add(it.second.time.inWholeNanoseconds)
+            p1Times.add(it.part1.time.inWholeNanoseconds)
+            p2Times.add(it.part2.time.inWholeNanoseconds)
         }
     }
     val p1Time =

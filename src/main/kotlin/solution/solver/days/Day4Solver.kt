@@ -1,29 +1,10 @@
 package org.example.solution.solver.days
 
-import org.example.solution.solver.Result
 import org.example.solution.solver.Solver
-import org.example.solution.time
-import org.example.solution.toNanoDuration
 
 class Day4Solver : Solver {
 
-    override fun solve(input: List<String>): Pair<Result, Result> {
-        var part1Sum = 0
-        val part1Time = time {
-            part1Sum = part1(input)
-        }.toNanoDuration()
-        val part1Result = Result(part1Sum.toString(), part1Time)
-
-        var part2Sum = 0
-        val part2Time = time {
-            part2Sum = part2(input)
-        }.toNanoDuration()
-        val part2Result = Result(part2Sum.toString(), part2Time)
-
-        return part1Result to part2Result
-    }
-
-    private fun part1(input: List<String>): Int {
+    override fun part1(input: List<String>): Int {
         var sum = 0
         for (y in 0 until input.size) {
             for (x in 0 until input[y].length) {
@@ -35,7 +16,7 @@ class Day4Solver : Solver {
         return sum
     }
 
-    private fun part2(input: List<String>): Int {
+    override fun part2(input: List<String>): Int {
         var sum = 0
         // We can start from index 1 since 'A' has to be in the middle of the cross
         // Same rule applies to maximum value

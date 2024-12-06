@@ -1,9 +1,6 @@
 package org.example.solution.solver.days
 
-import org.example.solution.solver.Result
 import org.example.solution.solver.Solver
-import org.example.solution.time
-import org.example.solution.toNanoDuration
 import kotlin.math.abs
 
 class Day2Solver : Solver {
@@ -18,25 +15,13 @@ class Day2Solver : Solver {
         return this.split(' ').map { it.toInt() }.let { Report(it) }
     }
 
-    override fun solve(input: List<String>): Pair<Result, Result> {
-        var safeReports = 0
-        val safeReportsTime = time {
-            safeReports = input.toReports().filter { report ->
-                isSafe(report.levels, false)
-            }.size
-        }
-        val safeReportsResult = Result(safeReports.toString(), safeReportsTime.toNanoDuration())
+    override fun part1(input: List<String>) = input.toReports().filter {
+        isSafe(it.levels, false)
+    }.size
 
-        var safeReports2 = 0
-        val safeReports2Time = time {
-            safeReports2 = input.toReports().filter { report ->
-                isSafe(report.levels, true)
-            }.size
-        }
-        val safeReports2Result = Result(safeReports2.toString(), safeReports2Time.toNanoDuration())
-
-        return safeReportsResult to safeReports2Result
-    }
+    override fun part2(input: List<String>) = input.toReports().filter {
+        isSafe(it.levels, true)
+    }.size
 
     private fun isSafe(levels: List<Int>, tolerance: Boolean): Boolean {
         // Calculate if the numbers are growing or shrinking

@@ -1,11 +1,9 @@
 package org.example.solution.solver.days
 
-import org.example.solution.solver.Result
 import org.example.solution.solver.Solver
-import org.example.solution.time
-import org.example.solution.toNanoDuration
 import kotlin.text.isDigit
 
+// YES, this is NO REGEX solution!!!
 class Day3Solver : Solver {
 
     data class Slider(private val value: List<String>) {
@@ -36,23 +34,8 @@ class Day3Solver : Solver {
         private var isBlocked = false
     }
 
-    // YES, this is NO REGEX solution, I hate regex
-    override fun solve(input: List<String>): Pair<Result, Result> {
-        var part1Sum = 0
-        val part1Time = time {
-            part1Sum = runSolution(input)
-        }.toNanoDuration()
-        val part1Result = Result(part1Sum.toString(), part1Time)
-
-        var part2Sum = 0
-        val part2Time = time {
-            part2Sum = runSolution(input, allowBlocking = true)
-        }.toNanoDuration()
-        val part2Result = Result(part2Sum.toString(), part2Time)
-
-        return part1Result to part2Result
-    }
-
+    override fun part1(input: List<String>) = runSolution(input)
+    override fun part2(input: List<String>) = runSolution(input, allowBlocking = true)
 
     private fun runSolution(input: List<String>, allowBlocking: Boolean = false): Int {
         var sum = 0

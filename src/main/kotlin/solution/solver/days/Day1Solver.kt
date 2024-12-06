@@ -1,36 +1,12 @@
 package org.example.solution.solver.days
 
 import org.example.solution.solver.Solver
-import org.example.solution.solver.Result
-import org.example.solution.time
-import org.example.solution.toNanoDuration
 import kotlin.math.abs
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 class Day1Solver : Solver {
 
-    override fun solve(input: List<String>): Pair<Result, Result> {
-        // Early return on empty input
-        if (input.isEmpty()) return Pair(
-            Result("0", 0.toDuration(DurationUnit.MICROSECONDS)),
-            Result("0", 0.toDuration(DurationUnit.MICROSECONDS))
-        )
-
-        var distance = 0
-        val distanceTime = time {
-            distance = input.getDistance()
-        }
-        val distanceResult = Result(distance.toString(), distanceTime.toNanoDuration())
-
-        var similarity = 0
-        val similarityTime = time {
-            similarity = input.getSimilarity()
-        }
-        var similarityResult = Result(similarity.toString(), similarityTime.toNanoDuration())
-
-        return distanceResult to similarityResult
-    }
+    override fun part1(input: List<String>) = input.getDistance()
+    override fun part2(input: List<String>) = input.getSimilarity()
 
     private fun List<String>.getSimilarity(): Int {
         val split = this.toSeparate()
