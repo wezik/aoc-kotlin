@@ -1,5 +1,7 @@
 plugins {
-    kotlin("jvm") version "2.0.20"
+    kotlin("jvm") version "2.1.0"
+
+    id("com.adarshr.test-logger") version "4.0.0"
 }
 
 group = "org.example"
@@ -21,11 +23,6 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-    testLogging {
-        events("passed", "skipped", "failed") // Log test results
-        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.SHORT // Show full exception stack traces
-        showStandardStreams = true // Print standard output and error streams
-    }
 }
 
 kotlin {
