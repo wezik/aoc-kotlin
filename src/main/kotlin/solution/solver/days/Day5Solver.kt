@@ -1,111 +1,125 @@
 package org.example.solution.solver.days
 
-import org.example.solution.solver.Result
 import org.example.solution.solver.Solver
-import org.example.solution.time
-import org.example.solution.toNanoDuration
 
-// alias
 private typealias Rules = Map<Int, Rule>
-private typealias Updates = List<Update>
+private typealias Rule = MutableSet<Int>
 
-private data class Rule(val before: MutableSet<Int>, val after: MutableSet<Int>)
-private data class Update(val pages: List<Int>)
+private typealias Updates = List<Update>
+private typealias Update = List<Int>
 
 class Day5Solver : Solver {
 
-    override fun solve(input: List<String>): Pair<Result, Result> {
-        var part1Sum = 0
-        val part1Time = time {
-            part1Sum = part1(input)
-        }.toNanoDuration()
-        val part1Result = Result(part1Sum.toString(), part1Time)
-
-        var part2Sum = 0
-        val part2Time = time {
-            part2Sum = part2(input)
-        }.toNanoDuration()
-        val part2Result = Result(part2Sum.toString(), part2Time)
-
-        return part1Result to part2Result
-    }
-
-    private fun List<String>.split(): Pair<Rules, Updates> {
+    private fun List<String>.parse(): Pair<Rules, Updates> {
         val rules = mutableMapOf<Int, Rule>()
         val updates = mutableListOf<Update>()
 
-        forEach { line ->
-            if (line.contains("|")) {
-                // Should be of pattern 'A|B' otherwise the input is incorrect
-                val (a, b) = line.split("|")
-                val aRule = rules.getOrPut(a.toInt()) { Rule(HashSet<Int>(), HashSet<Int>()) }
-                val bRule = rules.getOrPut(b.toInt()) { Rule(HashSet<Int>(), HashSet<Int>()) }
-                aRule.before.add(b.toInt())
-                bRule.after.add(a.toInt())
-            } else if (line.isNotBlank()) {
-                val pages = line.split(",").map { it.toInt() }
-                updates.add(Update(pages))
-            }
+        val splitLine = this.indexOf("")
+
+        this.subList(0, splitLine).forEach { ruleInput ->
+            val (a, b) = ruleInput.split("|")
+            val aRule = rules.getOrPut(a.toInt()) { HashSet<Int>() }
+            aRule.add(b.toInt())
         }
+
+        this.subList(splitLine + 1, this.size).forEach { updateInput ->
+            val pages = updateInput.split(",").map { it.toInt() }
+            updates.add(pages)
+        }
+
         return rules to updates
     }
 
-    private fun part1(input: List<String>): Int {
-        var sum = 0
-        val (rules, updates) = input.split()
-        for (update in updates) {
-            if (rules.isUpdateValid(update)) {
-                sum += update.pages[update.pages.size / 2]
-            }
-        }
-        return sum
+    override fun part1(input: List<String>): Int {
+        val (rules, updates) = input.parse()
+        return updates
+            .filter { it.isValid(rules) }
+            .map { it.getMiddlePage() }
+            .sum()
     }
 
-    private fun Rules.isUpdateValid(update: Update): Boolean {
-        val werePresent = HashSet<Int>()
-        update.pages.reversed().forEachIndexed { index, page ->
-            // If rule is null, then the page is not in the rules therefore it is allowed
-            val rule = get(page) ?: return@forEachIndexed
-            werePresent.add(page)
-
-            // Trim rule for the pages that are present in the update
-            val rulesTrimmed = rule.before.filter { update.pages.contains(it) }
-            if (!werePresent.containsAll(rulesTrimmed)) {
-                return false
-            }
-        }
-        return true
+    private fun Update.isValid(rules: Rules): Boolean {
+        // Look for first invalid page
+        return withIndex().find { !isValidPage(it.index, rules) } == null
     }
 
-    private fun part2(input: List<String>): Int {
-        var sum = 0
-        val (rules, updates) = input.split()
-        for (update in updates) {
-            if (!rules.isUpdateValid(update)) {
-                val fixedUpdate = update.fix(rules)
-                sum += fixedUpdate.pages[fixedUpdate.pages.size / 2]
-            }
-        }
-        return sum
+    private fun Update.isValidPage(i: Int, rules: Rules): Boolean {
+        // Rules are restrictions so on no rule it is valid
+        val rule = rules[this[i]] ?: return true
+        // No rule should be present before the page
+        return this.subList(0, i).find { rule.contains(it) } == null
     }
 
-    private fun Update.fix(rules: Rules): Update {
+    private fun Update.getMiddlePage() = this[this.size / 2]
 
-        val newPages = ArrayList<Int>()
-        val oldPages = pages.toMutableList()
+    override fun part2(input: List<String>): Int {
+        val (rules, updates) = input.parse()
+        return updates
+            .filter { !it.isValid(rules) }
+            .map { it.fix2(rules).getMiddlePage() }
+            .sum()
+    }
 
-        for (i in pages.size - 1 downTo 0) {
-            val fixedPage = oldPages.find { page ->
-                val rule = rules[page] ?: return@find true
+    private fun Update.findCorrect(rules: Rules): Int? {
+        // TODO This part is broken
+        return withIndex().find {
+            val rule = rules[this[it.index]] ?: return@find true
+            this.subList(0, it.index).find { rule.contains(it) } == null
+        }?.value
+    }
 
-                val trimmedRules = rule.before.filter { oldPages.contains(it) }
+    private fun Update.fix2(rules: Rules): Update {
+        val newPages = ArrayList<Int>(size)
+        val sourcePages = this.toMutableList()
 
-                return@find trimmedRules.isEmpty()
+        while (sourcePages.isNotEmpty()) {
+            val nextPage = sourcePages.findCorrect(rules)
+            if (nextPage != null) {
+                newPages.add(nextPage)
+                sourcePages.remove(nextPage)
+            } else {
+                throw IllegalStateException("Page is null")
             }
-            oldPages.remove(fixedPage)
-            newPages.add(fixedPage ?: pages[i])
         }
-        return Update(newPages.reversed())
+        return newPages
+    }
+
+    // Boolean is true if the update was fixed
+    private fun Update.fix(rules: Rules): Pair<Update, Boolean> {
+        var newPages = ArrayList<Int>(size)
+        val pageSource = this.reversed().toMutableList()
+        var wasFixed = false
+
+        // while pages filled and not the same as previous run!
+        while (pageSource.isNotEmpty()) {
+            val page = pageSource.find {
+
+                // take the rules
+
+                // If no rules it's valid
+                val rule = rules[it] ?: return@find true
+                // Trim unrelated rules to this update
+                val trimmedRules = rule.filter { this.contains(it) }
+                val rulesExhausted = trimmedRules.filter { !newPages.contains(it) }.isEmpty()
+                if (!rulesExhausted) {
+                    // Fix had to be done
+                    wasFixed = true
+                    return@find false
+                }
+                return@find true
+            }
+            if (page != null) {
+                newPages.add(page)
+                pageSource.remove(page)
+            }
+            if (page == null) {
+                throw IllegalStateException("Page is null")
+            }
+        }
+
+        val result = newPages.reversed()
+
+        return newPages.reversed() to wasFixed
     }
 
 }
