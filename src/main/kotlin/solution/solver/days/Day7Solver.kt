@@ -4,6 +4,9 @@ import org.example.solution.solver.Solver
 
 class Day7Solver : Solver {
 
+    private val combinationCache = mutableMapOf<Pair<List<String>, Int>, List<List<String>>>()
+    private val validationCache = mutableMapOf<Pair<Equation, Boolean>, Boolean>()
+
     private fun interface Instruction {
         fun value(): Long
         operator fun plus(other: Instruction) = value() + other.value()
@@ -19,24 +22,41 @@ class Day7Solver : Solver {
         }
     }
 
-    // Generate all possible combinations for a given list and length
+    // Generate all possible combinations for a given list and length (with caching)
     fun generateCombinations(strings: List<String>, length: Int): List<List<String>> {
-        if (length == 0) return listOf(emptyList())
+        val key = strings to length
+        if (key in combinationCache) return combinationCache[key]!!
+
+        if (length == 0) {
+            combinationCache[key] = listOf(emptyList())
+            return combinationCache[key]!!
+        }
+
         val smallerCombinations = generateCombinations(strings, length - 1)
-        return smallerCombinations.flatMap { combo ->
+        val result = smallerCombinations.flatMap { combo ->
             strings.map { str -> combo + str }
         }
+
+        combinationCache[key] = result
+        return result
     }
 
     private fun Equation.isValid(allowJoined: Boolean = false): Boolean {
-        // Test all generated combinations of operators
+        val key = this to allowJoined
+        if (key in validationCache) return validationCache[key]!!
+
         val validOperators = mutableListOf("+", "*")
         if (allowJoined) validOperators.add("|")
 
         val operatorCombos = generateCombinations(validOperators, values.size - 1)
         for (combo in operatorCombos) {
-            if (this.toInstructionOf(combo).value() == sum) return true
+            if (this.toInstructionOf(combo).value() == sum) {
+                validationCache[key] = true
+                return true
+            }
         }
+
+        validationCache[key] = false
         return false
     }
 
