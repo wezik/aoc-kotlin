@@ -5,8 +5,8 @@ import kotlin.math.abs
 
 class Day1Solver : Solver {
 
-    override fun part1(input: List<String>) = input.getDistance()
-    override fun part2(input: List<String>) = input.getSimilarity()
+    override fun part1(input: List<String>) = input.getDistance().toString()
+    override fun part2(input: List<String>) = input.getSimilarity().toString()
 
     private fun List<String>.getSimilarity(): Int {
         val split = this.toSeparate()

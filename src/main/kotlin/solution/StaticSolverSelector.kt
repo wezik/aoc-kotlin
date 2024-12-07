@@ -1,6 +1,6 @@
 package org.example.solution
 
-import org.example.solution.days.Day6Solver
+import org.example.solution.solver.days.Day6Solver
 import org.example.solution.solver.Solver
 import org.example.solution.solver.days.*
 
@@ -15,6 +15,7 @@ class StaticSolverSelector {
         SolverSource(Day4Solver(), "inputs/day4"),
         SolverSource(Day5Solver(), "inputs/day5"),
         SolverSource(Day6Solver(), "inputs/day6"),
+        SolverSource(Day7Solver(), "inputs/day7"),
     )
 
     fun select(day: Int): Solver {

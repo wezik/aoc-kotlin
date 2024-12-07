@@ -34,8 +34,8 @@ class Day3Solver : Solver {
         private var isBlocked = false
     }
 
-    override fun part1(input: List<String>) = runSolution(input)
-    override fun part2(input: List<String>) = runSolution(input, allowBlocking = true)
+    override fun part1(input: List<String>) = runSolution(input).toString()
+    override fun part2(input: List<String>) = runSolution(input, allowBlocking = true).toString()
 
     private fun runSolution(input: List<String>, allowBlocking: Boolean = false): Int {
         var sum = 0

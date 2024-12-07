@@ -36,7 +36,7 @@ class Day4Spec : FreeSpec({
             )
 
             // expect
-            solver.part1(input) shouldBe 18
+            solver.part1(input) shouldBe "18"
         }
 
         "detects directions" - {
@@ -45,14 +45,14 @@ class Day4Spec : FreeSpec({
                 val input = listOf("MMSAMX")
 
                 // expect
-                solver.part1(input) shouldBe 1
+                solver.part1(input) shouldBe "1"
             }
             "right" {
                 // given
                 val input = listOf("MXMASX")
 
                 // expect
-                solver.part1(input) shouldBe 1
+                solver.part1(input) shouldBe "1"
             }
             "up" {
                 // given
@@ -64,7 +64,7 @@ class Day4Spec : FreeSpec({
                 )
 
                 // expect
-                solver.part1(input) shouldBe 1
+                solver.part1(input) shouldBe "1"
             }
             "down" {
                 // given
@@ -76,7 +76,7 @@ class Day4Spec : FreeSpec({
                 )
 
                 // expect
-                solver.part1(input) shouldBe 1
+                solver.part1(input) shouldBe "1"
             }
             "left-up" {
                 // given
@@ -88,7 +88,7 @@ class Day4Spec : FreeSpec({
                 )
 
                 // expect
-                solver.part1(input) shouldBe 1
+                solver.part1(input) shouldBe "1"
             }
             "right-up" {
                 // given
@@ -100,7 +100,7 @@ class Day4Spec : FreeSpec({
                 )
 
                 // expect
-                solver.part1(input) shouldBe 1
+                solver.part1(input) shouldBe "1"
             }
             "left-down" {
                 // given
@@ -112,7 +112,7 @@ class Day4Spec : FreeSpec({
                 )
 
                 // expect
-                solver.part1(input) shouldBe 1
+                solver.part1(input) shouldBe "1"
             }
             "right-down" {
                 // given
@@ -124,7 +124,7 @@ class Day4Spec : FreeSpec({
                 )
 
                 // expect
-                solver.part1(input) shouldBe 1
+                solver.part1(input) shouldBe "1"
             }
         }
         "detects multiples" {
@@ -137,7 +137,7 @@ class Day4Spec : FreeSpec({
             )
 
             // expect
-            solver.part1(input) shouldBe 4
+            solver.part1(input) shouldBe "4"
         }
     }
 
@@ -151,7 +151,7 @@ class Day4Spec : FreeSpec({
             )
 
             // expect
-            solver.part2(input) shouldBe 1
+            solver.part2(input) shouldBe "1"
         }
         "example input" {
             // given
@@ -169,7 +169,7 @@ class Day4Spec : FreeSpec({
             )
 
             // expect
-            solver.part2(input) shouldBe 9
+            solver.part2(input) shouldBe "9"
         }
         "correctly handles repeating characters in a single cross" {
             // given
@@ -180,7 +180,7 @@ class Day4Spec : FreeSpec({
             )
 
             // expect
-            solver.part2(input) shouldBe 0
+            solver.part2(input) shouldBe "0"
         }
     }
 

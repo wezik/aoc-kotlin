@@ -30,12 +30,12 @@ class Day5Solver : Solver {
         return rules to updates
     }
 
-    override fun part1(input: List<String>): Int {
+    override fun part1(input: List<String>): String {
         val (rules, updates) = input.parse()
         return updates
             .filter { it.isValid(rules) }
             .map { it.getMiddlePage() }
-            .sum()
+            .sum().toString()
     }
 
     private fun Update.isValid(rules: Rules): Boolean {
@@ -52,12 +52,12 @@ class Day5Solver : Solver {
 
     private fun Update.getMiddlePage() = this[this.size / 2]
 
-    override fun part2(input: List<String>): Int {
+    override fun part2(input: List<String>): String {
         val (rules, updates) = input.parse()
         return updates
             .filter { !it.isValid(rules) }
             .map { it.fix2(rules).getMiddlePage() }
-            .sum()
+            .sum().toString()
     }
 
     private fun Update.findCorrect(rules: Rules): Int? {

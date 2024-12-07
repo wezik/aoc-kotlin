@@ -4,7 +4,7 @@ import org.example.solution.solver.Solver
 
 class Day4Solver : Solver {
 
-    override fun part1(input: List<String>): Int {
+    override fun part1(input: List<String>): String {
         var sum = 0
         for (y in 0 until input.size) {
             for (x in 0 until input[y].length) {
@@ -13,10 +13,10 @@ class Day4Solver : Solver {
                 }
             }
         }
-        return sum
+        return sum.toString()
     }
 
-    override fun part2(input: List<String>): Int {
+    override fun part2(input: List<String>): String {
         var sum = 0
         // We can start from index 1 since 'A' has to be in the middle of the cross
         // Same rule applies to maximum value
@@ -28,7 +28,7 @@ class Day4Solver : Solver {
                 }
             }
         }
-        return sum
+        return sum.toString()
 
     }
 

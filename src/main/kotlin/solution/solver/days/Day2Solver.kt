@@ -17,11 +17,11 @@ class Day2Solver : Solver {
 
     override fun part1(input: List<String>) = input.toReports().filter {
         isSafe(it.levels, false)
-    }.size
+    }.size.toString()
 
     override fun part2(input: List<String>) = input.toReports().filter {
         isSafe(it.levels, true)
-    }.size
+    }.size.toString()
 
     private fun isSafe(levels: List<Int>, tolerance: Boolean): Boolean {
         // Calculate if the numbers are growing or shrinking

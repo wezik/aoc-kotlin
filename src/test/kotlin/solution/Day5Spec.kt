@@ -19,7 +19,7 @@ class Day5Spec : FreeSpec({
             )
 
             // expect
-            solver.part1(input) shouldBe 51
+            solver.part1(input) shouldBe "51"
         }
         "example input" {
             // given
@@ -55,7 +55,7 @@ class Day5Spec : FreeSpec({
             )
 
             // expect
-            solver.part1(input) shouldBe 143
+            solver.part1(input) shouldBe "143"
         }
     }
     "\"Detect updates with incorrect ordering and fix them\" part 2" - {
@@ -70,7 +70,7 @@ class Day5Spec : FreeSpec({
             )
 
             // expect
-            solver.part2(input) shouldBe 53
+            solver.part2(input) shouldBe "53"
         }
         "example input" {
             // given
@@ -106,7 +106,7 @@ class Day5Spec : FreeSpec({
             )
 
             // expect
-            solver.part2(input) shouldBe 123
+            solver.part2(input) shouldBe "123"
         }
     }
 

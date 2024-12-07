@@ -11,12 +11,12 @@ interface Solver {
     fun solve(input: List<String>): SolutionWrapper {
         var part1Solution = ""
         val part1Time = time {
-            part1Solution = part1(input).toString()
+            part1Solution = part1(input)
         }.toNanoDuration()
 
         var part2Solution = ""
         val part2Time = time {
-            part2Solution = part2(input).toString()
+            part2Solution = part2(input)
         }.toNanoDuration()
 
         return SolutionWrapper(
@@ -25,7 +25,7 @@ interface Solver {
         )
     }
 
-    fun part1(input: List<String>): Int
-    fun part2(input: List<String>): Int
+    fun part1(input: List<String>): String
+    fun part2(input: List<String>): String
 
 }

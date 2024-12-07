@@ -35,7 +35,7 @@ class Day2Spec : FreeSpec({
             )
 
             // expect
-            solver.part1(input) shouldBe 2
+            solver.part1(input) shouldBe "2"
         }
 
     }
@@ -54,7 +54,7 @@ class Day2Spec : FreeSpec({
             )
 
             // expect
-            solver.part2(input) shouldBe 4
+            solver.part2(input) shouldBe "4"
         }
 
         "handles unsafe on the beginning" {
@@ -62,7 +62,7 @@ class Day2Spec : FreeSpec({
             val input = listOf("1 3 2 4 5")
 
             // expect
-            solver.part2(input) shouldBe 1
+            solver.part2(input) shouldBe "1"
         }
 
         "calculates difference properly" {
@@ -70,7 +70,7 @@ class Day2Spec : FreeSpec({
             val input = listOf("1 7 2 4 5")
 
             // expect
-            solver.part2(input) shouldBe 1
+            solver.part2(input) shouldBe "1"
         }
 
         "calculates difference properly" {
@@ -78,7 +78,7 @@ class Day2Spec : FreeSpec({
             val input = listOf("1 2 7 8 9")
 
             // expect
-            solver.part2(input) shouldBe 0
+            solver.part2(input) shouldBe "0"
         }
 
         "handles last entry direction change" {
@@ -86,7 +86,7 @@ class Day2Spec : FreeSpec({
             val input = listOf("1 2 4 6 3")
 
             // expect
-            solver.part2(input) shouldBe 1
+            solver.part2(input) shouldBe "1"
         }
 
         "handles direction change early" {
@@ -94,7 +94,7 @@ class Day2Spec : FreeSpec({
             val input = listOf("1 2 1 4 5")
 
             // expect
-            solver.part2(input) shouldBe 1
+            solver.part2(input) shouldBe "1"
         }
 
         "handles first entry being bad" {
@@ -102,7 +102,7 @@ class Day2Spec : FreeSpec({
             val input = listOf("6 1 3 4 5")
 
             // expect
-            solver.part2(input) shouldBe 1
+            solver.part2(input) shouldBe "1"
         }
 
         data class BadActorTest(private val value: String, val index: Int) : WithDataTestName {
@@ -118,7 +118,7 @@ class Day2Spec : FreeSpec({
                 BadActorTest("5 6 4 7 9", 2),
             ) { value ->
                 // expect
-                solver.part2(value.input) shouldBe 1
+                solver.part2(value.input) shouldBe "1"
             }
         }
 
@@ -130,7 +130,7 @@ class Day2Spec : FreeSpec({
                 BadActorTest("4 3 5 2 1", 2),
             ) { value ->
                 // expect
-                solver.part2(value.input) shouldBe 1
+                solver.part2(value.input) shouldBe "1"
             }
         }
 

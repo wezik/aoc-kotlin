@@ -34,7 +34,7 @@ class Day1Spec : FreeSpec({
             )
 
             // expect
-            solver.part1(input) shouldBe 11
+            solver.part1(input) shouldBe "11"
         }
 
         "example input" {
@@ -49,7 +49,7 @@ class Day1Spec : FreeSpec({
             )
 
             // expect
-            solver.part1(input) shouldBe 13
+            solver.part1(input) shouldBe "13"
         }
 
     }
@@ -68,7 +68,7 @@ class Day1Spec : FreeSpec({
             )
 
             // expect
-            solver.part2(input) shouldBe 31
+            solver.part2(input) shouldBe "31"
         }
 
         "big input timeout test".config(timeout = 500.milliseconds) {
@@ -77,7 +77,7 @@ class Day1Spec : FreeSpec({
             (0..12).forEach { input.addAll(input) }
 
             // expect
-            solver.part2(input) shouldBe 2080374784
+            solver.part2(input) shouldBe "2080374784"
         }
 
     }

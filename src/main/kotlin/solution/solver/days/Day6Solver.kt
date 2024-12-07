@@ -1,4 +1,4 @@
-package org.example.solution.days
+package org.example.solution.solver.days
 
 import org.example.solution.solver.Solver
 
@@ -7,7 +7,10 @@ class Day6Solver : Solver {
     private data class Guard(var x: Int, var y: Int)
 
     // Boolean represents if the cell is blocked or not
-    private data class Board(val grid: List<List<Boolean>>)
+    private data class Board(val grid: List<List<Boolean>>) {
+        val width = grid.first().size
+        val height = grid.size
+    }
 
     private fun List<String>.parse(): Pair<Board, Guard> {
         val grid = ArrayList<List<Boolean>>()
@@ -30,7 +33,7 @@ class Day6Solver : Solver {
         return Board(grid) to guard
     }
 
-    override fun part1(input: List<String>): Int {
+    override fun part1(input: List<String>): String {
         var (board, guard) = input.parse()
         val visited = mutableSetOf<Pair<Int, Int>>()
         visited.add(guard.x to guard.y)
@@ -38,7 +41,7 @@ class Day6Solver : Solver {
             guard = guard.next(board) ?: break
             visited.add(guard.x to guard.y)
         }
-        return visited.size
+        return visited.size.toString()
     }
 
     private interface Direction {
@@ -75,12 +78,18 @@ class Day6Solver : Solver {
         }
     }
 
-    private fun Board.toString(guard: Guard, visited: Set<Pair<Int, Int>>): String {
+    private fun Board.toString(guard: Guard, visited: Set<PosWrapper>): String {
         return grid.mapIndexed { y, row ->
             row.mapIndexed { x, cell ->
                 return@mapIndexed when {
                     x == guard.x && y == guard.y -> "[^]"
-                    visited.contains(x to y) -> "[o]"
+                    visited.find { wrapper ->
+                        if (wrapper.pos.first == x && wrapper.pos.second == y) {
+                            return@find true
+                        }
+                        return@find false
+                    } != null -> "[o]"
+
                     cell -> "[#]"
                     else -> "[.]"
                 }
@@ -105,8 +114,51 @@ class Day6Solver : Solver {
         return next
     }
 
-    override fun part2(input: List<String>): Int {
-        return 0
+    private data class PosWrapper(val pos: Pair<Int, Int>, val direction: Direction) {
+        override fun toString(): String {
+            return "$pos ${direction::class.simpleName}"
+        }
     }
 
+    override fun part2(input: List<String>): String {
+        currentDirection = Up
+        var (board, guard) = input.parse()
+        val visited = mutableSetOf<PosWrapper>()
+        visited.add(PosWrapper(guard.x to guard.y, currentDirection))
+        while (true) {
+            guard = guard.next(board) ?: break
+            visited.add(PosWrapper(guard.x to guard.y, currentDirection))
+        }
+
+
+        // Real part 2
+        return visited.map { if (it.willLoop(board)) 1 else 0 }.sum().toString()
+    }
+
+    private fun PosWrapper.willLoop(board: Board): Boolean {
+        currentDirection = direction
+
+        // copy and add obstacle
+        val next = direction.next(Guard(pos.first, pos.second))
+        val boardWithObstacle = board.copy(grid = board.grid.mapIndexed { y, row ->
+            row.mapIndexed { x, cell ->
+                if (x == next.x && y == next.y) {
+                    return@mapIndexed true
+                }
+                return@mapIndexed cell
+            }
+        })
+
+        var guard = Guard(pos.first, pos.second)
+        val visited = mutableSetOf<PosWrapper>()
+        visited.add(PosWrapper(guard.x to guard.y, currentDirection))
+        while (true) {
+            guard = guard.next(boardWithObstacle) ?: break
+            if (visited.contains(PosWrapper(guard.x to guard.y, currentDirection))) {
+                return true
+            }
+            visited.add(PosWrapper(guard.x to guard.y, currentDirection))
+        }
+        return false
+    }
 }
