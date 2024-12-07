@@ -52,4 +52,31 @@ class Day7Spec : FreeSpec({
         }
     }
 
+    "\"Find and sum equations that can be made true with joined (||) operators\" part 2" - {
+        "example input" {
+            // given
+            val input = listOf(
+                "190: 10 19",
+                "3267: 81 40 27",
+                "83: 17 5",
+                "156: 15 6",
+                "7290: 6 8 6 15",
+                "161011: 16 10 13",
+                "192: 17 8 14",
+                "21037: 9 7 18 13",
+                "292: 11 6 16 20",
+            )
+
+            // expect
+            solver.part2(input) shouldBe "11387"
+        }
+        "|| operator works" {
+            // given
+            val input = listOf("1090: 10 90")
+
+            // expect
+            solver.part2(input) shouldBe "1090"
+        }
+    }
+
 })

@@ -28,9 +28,12 @@ class Day7Solver : Solver {
         }
     }
 
-    private fun Equation.isValid(): Boolean {
+    private fun Equation.isValid(allowJoined: Boolean = false): Boolean {
         // Test all generated combinations of operators
-        val operatorCombos = generateCombinations(listOf("+", "*"), values.size - 1)
+        val validOperators = mutableListOf("+", "*")
+        if (allowJoined) validOperators.add("|")
+
+        val operatorCombos = generateCombinations(validOperators, values.size - 1)
         for (combo in operatorCombos) {
             if (this.toInstructionOf(combo).value() == sum) return true
         }
@@ -41,13 +44,15 @@ class Day7Solver : Solver {
         return when (op) {
             "+" -> Instruction { a + b }
             "*" -> Instruction { a * b }
+            "|" -> Instruction { "${a.value()}${b.value()}".toLong() }
             else -> throw IllegalArgumentException("Unknown operator $op")
         }
     }
 
     private fun Equation.toInstructionOf(operators: List<String>): Instruction {
-        var instruction =
-            createInstruction(operators.first(), Instruction { values.first() }, Instruction { values[1] })
+        var instruction = createInstruction(
+            operators.first(), Instruction { values.first() }, Instruction { values[1] }
+        )
 
         for (i in 2 until values.size) {
             instruction = createInstruction(operators[i - 1], instruction, Instruction { values[i] })
@@ -62,6 +67,7 @@ class Day7Solver : Solver {
     }
 
     override fun part2(input: List<String>): String {
-        return "0"
+        val equations = input.parse()
+        return equations.filter { it.isValid(allowJoined = true) }.map { it.sum }.sum().toString()
     }
 }
