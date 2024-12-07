@@ -7,10 +7,7 @@ class Day6Solver : Solver {
     private data class Guard(var x: Int, var y: Int)
 
     // Boolean represents if the cell is blocked or not
-    private data class Board(val grid: List<List<Boolean>>) {
-        val width = grid.first().size
-        val height = grid.size
-    }
+    private data class Board(val grid: List<List<Boolean>>)
 
     private fun List<String>.parse(): Pair<Board, Guard> {
         val grid = ArrayList<List<Boolean>>()
@@ -76,25 +73,6 @@ class Day6Solver : Solver {
             Left -> Up
             else -> Up
         }
-    }
-
-    private fun Board.toString(guard: Guard, visited: Set<PosWrapper>): String {
-        return grid.mapIndexed { y, row ->
-            row.mapIndexed { x, cell ->
-                return@mapIndexed when {
-                    x == guard.x && y == guard.y -> "[^]"
-                    visited.find { wrapper ->
-                        if (wrapper.pos.first == x && wrapper.pos.second == y) {
-                            return@find true
-                        }
-                        return@find false
-                    } != null -> "[o]"
-
-                    cell -> "[#]"
-                    else -> "[.]"
-                }
-            }.joinToString("")
-        }.joinToString("\n")
     }
 
     private fun Guard.next(board: Board): Guard? {

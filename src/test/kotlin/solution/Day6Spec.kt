@@ -1,12 +1,12 @@
 package solution
 
-import app.wezik.aoc2024.solution.days.Day6Solverv2
+import app.wezik.aoc2024.solution.days.Day6Solver
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 
 class Day6Spec : FreeSpec({
 
-    val solver = Day6Solverv2()
+    val solver = Day6Solver()
 
     "\"Calculate guards path\" part 1" - {
         "example input" {
