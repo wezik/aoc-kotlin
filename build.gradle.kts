@@ -2,13 +2,17 @@ plugins {
     kotlin("jvm") version "2.1.0"
 
     id("com.adarshr.test-logger") version "4.0.0"
+    application
 }
 
-group = "org.example"
-version = "1.0-SNAPSHOT"
+group = "app.wezik.aoc2024"
 
 repositories {
     mavenCentral()
+}
+
+application {
+    mainClass = "app.wezik.aoc2024.MainKt"
 }
 
 val kotestVersion = "5.9.0"

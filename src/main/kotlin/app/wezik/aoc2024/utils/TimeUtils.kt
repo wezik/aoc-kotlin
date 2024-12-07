@@ -1,4 +1,4 @@
-package org.example.solution
+package app.wezik.aoc2024.utils
 
 import kotlin.time.Duration
 import kotlin.time.DurationUnit

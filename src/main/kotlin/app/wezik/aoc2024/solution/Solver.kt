@@ -1,7 +1,7 @@
-package org.example.solution.solver
+package app.wezik.aoc2024.solution
 
-import org.example.solution.time
-import org.example.solution.toNanoDuration
+import app.wezik.aoc2024.utils.time
+import app.wezik.aoc2024.utils.toNanoDuration
 import kotlin.time.Duration
 
 data class TimeWrapper(val result: String, val time: Duration)
@@ -27,5 +27,4 @@ interface Solver {
 
     fun part1(input: List<String>): String
     fun part2(input: List<String>): String
-
 }

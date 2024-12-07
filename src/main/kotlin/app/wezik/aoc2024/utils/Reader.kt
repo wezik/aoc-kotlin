@@ -1,4 +1,4 @@
-package org.example.solution
+package app.wezik.aoc2024.utils
 
 import java.io.File
 

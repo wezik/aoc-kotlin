@@ -1,10 +1,10 @@
 package solution
 
+import app.wezik.aoc2024.solution.days.Day2Solver
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.datatest.WithDataTestName
 import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
-import org.example.solution.solver.days.Day2Solver
 
 class Day2Spec : FreeSpec({
     val solver = Day2Solver()

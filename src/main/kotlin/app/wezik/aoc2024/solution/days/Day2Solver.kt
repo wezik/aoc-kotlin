@@ -1,6 +1,6 @@
-package org.example.solution.solver.days
+package app.wezik.aoc2024.solution.days
 
-import org.example.solution.solver.Solver
+import app.wezik.aoc2024.solution.Solver
 import kotlin.math.abs
 
 class Day2Solver : Solver {

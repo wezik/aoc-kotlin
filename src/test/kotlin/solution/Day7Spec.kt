@@ -1,8 +1,8 @@
 package solution
 
+import app.wezik.aoc2024.solution.days.Day7Solver
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
-import org.example.solution.solver.days.Day7Solver
 
 class Day7Spec : FreeSpec({
 
