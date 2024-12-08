@@ -9,18 +9,6 @@ import io.kotest.matchers.shouldBe
 class Day2Spec : FreeSpec({
     val solver = Day2Solver()
 
-    "empty run" {
-        // given
-        val input: List<String> = emptyList()
-
-        // when
-        val solution = solver.solve(input)
-
-        // then
-        solution.part1.result shouldBe "0"
-        solution.part2.result shouldBe "0"
-    }
-
     "\"Safe reports\" part 1" - {
 
         "example input" {

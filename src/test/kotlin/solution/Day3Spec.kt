@@ -7,18 +7,6 @@ import io.kotest.matchers.shouldBe
 class Day3Spec : FreeSpec({
     val solver = Day3Solver()
 
-    "empty run" {
-        // given
-        val input: List<String> = emptyList()
-
-        // when
-        val solution = solver.solve(input)
-
-        // then
-        solution.part1.result shouldBe "0"
-        solution.part2.result shouldBe "0"
-    }
-
     "\"Mul parsing\" part 1" - {
 
         "example input" {

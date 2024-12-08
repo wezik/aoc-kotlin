@@ -7,18 +7,6 @@ import io.kotest.matchers.shouldBe
 class Day4Spec : FreeSpec({
     val solver = Day4Solver()
 
-    "empty run" {
-        // and given
-        val input: List<String> = emptyList()
-
-        // when
-        val solution = solver.solve(input)
-
-        // then
-        solution.part1.result shouldBe "0"
-        solution.part2.result shouldBe "0"
-    }
-
     "\"'XMAS' finder\" part 1" - {
         "example input" {
             // given

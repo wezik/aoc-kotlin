@@ -23,36 +23,36 @@ fun main(args: Array<String>) {
         val inputPath = inputArg ?: solverSource.path
         val input = readFrom(inputPath)
         if (benchmarkArg != null && benchmarkArg == "true") {
+            println()
+            println("[Day ${solverSource.ordinal + 1}] solver running...")
             val (p1Time, p2Time) = runBenchmark(solverSource)
-            val solution = solverSource.solver.solve(input)
-            println("===========================================")
-            println("Part 1: \"${solution.part1.result}\" generated in $p1Time")
-            println("Part 2: \"${solution.part2.result}\" generated in $p2Time")
-            println("===========================================")
+            println(" Part 1 solution ${p1Time.formatToMs()} on average over $benchmarkRuns runs")
+            println(" Part 2 solution ${p2Time.formatToMs()} on average over $benchmarkRuns runs")
             return@forEach
         }
+        println()
+        println("[Day ${solverSource.ordinal + 1}] solver running...")
         val solution = solverSource.solver.solve(input)
-        println("===========================================")
-        println("Part 1: \"${solution.part1.result}\" generated in ${solution.part1.time.formatToMs()}")
-        println("Part 2: \"${solution.part2.result}\" generated in ${solution.part2.time.formatToMs()}")
-        println("===========================================")
+        println(" Part 1 solution in ${solution.part1.time.formatToSeconds()}: \"${solution.part1.result}\"")
+        println(" Part 2 solution in ${solution.part2.time.formatToSeconds()}: \"${solution.part2.result}\"")
     }
 }
 
+val benchmarkRuns = 100
+
+private fun Duration.formatToSeconds() = this.toString(DurationUnit.SECONDS, 3)
 private fun Duration.formatToMs() = this.toString(DurationUnit.MILLISECONDS, 3)
 
-private fun runBenchmark(source: StaticSolverSelector.SolverSource): Pair<String, String> {
+private fun runBenchmark(source: StaticSolverSelector.SolverSource): Pair<Duration, Duration> {
     val p1Times = mutableListOf<Long>()
     val p2Times = mutableListOf<Long>()
-    (1..1000).forEach {
+    (0 until benchmarkRuns).forEach {
         source.solver.solve(readFrom(source.path)).let {
             p1Times.add(it.part1.time.inWholeNanoseconds)
             p2Times.add(it.part2.time.inWholeNanoseconds)
         }
     }
-    val p1Time =
-        p1Times.average().toDuration(DurationUnit.NANOSECONDS).formatToMs() + " average for ${p1Times.size} runs"
-    val p2Time =
-        p2Times.average().toDuration(DurationUnit.NANOSECONDS).formatToMs() + " average for ${p2Times.size} runs"
+    val p1Time = p1Times.average().toDuration(DurationUnit.NANOSECONDS)
+    val p2Time = p2Times.average().toDuration(DurationUnit.NANOSECONDS)
     return p1Time to p2Time
 }

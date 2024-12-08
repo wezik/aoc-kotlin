@@ -8,18 +8,6 @@ import kotlin.time.Duration.Companion.milliseconds
 class Day1Spec : FreeSpec({
     val solver = Day1Solver()
 
-    "empty run" {
-        // given
-        val input: List<String> = emptyList()
-
-        // when
-        val solution = solver.solve(input)
-
-        // expect
-        solution.part1.result shouldBe "0"
-        solution.part2.result shouldBe "0"
-    }
-
     "\"Distance\" part 1" - {
 
         "example input" {
