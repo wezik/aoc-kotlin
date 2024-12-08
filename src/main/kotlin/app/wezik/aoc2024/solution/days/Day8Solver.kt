@@ -28,28 +28,42 @@ class Day8Solver : Solver {
         return context.findAntiNodes().size.toString()
     }
 
-    private fun Context.findAntiNodes(): Set<Vector2D> {
+    override fun part2(input: List<String>): String {
+        val context = input.parse()
+        return context.findAntiNodes(part2 = true).size.toString()
+    }
+
+    private fun Context.findAntiNodes(part2: Boolean = false): Set<Vector2D> {
         return antennas.groupBy { it.id }.flatMap { (_, antennas) ->
             val vectors = antennas.map { it.vector }
-            findAntiNodes(vectors, this.dimensions)
+            findAntiNodes(vectors, this.dimensions, part2)
         }.toSet()
     }
 
-    private fun findAntiNodes(vectors: List<Vector2D>, dimensions: Vector2D): Set<Vector2D> {
+    private fun findAntiNodes(vectors: List<Vector2D>, dimensions: Vector2D, part2: Boolean = false): Set<Vector2D> {
         val antiNodes = mutableSetOf<Vector2D>()
         for (primaryVector in vectors) {
             for (secondaryVector in vectors) {
                 if (primaryVector == secondaryVector) continue
                 val result = primaryVector + (primaryVector - secondaryVector)
-                if (result.x < 0 || result.x > dimensions.x - 1 || result.y < 0 || result.y > dimensions.y - 1) continue
+                if (result.isOutOfBounds(dimensions)) continue
                 antiNodes.add(result)
+                if (part2) {
+                    antiNodes.add(primaryVector)
+                    antiNodes.add(secondaryVector)
+                    var nextResult = result + (primaryVector - secondaryVector)
+                    while (!nextResult.isOutOfBounds(dimensions)) {
+                        antiNodes.add(nextResult)
+                        nextResult = nextResult + (primaryVector - secondaryVector)
+                    }
+                }
             }
         }
         return antiNodes
     }
 
-    override fun part2(input: List<String>): String {
-        return "0"
+    private fun Vector2D.isOutOfBounds(dimensions: Vector2D): Boolean {
+        return x < 0 || x > dimensions.x - 1 || y < 0 || y > dimensions.y - 1
     }
 
 }
