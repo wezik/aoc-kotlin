@@ -25,41 +25,35 @@ class Day9Solver : Solver {
 
     private fun List<Int?>.organizeFreeSpace(): List<Int?> {
         val organized = this.toMutableList()
+        val (listOfFreeSpaces, listOfTakenSpaces) = organized.withIndex().partition { it.value == null }.let {
+            Pair(it.first.toMutableList(), it.second.toMutableList())
+        }
 
-        var firstFreeSpaceIndex = organized.withIndex().find { it.value == null }?.index
-        var lastTakenSpaceIndex = organized.withIndex().findLast { it.value != null }?.index
+        var firstFreeSpaceIndex = listOfFreeSpaces.removeFirst().index
+        var lastTakenSpaceIndex = listOfTakenSpaces.removeLast().index
 
-        while (firstFreeSpaceIndex!! < lastTakenSpaceIndex!!) {
-            print("\rFree space index: $firstFreeSpaceIndex / last taken space index: $lastTakenSpaceIndex")
+        while (firstFreeSpaceIndex < lastTakenSpaceIndex) {
             organized.withIndex().find { it.value == null }?.let {
                 organized[it.index] = organized[lastTakenSpaceIndex]
                 organized[lastTakenSpaceIndex] = null
             }
-            firstFreeSpaceIndex = organized.withIndex().find { it.value == null }?.index
-            lastTakenSpaceIndex = organized.withIndex().findLast { it.value != null }?.index
+            firstFreeSpaceIndex = listOfFreeSpaces.removeFirst().index
+            lastTakenSpaceIndex = listOfTakenSpaces.removeLast().index
         }
-        println()
-        organized.debugPrint()
 
         return organized
     }
 
 
     private fun List<Int?>.checkSum(): Long {
-        return this.withIndex()
-            .filter { it.value != null }
-            .map { (it.index * it.value!!).toLong() }
-            .sum()
+        return this.withIndex().filter { it.value != null }.map { (it.index * it.value!!).toLong() }.sum()
     }
 
     override fun part1(input: List<String>): String {
         val input = input.parse()
 
         val organized = input.organizeFreeSpace()
-        val sum = organized.checkSum()
-        println("Sum: $sum")
-
-        return sum.toString()
+        return organized.checkSum().toString()
     }
 
     override fun part2(input: List<String>): String {
