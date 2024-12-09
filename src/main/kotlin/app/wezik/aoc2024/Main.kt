@@ -46,8 +46,9 @@ private fun Duration.formatToMs() = this.toString(DurationUnit.MILLISECONDS, 3)
 private fun runBenchmark(source: StaticSolverSelector.SolverSource): Pair<Duration, Duration> {
     val p1Times = mutableListOf<Long>()
     val p2Times = mutableListOf<Long>()
+    val input = readFrom(source.path)
     (0 until benchmarkRuns).forEach {
-        source.solver.solve(readFrom(source.path)).let {
+        source.solver.solve(input).let {
             p1Times.add(it.part1.time.inWholeNanoseconds)
             p2Times.add(it.part2.time.inWholeNanoseconds)
         }

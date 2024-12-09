@@ -13,6 +13,7 @@ class StaticSolverSelector {
         DAY6(Day6Solver(), "inputs/day6"),
         DAY7(Day7Solver(), "inputs/day7"),
         DAY8(Day8Solver(), "inputs/day8"),
+        DAY9(Day9Solver(), "inputs/day9"),
     }
 
     fun select(day: String): SolverSource {
