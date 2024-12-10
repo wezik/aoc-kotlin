@@ -11,32 +11,43 @@ class Day10Solver : Solver {
     }
 
     private data class Context(val grid: Grid) {
-        val scoreCache = mutableMapOf<Vector2D, Set<Vector2D>>()
+        val reachableEndsCache = mutableMapOf<Vector2D, Set<Vector2D>>()
+        val trailsCache = mutableMapOf<Vector2D, Int>()
     }
 
-    private fun Context.toVectorList(): List<Vector2D> {
-        return this.grid.input.withIndex().flatMap { (y, row) ->
-            row.withIndex().map { (x, _) ->
-                Vector2D(x, y)
-            }
+    private fun Context.toVectorList() = this.grid.input.withIndex().flatMap { (y, row) ->
+        row.withIndex().map { (x, _) ->
+            Vector2D(x, y)
         }
     }
 
-    private fun Context.getHikeScore(): Int {
+    private fun Context.getHikeScore(part2: Boolean = false): Int {
         val starters = this.toVectorList().filter { this.grid.get(it) == 0 }
         var score = 0
         for (starter in starters) {
-            score += this.findReachableEnds(starter).size
+            score += if (!part2) {
+                findReachableEnds(starter).size
+            } else {
+                countAvailableTrails(starter)
+            }
         }
         return score
     }
 
     private fun Context.findReachableEnds(vector: Vector2D): Set<Vector2D> {
-        if (this.grid.get(vector) == 9) return this.scoreCache.getOrPut(vector) { setOf(vector) }
+        if (this.grid.get(vector) == 9) return this.reachableEndsCache.getOrPut(vector) { setOf(vector) }
         val neighbors = this.pullValidNeighbors(vector)
-        if (neighbors.isEmpty()) return this.scoreCache.getOrPut(vector) { setOf() }
+        if (neighbors.isEmpty()) return this.reachableEndsCache.getOrPut(vector) { setOf() }
 
-        return this.scoreCache.getOrPut(vector) { neighbors.flatMap { this.findReachableEnds(it) }.toSet() }
+        return this.reachableEndsCache.getOrPut(vector) { neighbors.flatMap { this.findReachableEnds(it) }.toSet() }
+    }
+
+    private fun Context.countAvailableTrails(vector: Vector2D): Int {
+        if (this.grid.get(vector) == 9) return this.trailsCache.getOrPut(vector) { 1 }
+        val neighbors = this.pullValidNeighbors(vector)
+        if (neighbors.isEmpty()) return this.trailsCache.getOrPut(vector) { 0 }
+
+        return this.trailsCache.getOrPut(vector) { neighbors.sumOf { this.countAvailableTrails(it) } }
     }
 
     private fun Context.pullValidNeighbors(vector: Vector2D): List<Vector2D> {
@@ -63,6 +74,7 @@ class Day10Solver : Solver {
     }
 
     override fun part2(input: List<String>): String {
-        return ""
+        val context = input.parse()
+        return context.getHikeScore(part2 = true).toString()
     }
 }
