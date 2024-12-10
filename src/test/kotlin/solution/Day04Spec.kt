@@ -4,7 +4,7 @@ import app.wezik.aoc2024.solution.days.Day4Solver
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 
-class Day4Spec : FreeSpec({
+class Day04Spec : FreeSpec({
     val solver = Day4Solver()
 
     "\"'XMAS' finder\" part 1" - {

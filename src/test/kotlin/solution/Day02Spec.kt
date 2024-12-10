@@ -6,7 +6,7 @@ import io.kotest.datatest.WithDataTestName
 import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
 
-class Day2Spec : FreeSpec({
+class Day02Spec : FreeSpec({
     val solver = Day2Solver()
 
     "\"Safe reports\" part 1" - {

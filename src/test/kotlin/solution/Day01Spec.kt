@@ -5,7 +5,7 @@ import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 import kotlin.time.Duration.Companion.milliseconds
 
-class Day1Spec : FreeSpec({
+class Day01Spec : FreeSpec({
     val solver = Day1Solver()
 
     "\"Distance\" part 1" - {

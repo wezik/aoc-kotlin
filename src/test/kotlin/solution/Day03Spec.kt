@@ -4,7 +4,7 @@ import app.wezik.aoc2024.solution.days.Day3Solver
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 
-class Day3Spec : FreeSpec({
+class Day03Spec : FreeSpec({
     val solver = Day3Solver()
 
     "\"Mul parsing\" part 1" - {

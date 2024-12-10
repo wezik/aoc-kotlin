@@ -4,7 +4,7 @@ import app.wezik.aoc2024.solution.days.Day9Solver
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 
-class Day9Spec : FreeSpec({
+class Day09Spec : FreeSpec({
 
     val solver = Day9Solver()
 
