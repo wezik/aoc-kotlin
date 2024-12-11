@@ -4,68 +4,43 @@ import app.wezik.aoc2024.solution.Solver
 
 class Day11Solver : Solver {
 
-    private data class Context(val stones: ArrayList<Long>) {
-        var iterator = 0
+    private data class StoneEntry(val value: Long, val blinks: Int)
+
+    private data class Context(val stones: List<Long>) {
+        // Cache storing result for stone with x blinks
+        val cache = mutableMapOf<StoneEntry, Long>()
     }
 
-    private fun List<String>.parse(): Context {
-        return Context(this.flatMap { line ->
-            line.split(" ").map { it.toLong() }
-        }.toMutableList() as ArrayList<Long>)
+    private fun List<String>.parse() = Context(this.flatMap { it.split(' ').map { it.toLong() } })
+
+    private fun Context.count(stoneEntry: StoneEntry): Long {
+        val next = getNextEntry(stoneEntry)
+        if (next.first == null) return 1
+        if (next.second == null) return cache.getOrPut(next.first!!) { this.count(next.first!!) }
+        val a = cache.getOrPut(next.first!!) { this.count(next.first!!) }
+        val b = cache.getOrPut(next.second!!) { this.count(next.second!!) }
+        return a + b
     }
 
-    private enum class Rule {
-        TO_1,
-        REPLACE_BY_2,
-        MULTIPLY,
-    }
-
-    private fun Context.blink() {
-        iterator = 0
-        while (iterator < stones.size) {
-            val (a, b) = applyRule()
-            stones[iterator] = a
-            if (b != null) {
-                stones.add(iterator + 1, b)
-                iterator++
-            }
-            iterator++
+    private fun getNextEntry(stoneEntry: StoneEntry): Pair<StoneEntry?, StoneEntry?> {
+        if (stoneEntry.blinks == 0) return null to null
+        if (stoneEntry.value == 0L) return StoneEntry(1, stoneEntry.blinks - 1) to null
+        val str = stoneEntry.value.toString()
+        if (str.length % 2 == 0) {
+            val a = str.slice(0 until str.length / 2).toLong()
+            val b = str.slice(str.length / 2 until str.length).toLong()
+            return StoneEntry(a, stoneEntry.blinks - 1) to StoneEntry(b, stoneEntry.blinks - 1)
         }
-    }
-
-    private fun Context.applyRule(): Pair<Long, Long?> {
-        val rule = getRule()
-        return when (rule) {
-            Rule.TO_1 -> 1L to null
-            Rule.REPLACE_BY_2 -> {
-                val value = stones[iterator].toString()
-                val a = value.slice(0 until value.length / 2).toLong()
-                val b = value.slice(value.length / 2 until value.length).toLong()
-                a to b
-            }
-
-            Rule.MULTIPLY -> stones[iterator] * 2024L to null
-        }
-    }
-
-    private fun Context.getRule(): Rule {
-        val value = stones[iterator]
-        return when {
-            value == 0L -> Rule.TO_1
-            value.toString().length % 2 == 0 -> Rule.REPLACE_BY_2
-            else -> Rule.MULTIPLY
-        }
+        return StoneEntry(stoneEntry.value * 2024, stoneEntry.blinks - 1) to null
     }
 
     override fun part1(input: List<String>): String {
-        val input = input.parse()
-        (1..25).forEach {
-            input.blink()
-        }
-        return input.stones.size.toString()
+        val ctx = input.parse()
+        return ctx.stones.map { ctx.count(StoneEntry(it, 25)) }.sum().toString()
     }
 
     override fun part2(input: List<String>): String {
-        return ""
+        val ctx = input.parse()
+        return ctx.stones.map { ctx.count(StoneEntry(it, 75)) }.sum().toString()
     }
 }

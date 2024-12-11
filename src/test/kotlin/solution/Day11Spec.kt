@@ -8,7 +8,7 @@ class Day11Spec : FreeSpec({
 
     val solver = Day11Solver()
 
-    "\"Amount of stones after 25 blinks\" part 1" - {
+    "\"Amount of stones after 25 blinks\" part 1 & 2" - {
         "example input" {
             // given
             val input = listOf(
