@@ -17,6 +17,19 @@ class StaticSolverSelector {
         DAY10(Day10Solver(), "inputs/day10"),
         DAY11(Day11Solver(), "inputs/day11"),
         DAY12(Day12Solver(), "inputs/day12"),
+        DAY13(Day13Solver(), "inputs/day13"),
+        DAY14(Day14Solver(), "inputs/day14"),
+        DAY15(Day15Solver(), "inputs/day15"),
+        DAY16(Day16Solver(), "inputs/day16"),
+        DAY17(Day17Solver(), "inputs/day17"),
+        DAY18(Day18Solver(), "inputs/day18"),
+        DAY19(Day19Solver(), "inputs/day19"),
+        DAY20(Day20Solver(), "inputs/day20"),
+        DAY21(Day21Solver(), "inputs/day21"),
+        DAY22(Day22Solver(), "inputs/day22"),
+        DAY23(Day23Solver(), "inputs/day23"),
+        DAY24(Day24Solver(), "inputs/day24"),
+        DAY25(Day25Solver(), "inputs/day25"),
     }
 
     fun select(day: String): SolverSource {
