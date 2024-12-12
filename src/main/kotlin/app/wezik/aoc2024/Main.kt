@@ -38,7 +38,7 @@ fun main(args: Array<String>) {
     }
 }
 
-val benchmarkRuns = 100
+val benchmarkRuns = 1000
 
 private fun Duration.formatToSeconds() = this.toString(DurationUnit.SECONDS, 3)
 private fun Duration.formatToMs() = this.toString(DurationUnit.MILLISECONDS, 3)
