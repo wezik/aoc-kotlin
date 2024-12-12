@@ -47,4 +47,5 @@ bin/
 
 .kotlin/
 
-inputs/
+inputs/*
+!inputs/.gitkeep
