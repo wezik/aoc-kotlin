@@ -4,60 +4,47 @@ import app.wezik.aoc2024.solution.Solver
 
 class Day12Solver : Solver {
 
-    private data class Context(val input: List<String>) {
-        val rows = input.size
-        val cols = input.first().length
+    private data class InputWrapper(val grid: List<String>) {
+        val rows = grid.size
+        val cols = grid.first().length
         val visited = Array(rows) { BooleanArray(cols) }
-        var totalPrice = 0L
     }
 
-    private data class Region(val size: Int, val edges: Int, val sides: Int) {
-        fun getPrice(part2: Boolean = false): Long {
-            return if (part2) (size * sides).toLong() else (size * edges).toLong()
-        }
-    }
+    private fun InputWrapper.isValid(x: Int, y: Int) = y in 0 until rows && x in 0 until cols
 
-    private fun Context.isValid(x: Int, y: Int) = y in 0 until rows && x in 0 until cols
-
-    private fun Context.getPrice(part2: Boolean = false): Long {
-        for (y in 0 until rows) {
-            for (x in 0 until cols) {
-                if (visited[y][x]) continue
-                val char = input[y][x]
-                val region = floodFill(x, y, char, part2)
-                totalPrice += region.getPrice(part2)
-            }
-        }
-        return totalPrice
-    }
-
-    private fun Context.floodFill(x: Int, y: Int, char: Char, part2: Boolean = false): Region {
-        val directions = listOf(
-            Pair(-1, 0), // Up
-            Pair(1, 0),  // Down
-            Pair(0, -1), // Left
-            Pair(0, 1)   // Right
+    private companion object {
+        val DIRECTIONS = listOf(
+            Pair(0, -1), // Up
+            Pair(0, 1),  // Down
+            Pair(-1, 0), // Left
+            Pair(1, 0),  // Right
         )
+        val CORNER_OFFSETS = listOf(
+            Pair(-0.5, -0.5), // Up Left
+            Pair(0.5, -0.5),  // Up Right
+            Pair(0.5, 0.5),   // Down Right
+            Pair(-0.5, 0.5),  // Down Left
+        )
+    }
 
-        var size = 0
+    private fun InputWrapper.getRegionPrice(x: Int, y: Int, discount: Boolean): Long {
         var edges = 0
-        var sides = 0
-        val stack = mutableListOf(Pair(x, y))
+        var size = 0
+        val stack = mutableListOf(x to y)
+        val regionCells = mutableSetOf(x to y) // Keep track of all cells for corner calculation
+        val cellId = grid[y][x]
         visited[y][x] = true
 
-        // Use a set to track all cells belonging to this region
-        val regionCells = mutableSetOf(Pair(x, y))
-
         while (stack.isNotEmpty()) {
-            val (currentX, currentY) = stack.removeLast()
+            val (x, y) = stack.removeLast()
             size++
 
-            for ((directionX, directionY) in directions) {
-                val nextX = currentX + directionX
-                val nextY = currentY + directionY
+            for ((dirX, dirY) in DIRECTIONS) {
+                val nextX = x + dirX
+                val nextY = y + dirY
 
                 // If the next cell is out of bounds or a different character, it's an edge
-                if (!isValid(nextX, nextY) || input[nextY][nextX] != char) {
+                if (!isValid(nextX, nextY) || grid[nextY][nextX] != cellId) {
                     edges++
                     continue
                 }
@@ -67,71 +54,57 @@ class Day12Solver : Solver {
 
                 // Mark as visited and add to stack
                 visited[nextY][nextX] = true
-                stack.add(Pair(nextX, nextY))
-                regionCells.add(Pair(nextX, nextY))
+                stack.add(nextX to nextY)
+                if (discount) regionCells.add(nextX to nextY)
             }
         }
 
-        // Calculate sides if part2 is enabled
-        if (part2) {
-            sides = calculateSides(regionCells)
-        }
-
-        return Region(size, edges, sides)
-    }
-
-    private enum class Direction(val x: Int, val y: Int) {
-        UP(0, -1), DOWN(0, 1), LEFT(-1, 0), RIGHT(1, 0);
-
-        fun getLeft() = when (this) {
-            UP -> LEFT
-            DOWN -> RIGHT
-            LEFT -> DOWN
-            RIGHT -> UP
-        }
-
-        fun getRight() = when (this) {
-            UP -> RIGHT
-            DOWN -> LEFT
-            LEFT -> UP
-            RIGHT -> DOWN
+        // Calculate amount of corners if discount is enabled
+        return if (discount) {
+            size.toLong() * countCorners(regionCells)
+        } else {
+            size.toLong() * edges
         }
     }
 
-    private fun calculateSides(regionCells: Set<Pair<Int, Int>>): Int {
+    fun countCorners(regionCells: Set<Pair<Int, Int>>): Int {
+        // Create corners for each cell in the region
         val cornerCandidates = regionCells.flatMap { (x, y) ->
-            setOf(
-                x - 0.5 to y - 0.5,
-                x + 0.5 to y - 0.5,
-                x + 0.5 to y + 0.5,
-                x - 0.5 to y + 0.5,
-            )
+            CORNER_OFFSETS.map { (xOffset, yOffset) -> x + xOffset to y + yOffset }
         }.toSet()
 
-        var corners = 0
+        var cornersTotal = 0
         for ((x, y) in cornerCandidates) {
-            val adjacentCells = listOf(
-                x - 0.5 to y - 0.5,
-                x + 0.5 to y - 0.5,
-                x + 0.5 to y + 0.5,
-                x - 0.5 to y + 0.5,
-            ).map { (checkX, checkY) -> checkX.toInt() to checkY.toInt() in regionCells }
-            when (adjacentCells.filter { it }.count()) {
-                1 -> corners++
-                2 -> {
-                    if (adjacentCells[0] && adjacentCells[2]) {
-                        corners += 2
-                    } else if (adjacentCells[1] && adjacentCells[3]) {
-                        corners += 2
-                    }
-                }
-                3 -> corners++
+            // Check adjacent cells for all corners
+            val adjacentCells = CORNER_OFFSETS
+                .map { (xOffset, yOffset) -> x + xOffset to y + yOffset }
+                .map { (xCell, yCell) -> xCell.toInt() to yCell.toInt() in regionCells }
+
+            // 1 & 3 cells are corners, 2 cells is an edge case separating two inner regions sharing a wall (requirement)
+            val cellCount = adjacentCells.filter { it == true }.count()
+            when {
+                cellCount == 1 -> cornersTotal++
+                cellCount == 2 && adjacentCells[0] && adjacentCells[2] -> cornersTotal += 2
+                cellCount == 2 && adjacentCells[1] && adjacentCells[3] -> cornersTotal += 2
+                cellCount == 3 -> cornersTotal++
             }
         }
-        return corners.toInt()
+        return cornersTotal
     }
 
-    override fun part1(input: List<String>) = Context(input).getPrice().toString()
+    private fun List<String>.getPrice(discount: Boolean = false): Long {
+        var totalPrice = 0L
+        val input = InputWrapper(this)
+        for (y in 0 until input.rows) {
+            for (x in 0 until input.cols) {
+                if (input.visited[y][x]) continue // Skip if already visited
+                totalPrice += input.getRegionPrice(x, y, discount)
+            }
+        }
+        return totalPrice
+    }
 
-    override fun part2(input: List<String>) = Context(input).getPrice(part2 = true).toString()
+    override fun part1(input: List<String>) = input.getPrice().toString()
+    override fun part2(input: List<String>) = input.getPrice(discount = true).toString()
+
 }
