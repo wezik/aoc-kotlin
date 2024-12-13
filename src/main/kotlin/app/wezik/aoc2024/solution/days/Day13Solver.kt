@@ -6,47 +6,39 @@ class Day13Solver : Solver {
 
     private operator fun Vector.plus(other: Vector): Vector = Vector(x + other.x, y + other.y)
     private data class Vector(val x: Long, val y: Long)
-    private data class State(val destination: Vector, val buttons: List<Pair<Vector, Int>>)
+    private data class Machine(val prize: Vector, val buttons: Pair<Vector, Vector>)
 
-    private fun List<String>.parse(fixConversion: Boolean): List<State> {
-        val buttonQueue = mutableListOf<Vector>()
-        val states = mutableListOf<State>()
-
-        forEach { line ->
-            when (line.firstOrNull()) {
-                'B' -> buttonQueue.add(
-                    line.split(',').let { (xString, yString) ->
-                        Vector(xString.split('+')[1].toLong(), yString.split('+')[1].toLong())
-                    }
-                )
-
-                'P' -> {
-                    val offset = if (fixConversion) Vector(10_000_000_000_000L, 10_000_000_000_000L) else Vector(0L, 0L)
-                    val vector = line.split(',').let { (xString, yString) ->
-                        Vector(xString.split('=')[1].toLong(), yString.split('=')[1].toLong()) + offset
-                    }
-                    states.add(State(vector, listOf(buttonQueue.removeFirst() to 3, buttonQueue.removeFirst() to 1)))
-                }
-            }
+    private fun List<String>.parse(part2: Boolean): List<Machine> {
+        val machines = mutableListOf<Machine>()
+        val iterator = iterator()
+        while (iterator.hasNext()) {
+            var line = iterator.next()
+            if (line.isBlank()) continue
+            val buttonA = line.split(',').let { Vector(it[0].split('+')[1].toLong(), it[1].split('+')[1].toLong()) }
+            line = iterator.next()
+            val buttonB = line.split(',').let { Vector(it[0].split('+')[1].toLong(), it[1].split('+')[1].toLong()) }
+            line = iterator.next()
+            var prize = line.split(',').let { Vector(it[0].split('=')[1].toLong(), it[1].split('=')[1].toLong()) }
+            if (part2) prize += Vector(10_000_000_000_000, 10_000_000_000_000)
+            machines.add(Machine(prize, buttonA to buttonB))
         }
-        return states
+        return machines
     }
 
-    private fun List<String>.findCheapestPaths(fixConversion: Boolean = false) =
-        this.parse(fixConversion).map { it.findCheapestPath(it.destination, it.buttons) }.filterNotNull().sum()
+    private fun List<String>.findSolution(part2: Boolean = false) = parse(part2).map { it.findLowestPrice() }.sum()
 
-    private fun State.findCheapestPath(destination: Vector, buttons: List<Pair<Vector, Int>>): Long? {
-        val vecA = buttons[0].first
-        val vecB = buttons[1].first
+    private fun Machine.findLowestPrice(): Long {
+        val (vecA, vecB) = buttons
 
-        val countA = (destination.x * vecB.y - destination.y * vecB.x).toDouble() / (vecA.x * vecB.y - vecA.y * vecB.x)
-        val countB = (destination.x - vecA.x * countA).toDouble() / (vecB.x)
+        val denominator = vecA.x * vecB.y - vecA.y * vecB.x
+        val countA = (prize.x * vecB.y - prize.y * vecB.x).toDouble() / denominator
+        val countB = (prize.x - vecA.x * countA).toDouble() / vecB.x
 
-        if (countA % 1 != 0.0 || countB % 1 != 0.0) return null
+        if (countA % 1 != 0.0 || countB % 1 != 0.0) return 0L
         return countA.toLong() * 3 + countB.toLong()
     }
 
-    override fun part1(input: List<String>) = input.findCheapestPaths().toString()
-    override fun part2(input: List<String>) = input.findCheapestPaths(fixConversion = true).toString()
+    override fun part1(input: List<String>) = input.findSolution().toString()
+    override fun part2(input: List<String>) = input.findSolution(part2 = true).toString()
 
 }
