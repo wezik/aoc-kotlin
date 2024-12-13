@@ -8,13 +8,29 @@ class Day13Spec : FreeSpec({
 
     val solver = Day13Solver()
 
-    "\"\" part 1" - {
-        "example input" - {
+    "\"Find sum of cheapest ways to reach destinations\" part 1" - {
+        "example input" {
             // given
-            val input = listOf("")
+            val input = listOf(
+                "Button A: X+94, Y+34",
+                "Button B: X+22, Y+67",
+                "Prize: X=8400, Y=5400",
+                "",
+                "Button A: X+26, Y+66",
+                "Button B: X+67, Y+21",
+                "Prize: X=12748, Y=12176",
+                "",
+                "Button A: X+17, Y+86",
+                "Button B: X+84, Y+37",
+                "Prize: X=7870, Y=6450",
+                "",
+                "Button A: X+69, Y+23",
+                "Button B: X+27, Y+71",
+                "Prize: X=18641, Y=10279",
+            )
 
             // expect
-            solver.part1(input) shouldBe ""
+            solver.part1(input) shouldBe "480"
         }
     }
 
