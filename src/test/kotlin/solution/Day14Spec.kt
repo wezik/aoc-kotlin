@@ -31,14 +31,4 @@ class Day14Spec : FreeSpec({
         }
     }
 
-    "\"\" part 2" - {
-        "example input" - {
-            // given
-            val input = listOf("")
-
-            // expect
-            solver.part2(input) shouldBe ""
-        }
-    }
-
 })
