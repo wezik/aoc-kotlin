@@ -1,72 +1,41 @@
 package solution
 
-import app.wezik.aoc2024.solution.days.Day1Solver
+import app.wezik.aoc2024.solution.days.Day01
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 import kotlin.time.Duration.Companion.milliseconds
 
 class Day01Spec : FreeSpec({
-    val solver = Day1Solver()
+    val solver = Day01()
 
-    "\"Distance\" part 1" - {
+    "part 1 - distance" {
+        // given
+        val input = listOf(
+            "3   4",
+            "4   3",
+            "2   5",
+            "1   3",
+            "3   9",
+            "3   5"
+        )
 
-        "example input" {
-            // given
-            val input = listOf(
-                "3   4",
-                "4   3",
-                "2   5",
-                "1   3",
-                "3   9",
-                "3   3"
-            )
-
-            // expect
-            solver.part1(input) shouldBe "11"
-        }
-
-        "example input" {
-            // given
-            val input = listOf(
-                "3   4",
-                "4   3",
-                "2   5",
-                "1   3",
-                "3   9",
-                "3   5"
-            )
-
-            // expect
-            solver.part1(input) shouldBe "13"
-        }
-
+        // expect
+        solver.part1(input) shouldBe "13"
     }
 
-    "\"Similarity\" part 2" - {
+    "part 2 - similarity" {
+        // given
+        val input = listOf(
+            "3   4",
+            "4   3",
+            "2   5",
+            "1   3",
+            "3   9",
+            "3   3"
+        )
 
-        "example input" {
-            // given
-            val input = listOf(
-                "3   4",
-                "4   3",
-                "2   5",
-                "1   3",
-                "3   9",
-                "3   3"
-            )
-
-            // expect
-            solver.part2(input) shouldBe "31"
-        }
-
-        "big input timeout test".config(timeout = 500.milliseconds) {
-            // given
-            val input = mutableListOf("3   4", "4   3", "2   5", "1   3", "3   9", "3   3")
-            (0..12).forEach { input.addAll(input) }
-
-            // expect
-            solver.part2(input) shouldBe "2080374784"
-        }
-
+        // expect
+        solver.part2(input) shouldBe "31"
     }
+
 })

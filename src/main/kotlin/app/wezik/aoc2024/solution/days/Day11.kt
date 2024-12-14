@@ -2,7 +2,7 @@ package app.wezik.aoc2024.solution.days
 
 import app.wezik.aoc2024.solution.Solver
 
-class Day11Solver : Solver {
+class Day11 : Solver {
 
     private data class StoneEntry(val value: Long, val blinks: Int)
 

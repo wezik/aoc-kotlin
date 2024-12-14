@@ -3,7 +3,7 @@ package app.wezik.aoc2024.solution.days
 import app.wezik.aoc2024.solution.Solver
 import kotlin.math.abs
 
-class Day1Solver : Solver {
+class Day01 : Solver {
 
     override fun part1(input: List<String>) = input.getDistance().toString()
     override fun part2(input: List<String>) = input.getSimilarity().toString()

@@ -2,7 +2,7 @@ package app.wezik.aoc2024.solution.days
 
 import app.wezik.aoc2024.solution.Solver
 
-class Day4Solver : Solver {
+class Day04 : Solver {
 
     override fun part1(input: List<String>): String {
         var sum = 0

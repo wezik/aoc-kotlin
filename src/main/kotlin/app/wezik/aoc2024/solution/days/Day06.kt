@@ -2,7 +2,7 @@ package app.wezik.aoc2024.solution.days
 
 import app.wezik.aoc2024.solution.Solver
 
-class Day6Solver : Solver {
+class Day06 : Solver {
 
     private data class Guard(var x: Int, var y: Int)
 

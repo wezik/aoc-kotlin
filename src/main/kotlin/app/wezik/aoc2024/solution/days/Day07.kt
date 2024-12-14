@@ -2,7 +2,7 @@ package app.wezik.aoc2024.solution.days
 
 import app.wezik.aoc2024.solution.Solver
 
-class Day7Solver : Solver {
+class Day07 : Solver {
 
     private val combinationCache = mutableMapOf<Pair<List<String>, Int>, List<List<String>>>()
     private val validationCache = mutableMapOf<Pair<Equation, Boolean>, Boolean>()

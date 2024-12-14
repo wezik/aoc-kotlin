@@ -1,34 +1,30 @@
 package solution
 
-import app.wezik.aoc2024.solution.days.Day2Solver
+import app.wezik.aoc2024.solution.days.Day02
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.datatest.WithDataTestName
 import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
 
 class Day02Spec : FreeSpec({
-    val solver = Day2Solver()
+    val solver = Day02()
 
-    "\"Safe reports\" part 1" - {
+    "part 1 - safe reports" {
+        // given
+        val input = listOf(
+            "7 6 4 2 1", // safe
+            "1 2 7 8 9", // unsafe
+            "9 7 6 2 1", // unsafe
+            "1 3 2 4 5", // unsafe
+            "8 6 4 4 1", // unsafe
+            "1 3 6 7 9"  // safe
+        )
 
-        "example input" {
-            // given
-            val input = listOf(
-                "7 6 4 2 1", // safe
-                "1 2 7 8 9", // unsafe
-                "9 7 6 2 1", // unsafe
-                "1 3 2 4 5", // unsafe
-                "8 6 4 4 1", // unsafe
-                "1 3 6 7 9"  // safe
-            )
-
-            // expect
-            solver.part1(input) shouldBe "2"
-        }
-
+        // expect
+        solver.part1(input) shouldBe "2"
     }
 
-    "\"Safe reports with toleration\" part 2" - {
+    "part 2 - safe reports with toleration" - {
 
         "example input" {
             // given

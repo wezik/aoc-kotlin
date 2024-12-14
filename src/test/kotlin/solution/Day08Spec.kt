@@ -1,37 +1,34 @@
 package solution
 
-import app.wezik.aoc2024.solution.days.Day8Solver
+import app.wezik.aoc2024.solution.days.Day08
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 
 class Day08Spec : FreeSpec({
+    val solver = Day08()
 
-    val solver = Day8Solver()
+    "part 1 - anti nodes" {
+        // given
+        val input = listOf(
+            "............",
+            "........0...",
+            ".....0......",
+            ".......0....",
+            "....0.......",
+            "......A.....",
+            "............",
+            "............",
+            "........A...",
+            ".........A..",
+            "............",
+            "............",
+        )
 
-    "\"Unique frequencies that contain an anti-node\" part 1" - {
-        "example input" {
-            // given
-            val input = listOf(
-                "............",
-                "........0...",
-                ".....0......",
-                ".......0....",
-                "....0.......",
-                "......A.....",
-                "............",
-                "............",
-                "........A...",
-                ".........A..",
-                "............",
-                "............",
-            )
-
-            // expect
-            solver.part1(input) shouldBe "14"
-        }
+        // expect
+        solver.part1(input) shouldBe "14"
     }
 
-    "\"Including resonances\" part 2" - {
+    "part 2 - anti nodes with resonance" - {
         "example input" {
             // given
             val input = listOf(

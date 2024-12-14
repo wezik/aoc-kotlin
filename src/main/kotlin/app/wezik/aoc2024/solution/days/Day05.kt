@@ -2,7 +2,7 @@ package app.wezik.aoc2024.solution.days
 
 import app.wezik.aoc2024.solution.Solver
 
-class Day5Solver : Solver {
+class Day05 : Solver {
 
     private data class Rule(val value: Int, val before: Int)
     private data class Update(val pages: List<Int>)

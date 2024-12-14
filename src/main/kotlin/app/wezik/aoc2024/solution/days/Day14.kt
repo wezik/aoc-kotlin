@@ -2,7 +2,7 @@ package app.wezik.aoc2024.solution.days
 
 import app.wezik.aoc2024.solution.Solver
 
-class Day14Solver : Solver {
+class Day14 : Solver {
 
     private companion object {
         // constants mentioned in the puzzle description

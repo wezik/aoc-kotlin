@@ -2,7 +2,7 @@ package app.wezik.aoc2024.solution.days
 
 import app.wezik.aoc2024.solution.Solver
 
-class Day10Solver : Solver {
+class Day10 : Solver {
 
     private data class Vector2D(val x: Int, val y: Int)
 

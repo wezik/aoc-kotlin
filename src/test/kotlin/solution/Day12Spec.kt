@@ -1,119 +1,114 @@
 package solution
 
-import app.wezik.aoc2024.solution.days.Day12Solver
+import app.wezik.aoc2024.solution.days.Day12
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 
 class Day12Spec : FreeSpec({
+    val solver = Day12()
 
-    val solver = Day12Solver()
+    "part 1 - fence price" - {
+        "small example" {
+            // given
+            val input = listOf(
+                "AAAA",
+                "BBCD",
+                "BBCC",
+                "EEEC",
+            )
 
-    "\"Fence price\" part 1" - {
-        "example input" - {
-            "small example" {
-                // given
-                val input = listOf(
-                    "AAAA",
-                    "BBCD",
-                    "BBCC",
-                    "EEEC",
-                )
+            // expect
+            solver.part1(input) shouldBe "140"
+        }
+        "contained example" {
+            // given
+            val input = listOf(
+                "OOOOO",
+                "OXOXO",
+                "OOOOO",
+                "OXOXO",
+                "OOOOO",
+            )
 
-                // expect
-                solver.part1(input) shouldBe "140"
-            }
-            "contained example" {
-                // given
-                val input = listOf(
-                    "OOOOO",
-                    "OXOXO",
-                    "OOOOO",
-                    "OXOXO",
-                    "OOOOO",
-                )
+            // expect
+            solver.part1(input) shouldBe "772"
+        }
 
-                // expect
-                solver.part1(input) shouldBe "772"
-            }
+        "large example" {
+            // given
+            val input = listOf(
+                "RRRRIICCFF",
+                "RRRRIICCCF",
+                "VVRRRCCFFF",
+                "VVRCCCJFFF",
+                "VVVVCJJCFE",
+                "VVIVCCJJEE",
+                "VVIIICJJEE",
+                "MIIIIIJJEE",
+                "MIIISIJEEE",
+                "MMMISSJEEE",
+            )
 
-            "large example" {
-                // given
-                val input = listOf(
-                    "RRRRIICCFF",
-                    "RRRRIICCCF",
-                    "VVRRRCCFFF",
-                    "VVRCCCJFFF",
-                    "VVVVCJJCFE",
-                    "VVIVCCJJEE",
-                    "VVIIICJJEE",
-                    "MIIIIIJJEE",
-                    "MIIISIJEEE",
-                    "MMMISSJEEE",
-                )
-
-                // expect
-                solver.part1(input) shouldBe "1930"
-            }
+            // expect
+            solver.part1(input) shouldBe "1930"
         }
     }
 
-    "\"Fence price with a discount\" part 2" - {
-        "example input" - {
-            "small example" {
-                // given
-                val input = listOf(
-                    "AAAA",
-                    "BBCD",
-                    "BBCC",
-                    "EEEC",
-                )
+    "part 2 - discounted fence price" - {
+        "small example" {
+            // given
+            val input = listOf(
+                "AAAA",
+                "BBCD",
+                "BBCC",
+                "EEEC",
+            )
 
-                // expect
-                solver.part2(input) shouldBe "80"
-            }
-            "medium example" {
-                // given
-                val input = listOf(
-                    "EEEEE",
-                    "EXXXX",
-                    "EEEEE",
-                    "EXXXX",
-                    "EEEEE",
-                )
+            // expect
+            solver.part2(input) shouldBe "80"
+        }
+        "medium example" {
+            // given
+            val input = listOf(
+                "EEEEE",
+                "EXXXX",
+                "EEEEE",
+                "EXXXX",
+                "EEEEE",
+            )
 
-                // expect
-                solver.part2(input) shouldBe "236"
-            }
-            "large example" {
-                // given
-                val input = listOf(
-                    "RRRRIICCFF",
-                    "RRRRIICCCF",
-                    "VVRRRCCFFF",
-                    "VVRCCCJFFF",
-                    "VVVVCJJCFE",
-                    "VVIVCCJJEE",
-                    "VVIIICJJEE",
-                    "MIIIIIJJEE",
-                    "MIIISIJEEE",
-                    "MMMISSJEEE",
-                )
+            // expect
+            solver.part2(input) shouldBe "236"
+        }
+        "large example" {
+            // given
+            val input = listOf(
+                "RRRRIICCFF",
+                "RRRRIICCCF",
+                "VVRRRCCFFF",
+                "VVRCCCJFFF",
+                "VVVVCJJCFE",
+                "VVIVCCJJEE",
+                "VVIIICJJEE",
+                "MIIIIIJJEE",
+                "MIIISIJEEE",
+                "MMMISSJEEE",
+            )
 
-                // expect
-                solver.part2(input) shouldBe "1206"
-            }
-            "edge case" {
-                // given
-                val input = listOf(
-                    "OOOOO",
-                    "OAOAO",
-                    "OAAAO",
-                    "OOOOO",
-                )
+            // expect
+            solver.part2(input) shouldBe "1206"
+        }
+        "contained edge case" {
+            // given
+            val input = listOf(
+                "OOOOO",
+                "OAOAO",
+                "OAAAO",
+                "OOOOO",
+            )
 
-                // expect
-                solver.part2(input) shouldBe "220"
-            }
+            // expect
+            solver.part2(input) shouldBe "220"
         }
     }
 

@@ -3,7 +3,7 @@ package app.wezik.aoc2024.solution.days
 import app.wezik.aoc2024.solution.Solver
 import kotlin.math.abs
 
-class Day2Solver : Solver {
+class Day02 : Solver {
 
     private data class Report(var levels: List<Int>)
 

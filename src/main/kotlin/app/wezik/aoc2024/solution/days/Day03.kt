@@ -4,7 +4,7 @@ import app.wezik.aoc2024.solution.Solver
 import kotlin.text.isDigit
 
 // YES, this is NO REGEX solution!!!
-class Day3Solver : Solver {
+class Day03 : Solver {
 
     data class Slider(private val value: List<String>) {
 

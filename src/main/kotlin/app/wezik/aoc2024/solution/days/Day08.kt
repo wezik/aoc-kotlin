@@ -2,7 +2,7 @@ package app.wezik.aoc2024.solution.days
 
 import app.wezik.aoc2024.solution.Solver
 
-class Day8Solver : Solver {
+class Day08 : Solver {
 
     private data class Context(val antennas: List<Antenna>, val dimensions: Vector2D)
     private data class Antenna(val id: Char, val vector: Vector2D)

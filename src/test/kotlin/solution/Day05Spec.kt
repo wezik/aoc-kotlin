@@ -1,113 +1,83 @@
 package solution
 
-import app.wezik.aoc2024.solution.days.Day5Solver
+import app.wezik.aoc2024.solution.days.Day05
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 
 class Day05Spec : FreeSpec({
+    val solver = Day05()
 
-    val solver = Day5Solver()
+    "part 1 - valid updates" {
+        // given
+        val input = listOf(
+            "47|53",
+            "97|13",
+            "97|61",
+            "97|47",
+            "75|29",
+            "61|13",
+            "75|53",
+            "29|13",
+            "97|29",
+            "53|29",
+            "61|53",
+            "97|53",
+            "61|29",
+            "47|13",
+            "75|47",
+            "97|75",
+            "47|61",
+            "75|61",
+            "47|29",
+            "75|13",
+            "53|13",
+            "",
+            "75,47,61,53,29",
+            "97,61,53,29,13",
+            "75,29,13",
+            "75,97,47,61,53",
+            "61,13,29",
+            "97,13,75,29,47"
+        )
 
-    "\"Detect updates with correct ordering\" part 1" - {
-        "small input" {
-            // given
-            val input = listOf(
-                "47|53",
-                "",
-                "47,51,53",
-                "53,47,51",
-            )
-
-            // expect
-            solver.part1(input) shouldBe "51"
-        }
-        "example input" {
-            // given
-            val input = listOf(
-                "47|53",
-                "97|13",
-                "97|61",
-                "97|47",
-                "75|29",
-                "61|13",
-                "75|53",
-                "29|13",
-                "97|29",
-                "53|29",
-                "61|53",
-                "97|53",
-                "61|29",
-                "47|13",
-                "75|47",
-                "97|75",
-                "47|61",
-                "75|61",
-                "47|29",
-                "75|13",
-                "53|13",
-                "",
-                "75,47,61,53,29",
-                "97,61,53,29,13",
-                "75,29,13",
-                "75,97,47,61,53",
-                "61,13,29",
-                "97,13,75,29,47"
-            )
-
-            // expect
-            solver.part1(input) shouldBe "143"
-        }
+        // expect
+        solver.part1(input) shouldBe "143"
     }
-    "\"Detect updates with incorrect ordering and fix them\" part 2" - {
-        "small input" {
-            // given
-            val input = listOf(
-                "47|53",
-                "53|51",
-                "",
-                "47,53,51",
-                "53,47,51",
-            )
+    "part 2 - fixed updates" {
+        // given
+        val input = listOf(
+            "47|53",
+            "97|13",
+            "97|61",
+            "97|47",
+            "75|29",
+            "61|13",
+            "75|53",
+            "29|13",
+            "97|29",
+            "53|29",
+            "61|53",
+            "97|53",
+            "61|29",
+            "47|13",
+            "75|47",
+            "97|75",
+            "47|61",
+            "75|61",
+            "47|29",
+            "75|13",
+            "53|13",
+            "",
+            "75,47,61,53,29",
+            "97,61,53,29,13",
+            "75,29,13",
+            "75,97,47,61,53",
+            "61,13,29",
+            "97,13,75,29,47"
+        )
 
-            // expect
-            solver.part2(input) shouldBe "53"
-        }
-        "example input" {
-            // given
-            val input = listOf(
-                "47|53",
-                "97|13",
-                "97|61",
-                "97|47",
-                "75|29",
-                "61|13",
-                "75|53",
-                "29|13",
-                "97|29",
-                "53|29",
-                "61|53",
-                "97|53",
-                "61|29",
-                "47|13",
-                "75|47",
-                "97|75",
-                "47|61",
-                "75|61",
-                "47|29",
-                "75|13",
-                "53|13",
-                "",
-                "75,47,61,53,29",
-                "97,61,53,29,13",
-                "75,29,13",
-                "75,97,47,61,53",
-                "61,13,29",
-                "97,13,75,29,47"
-            )
-
-            // expect
-            solver.part2(input) shouldBe "123"
-        }
+        // expect
+        solver.part2(input) shouldBe "123"
     }
 
 })

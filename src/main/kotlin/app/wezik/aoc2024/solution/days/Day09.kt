@@ -3,7 +3,7 @@ package app.wezik.aoc2024.solution.days
 import app.wezik.aoc2024.solution.Solver
 import kotlin.collections.first
 
-class Day9Solver : Solver {
+class Day09 : Solver {
 
     override fun part1(input: List<String>): String {
         // Parse

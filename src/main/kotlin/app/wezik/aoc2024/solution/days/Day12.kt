@@ -2,7 +2,7 @@ package app.wezik.aoc2024.solution.days
 
 import app.wezik.aoc2024.solution.Solver
 
-class Day12Solver : Solver {
+class Day12 : Solver {
 
     private data class InputWrapper(val grid: List<String>) {
         val rows = grid.size

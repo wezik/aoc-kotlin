@@ -2,7 +2,7 @@ package app.wezik.aoc2024.solution.days
 
 import app.wezik.aoc2024.solution.Solver
 
-class Day13Solver : Solver {
+class Day13 : Solver {
 
     private operator fun Vector.plus(other: Vector): Vector = Vector(x + other.x, y + other.y)
     private data class Vector(val x: Long, val y: Long)

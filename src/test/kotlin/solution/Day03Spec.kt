@@ -1,25 +1,21 @@
 package solution
 
-import app.wezik.aoc2024.solution.days.Day3Solver
+import app.wezik.aoc2024.solution.days.Day03
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 
 class Day03Spec : FreeSpec({
-    val solver = Day3Solver()
+    val solver = Day03()
 
-    "\"Mul parsing\" part 1" - {
+    "part 1 - mul parsing" {
+        // given
+        val input = listOf("xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))")
 
-        "example input" {
-            // given
-            val input = listOf("xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))")
-
-            // expect
-            solver.part1(input) shouldBe "161"
-        }
-
+        // expect
+        solver.part1(input) shouldBe "161"
     }
 
-    "\"Mul & Do/Don'ts parsing\" part 2" - {
+    "part 2 - mul & do/don't parsing" - {
 
         "example input" {
             // given

@@ -1,14 +1,13 @@
 package solution
 
-import app.wezik.aoc2024.solution.days.Day7Solver
+import app.wezik.aoc2024.solution.days.Day07
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 
 class Day07Spec : FreeSpec({
+    val solver = Day07()
 
-    val solver = Day7Solver()
-
-    "\"Find and sum equations that can be made true\" part 1" - {
+    "part 1 - valid equations" - {
         "example input" {
             // given
             val input = listOf(
@@ -52,7 +51,7 @@ class Day07Spec : FreeSpec({
         }
     }
 
-    "\"Find and sum equations that can be made true with joined (||) operators\" part 2" - {
+    "part 2 - valid equations with joined operators" - {
         "example input" {
             // given
             val input = listOf(

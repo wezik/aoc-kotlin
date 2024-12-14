@@ -1,13 +1,13 @@
 package solution
 
-import app.wezik.aoc2024.solution.days.Day4Solver
+import app.wezik.aoc2024.solution.days.Day04
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 
 class Day04Spec : FreeSpec({
-    val solver = Day4Solver()
+    val solver = Day04()
 
-    "\"'XMAS' finder\" part 1" - {
+    "part 1 - xmas finder" - {
         "example input" {
             // given
             val input = listOf(
@@ -129,7 +129,7 @@ class Day04Spec : FreeSpec({
         }
     }
 
-    "\"X shaped 'MAS'\" part 2" - {
+    "part 2 - x shaped mas" - {
         "single MAS search" {
             //given
             val input = listOf(
