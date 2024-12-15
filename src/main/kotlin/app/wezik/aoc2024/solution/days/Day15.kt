@@ -4,96 +4,6 @@ import app.wezik.aoc2024.solution.Solver
 
 class Day15 : Solver {
 
-    private operator fun Pair<Int, Int>.plus(other: Pair<Int, Int>) = first + other.first to second + other.second
-
-    override fun part1(input: List<String>): String {
-        val breakage = input.withIndex().first { it.value.isEmpty() }
-        val input1 = input.subList(0, breakage.index)
-        val input2 = input.subList(breakage.index + 1, input.size)
-        val rows = input1.size
-        val cols = input1.first().length
-        var pos = 0 to 0
-        val walls = List(rows) { BooleanArray(cols) }
-        val boxes = List(rows) { BooleanArray(cols) }
-        val moves = mutableListOf<String>()
-        for (y in 0 until rows) {
-            for (x in 0 until input[y].length) {
-                when (input[y][x]) {
-                    '@' -> pos = x to y
-                    '#' -> walls[y][x] = true
-                    'O' -> boxes[y][x] = true
-                }
-            }
-        }
-        for (y in 0 until input2.size) {
-            moves.addAll(input2[y].split(""))
-        }
-//        fun printGrid() {
-//            var str = ""
-//            for (y in 0 until rows) {
-//                for (x in 0 until cols) {
-//                    if (pos.first == x && pos.second == y) {
-//                        str += "@"
-//                    } else if (boxes[y][x]) {
-//                        str += "O"
-//                    } else if (walls[y][x]) {
-//                        str += "#"
-//                    } else {
-//                        str += "`"
-//                    }
-//                }
-//                str += "\n"
-//            }
-//            println(str)
-//        }
-        while (moves.isNotEmpty()) {
-            val dir = when (moves.removeFirst()) {
-                "^" -> Pair(0, -1)
-                "v" -> Pair(0, 1)
-                ">" -> Pair(1, 0)
-                "<" -> Pair(-1, 0)
-                else -> Pair(0, 0)
-            }
-            if (dir == Pair(0, 0)) continue
-
-            var (cx, cy) = pos + dir
-
-            var hasSpace = false
-            while (!hasSpace && !walls[cy][cx]) {
-                if (!boxes[cy][cx]) hasSpace = true
-                cx += dir.first
-                cy += dir.second
-            }
-            if (!hasSpace) continue
-            cx = pos.first + dir.first
-            cy = pos.second + dir.second
-            var wasEmpty = false
-            var previous = false
-            while (!walls[cy][cx] && !wasEmpty) {
-                val temp = boxes[cy][cx]
-                boxes[cy][cx] = previous
-                previous = temp
-                if (!previous) wasEmpty = true
-                cx += dir.first
-                cy += dir.second
-            }
-            pos = pos + dir
-        }
-
-        val result = boxes.withIndex().map { (y, row) ->
-
-            row.withIndex().map {
-                if (it.value) {
-                    return@map (100 * y + it.index).toLong()
-                } else {
-                    return@map 0L
-                }
-            }.sum()
-        }.sum()
-
-        return result.toString()
-    }
-
     private companion object {
         val directions = mapOf(
             '^' to Pair(0, -1),
@@ -110,90 +20,124 @@ class Day15 : Solver {
         )
     }
 
-    override fun part2(input: List<String>): String {
+    private operator fun Pair<Int, Int>.plus(other: Pair<Int, Int>) = first + other.first to second + other.second
+
+    override fun part1(input: List<String>): String {
+        // parse
         val splitIndex = input.withIndex().first { it.value.isEmpty() }.index
-        val grid = input.subList(0, splitIndex).map { line ->
-            var str = line
-            expansion.forEach { (k, v) -> str = str.replace(k, v) }
-            str.toCharArray().toMutableList()
-        }
-        val moves = input.subList(splitIndex + 1, input.size).flatMap { it.toCharArray().toList() }
+        val grid = input.subList(0, splitIndex).map { line -> line.toMutableList() }
+        val moves = input.subList(splitIndex + 1, input.size).flatMap { it.toList() }
 
-        var pos = -1 to -1
-        for (y in 0 until grid.size) {
-            if (pos.first != -1) break
-            for (x in 0 until grid.first().size) {
-                if (grid[y][x] == '@') {
-                    pos = x to y
-                    break
-                }
-            }
-        }
+        // find the robot
+        var robot = grid.withIndex().first { it.value.contains('@') }.let { (y, row) -> row.indexOf('@') to y }
 
-        fun printGrid() {
-            var str = buildString {
-                for (y in 0 until grid.size) {
-                    val str = (grid[y].joinToString("")+"\n").toCharArray().toMutableList()
-                    if (y == pos.second) {
-                        str[pos.first] = '*'
-                    }
-                    append(str.joinToString(""))
-                }
-            }
-            println(str)
-        }
-
-//        printGrid()
+        // run the robot
         for (move in moves) {
             val dir = directions[move] ?: continue
-            val stack = mutableListOf<Pair<Int, Int>>()
-            val trackList = mutableMapOf((pos to grid[pos.second][pos.first]))
-            stack.add(pos)
             var canMove = true
-            while (stack.isNotEmpty()) {
+
+            // stack of (x, y) positions
+            val stack = mutableListOf<Pair<Int, Int>>()
+            // map of tracked (x, y) positions
+            val trackMap = mutableMapOf(robot to grid[robot.second][robot.first])
+
+            stack.add(robot)
+            while (stack.isNotEmpty() && canMove) {
+
+                // current = cx, cy
                 val (cx, cy) = stack.removeFirst()
-                trackList[(cx to cy)] = grid[cy][cx]
+                trackMap[cx to cy] = grid[cy][cx]
+
+                // next = nx, ny
                 val (nx, ny) = (cx to cy) + dir
-                if ((nx to ny) in stack) continue
+
+                when (grid[ny][nx]) {
+                    'O' -> stack.add(nx to ny)
+                    '#' -> canMove = false
+                }
+
+            }
+
+            // Early return, didn't move
+            if (!canMove) continue
+
+            // Update the grid
+            robot = robot + dir
+            trackMap.keys.forEach { (tx, ty) -> grid[ty][tx] = '.' }
+            trackMap.map { (pos, value) -> pos + dir to value }
+                .forEach { (next, value) -> grid[next.second][next.first] = value }
+        }
+
+        // output
+        var coordinatesSum = 0L
+        for ((y, row) in grid.withIndex()) {
+            for ((x, value) in row.withIndex()) {
+                if (value == 'O') coordinatesSum += (100 * y + x).toLong()
+            }
+        }
+        return coordinatesSum.toString()
+    }
+
+    override fun part2(input: List<String>): String {
+        // parse
+        val splitIndex = input.withIndex().first { it.value.isEmpty() }.index
+        val grid = input.subList(0, splitIndex).map { line ->
+            expansion.entries.fold(line) { updatedLine, (key, value) ->
+                updatedLine.replace(key, value)
+            }.toMutableList()
+        }
+        val moves = input.subList(splitIndex + 1, input.size).flatMap { it.toList() }
+
+        // find the robot
+        var robot = grid.withIndex().first { it.value.contains('@') }.let { (y, row) -> row.indexOf('@') to y }
+
+        // run the robot
+        for (move in moves) {
+            val dir = directions[move] ?: continue
+            var canMove = true
+
+            // stack of (x, y) positions
+            val stack = mutableListOf<Pair<Int, Int>>()
+            // map of tracked (x, y) positions
+            val trackMap = mutableMapOf(robot to grid[robot.second][robot.first])
+
+            stack.add(robot)
+            while (stack.isNotEmpty() && canMove) {
+
+                // current = cx, cy
+                val (cx, cy) = stack.removeFirst()
+                trackMap[cx to cy] = grid[cy][cx]
+
+                // next = nx, ny
+                val (nx, ny) = (cx to cy) + dir
+                if (nx to ny in stack) continue
+
                 when (grid[ny][nx]) {
                     '[' -> stack.addAll(listOf(nx to ny, nx + 1 to ny))
                     ']' -> stack.addAll(listOf(nx to ny, nx - 1 to ny))
-                    '.' -> continue
-                    '#' -> {
-                        canMove = false
-                        break
-                    }
-                    else -> continue
+                    '#' -> canMove = false
                 }
+
             }
 
-            if (!canMove) {
-//                printGrid()
-//                println(move)
-//                println(trackList)
-//                Thread.sleep(200)
-                continue
-            }
+            // Early return, didn't move
+            if (!canMove) continue
 
-            trackList.keys.forEach { (tx, ty) -> grid[ty][tx] = '.' }
-
-            for ((k, v) in trackList) {
-                val (tx, ty) = k
-                val (nx, ny) = (tx to ty) + dir
-                grid[ny][nx] = v
-            }
-            pos = pos + dir
-//            printGrid()
-//            println(trackList)
-//            println(move)
-//            Thread.sleep(200)
+            // Update the grid
+            robot = robot + dir
+            trackMap.keys.forEach { (tx, ty) -> grid[ty][tx] = '.' }
+            trackMap.map { (pos, value) -> pos + dir to value }
+                .forEach { (next, value) -> grid[next.second][next.first] = value }
         }
 
-        return grid.withIndex().map { (y, row) ->
-            row .withIndex()
-                .map { (x, value) -> if (value == '[') (100 * y + x).toLong() else 0L }
-                .sum()
-        }.sum().toString()
+        // output
+        var coordinatesSum = 0L
+        for ((y, row) in grid.withIndex()) {
+            for ((x, value) in row.withIndex()) {
+                if (value == '[') coordinatesSum += (100 * y + x).toLong()
+            }
+        }
+        return coordinatesSum.toString()
     }
 
 }
