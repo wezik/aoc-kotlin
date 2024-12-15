@@ -94,6 +94,106 @@ class Day15 : Solver {
         return result.toString()
     }
 
-    override fun part2(input: List<String>) = ""
+    private companion object {
+        val directions = mapOf(
+            '^' to Pair(0, -1),
+            'v' to Pair(0, 1),
+            '>' to Pair(1, 0),
+            '<' to Pair(-1, 0),
+        )
+
+        val expansion = mapOf(
+            "#" to "##",
+            "O" to "[]",
+            "." to "..",
+            "@" to "@.",
+        )
+    }
+
+    override fun part2(input: List<String>): String {
+        val splitIndex = input.withIndex().first { it.value.isEmpty() }.index
+        val grid = input.subList(0, splitIndex).map { line ->
+            var str = line
+            expansion.forEach { (k, v) -> str = str.replace(k, v) }
+            str.toCharArray().toMutableList()
+        }
+        val moves = input.subList(splitIndex + 1, input.size).flatMap { it.toCharArray().toList() }
+
+        var pos = -1 to -1
+        for (y in 0 until grid.size) {
+            if (pos.first != -1) break
+            for (x in 0 until grid.first().size) {
+                if (grid[y][x] == '@') {
+                    pos = x to y
+                    break
+                }
+            }
+        }
+
+        fun printGrid() {
+            var str = buildString {
+                for (y in 0 until grid.size) {
+                    val str = (grid[y].joinToString("")+"\n").toCharArray().toMutableList()
+                    if (y == pos.second) {
+                        str[pos.first] = '*'
+                    }
+                    append(str.joinToString(""))
+                }
+            }
+            println(str)
+        }
+
+//        printGrid()
+        for (move in moves) {
+            val dir = directions[move] ?: continue
+            val stack = mutableListOf<Pair<Int, Int>>()
+            val trackList = mutableMapOf((pos to grid[pos.second][pos.first]))
+            stack.add(pos)
+            var canMove = true
+            while (stack.isNotEmpty()) {
+                val (cx, cy) = stack.removeFirst()
+                trackList[(cx to cy)] = grid[cy][cx]
+                val (nx, ny) = (cx to cy) + dir
+                if ((nx to ny) in stack) continue
+                when (grid[ny][nx]) {
+                    '[' -> stack.addAll(listOf(nx to ny, nx + 1 to ny))
+                    ']' -> stack.addAll(listOf(nx to ny, nx - 1 to ny))
+                    '.' -> continue
+                    '#' -> {
+                        canMove = false
+                        break
+                    }
+                    else -> continue
+                }
+            }
+
+            if (!canMove) {
+//                printGrid()
+//                println(move)
+//                println(trackList)
+//                Thread.sleep(200)
+                continue
+            }
+
+            trackList.keys.forEach { (tx, ty) -> grid[ty][tx] = '.' }
+
+            for ((k, v) in trackList) {
+                val (tx, ty) = k
+                val (nx, ny) = (tx to ty) + dir
+                grid[ny][nx] = v
+            }
+            pos = pos + dir
+//            printGrid()
+//            println(trackList)
+//            println(move)
+//            Thread.sleep(200)
+        }
+
+        return grid.withIndex().map { (y, row) ->
+            row .withIndex()
+                .map { (x, value) -> if (value == '[') (100 * y + x).toLong() else 0L }
+                .sum()
+        }.sum().toString()
+    }
 
 }
