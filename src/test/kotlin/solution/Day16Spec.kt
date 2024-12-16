@@ -7,7 +7,7 @@ import io.kotest.matchers.shouldBe
 class Day16Spec : FreeSpec({
     val solver = Day16()
 
-    "part 1 - " {
+    "part 1 - reindeer olympics maze" {
         // given
         val input = listOf(
             "#################",
@@ -33,12 +33,30 @@ class Day16Spec : FreeSpec({
         solver.part1(input) shouldBe "11048"
     }
 
-    "part 2 - " {
+    "part 2 - tiles included in all best paths" {
         // given
-        val input = listOf("")
+        val input = listOf(
+            "#################",
+            "#...#...#...#..E#",
+            "#.#.#.#.#.#.#.#.#",
+            "#.#.#.#...#...#.#",
+            "#.#.#.#.###.#.#.#",
+            "#...#.#.#.....#.#",
+            "#.#.#.#.#.#####.#",
+            "#.#...#.#.#.....#",
+            "#.#.#####.#.###.#",
+            "#.#.#.......#...#",
+            "#.#.###.#####.###",
+            "#.#.#...#.....#.#",
+            "#.#.#.#####.###.#",
+            "#.#.#.........#.#",
+            "#.#.#.#########.#",
+            "#S#.............#",
+            "#################",
+        )
 
         // expect
-        solver.part2(input) shouldBe ""
+        solver.part2(input) shouldBe "64"
     }
 
 })
