@@ -1,0 +1,141 @@
+name: Reusable Benchmark
+
+on:
+  workflow_call:
+    inputs:
+      days:
+        type: string
+        required: true
+      runs:
+        type: string
+        required: true
+        default: "1000"
+      override-limits:
+        type: boolean
+        required: true
+        default: false
+    secrets:
+      DAY1:
+        required: true
+      DAY2:
+       required: true
+      DAY3:
+       required: true
+      DAY4:
+       required: true
+      DAY5:
+       required: true
+      DAY6:
+       required: true
+      DAY7:
+       required: true
+      DAY8:
+       required: true
+      DAY9:
+       required: true
+      DAY10:
+       required: true
+      DAY11:
+       required: true
+      DAY12:
+       required: true
+      DAY13:
+       required: true
+      DAY14:
+       required: true
+      DAY15:
+       required: true
+      DAY16:
+       required: true
+      DAY17:
+       required: true
+      DAY18:
+       required: true
+      DAY19:
+       required: true
+      DAY20:
+       required: true
+      DAY21:
+       required: true
+      DAY22:
+       required: true
+      DAY23:
+       required: true
+      DAY24:
+       required: true
+      DAY25:
+        required: true
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+
+      - name: Decode and save input files
+        run: |
+          mkdir -p inputs
+          for day in $(echo "${{ inputs.days }}" | tr "," "\n"); do
+            secret_name="DAY$day"
+            if [ -n "${!secret_name}" ]; then
+              # Create an input file for days with input data
+              echo "${!secret_name}" | tr -d '\n' | base64 --decode > inputs/$day
+            else
+              # Create an empty input file for days with no input data
+              echo "Empty input for day $day" > inputs/$day
+            fi
+          done
+        env:
+          DAY1: ${{ secrets.DAY1 }}
+          DAY2: ${{ secrets.DAY2 }}
+          DAY3: ${{ secrets.DAY3 }}
+          DAY4: ${{ secrets.DAY4 }}
+          DAY5: ${{ secrets.DAY5 }}
+          DAY6: ${{ secrets.DAY6 }}
+          DAY7: ${{ secrets.DAY7 }}
+          DAY8: ${{ secrets.DAY8 }}
+          DAY9: ${{ secrets.DAY9 }}
+          DAY10: ${{ secrets.DAY10 }}
+          DAY11: ${{ secrets.DAY11 }}
+          DAY12: ${{ secrets.DAY12 }}
+          DAY13: ${{ secrets.DAY13 }}
+          DAY14: ${{ secrets.DAY14 }}
+          DAY15: ${{ secrets.DAY15 }}
+          DAY16: ${{ secrets.DAY16 }}
+          DAY17: ${{ secrets.DAY17 }}
+          DAY18: ${{ secrets.DAY18 }}
+          DAY19: ${{ secrets.DAY19 }}
+          DAY20: ${{ secrets.DAY20 }}
+          DAY21: ${{ secrets.DAY21 }}
+          DAY22: ${{ secrets.DAY22 }}
+          DAY23: ${{ secrets.DAY23 }}
+          DAY24: ${{ secrets.DAY24 }}
+          DAY25: ${{ secrets.DAY25 }}
+
+      - name: Benchmark
+        run: |
+          mkdir -p results
+          output_file="results/benchmark-results.txt"
+          > $output_file
+          echo "-------------------------------------------------" | tee -a $output_file
+          for day in $(echo "${{ inputs.days }}" | tr "," "\n"); do
+            ./gradlew run --args="-day $day -benchmark ${{ inputs.runs }} -input inputs/$day -f ${{ inputs.override-limits }}" --quiet | tee -a $output_file
+            echo "-------------------------------------------------" | tee -a $output_file
+          done
+
+      - name: Upload results as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: results/benchmark-results.txt

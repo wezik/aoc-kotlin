@@ -1,0 +1,57 @@
+name: Benchmark on demand
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: Comma-separated list of days
+        type: string
+        required: true
+        default: "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25"
+      runs:
+        description: Number of runs
+        type: string
+        required: true
+        default: "1000"
+      override-limits:
+        description: Override hardcoded limits
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  benchmark:
+    uses: ./.github/workflows/reusable-benchmark.yml
+    with:
+      days: ${{ inputs.days }}
+      runs: ${{ inputs.runs }}
+      override-limits: ${{ inputs.override-limits }}
+    name: Run benchmark
+    permissions:
+      contents: read
+    secrets:
+      DAY1: ${{ secrets.DAY1 }}
+      DAY2: ${{ secrets.DAY2 }}
+      DAY3: ${{ secrets.DAY3 }}
+      DAY4: ${{ secrets.DAY4 }}
+      DAY5: ${{ secrets.DAY5 }}
+      DAY6: ${{ secrets.DAY6 }}
+      DAY7: ${{ secrets.DAY7 }}
+      DAY8: ${{ secrets.DAY8 }}
+      DAY9: ${{ secrets.DAY9 }}
+      DAY10: ${{ secrets.DAY10 }}
+      DAY11: ${{ secrets.DAY11 }}
+      DAY12: ${{ secrets.DAY12 }}
+      DAY13: ${{ secrets.DAY13 }}
+      DAY14: ${{ secrets.DAY14 }}
+      DAY15: ${{ secrets.DAY15 }}
+      DAY16: ${{ secrets.DAY16 }}
+      DAY17: ${{ secrets.DAY17 }}
+      DAY18: ${{ secrets.DAY18 }}
+      DAY19: ${{ secrets.DAY19 }}
+      DAY20: ${{ secrets.DAY20 }}
+      DAY21: ${{ secrets.DAY21 }}
+      DAY22: ${{ secrets.DAY22 }}
+      DAY23: ${{ secrets.DAY23 }}
+      DAY24: ${{ secrets.DAY24 }}
+      DAY25: ${{ secrets.DAY25 }}

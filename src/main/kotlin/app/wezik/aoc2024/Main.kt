@@ -22,6 +22,7 @@ fun main(args: Array<String>) {
     val day = argsMap["-day"]
     val inputArg = argsMap["-input"]
     val benchmarkArg = argsMap["-benchmark"]
+    val overrideLimits = argsMap["-f"]
 
     val solvers = if (day == null) {
         println("Running all days in order")
@@ -35,8 +36,9 @@ fun main(args: Array<String>) {
         val input = readFrom(inputPath)
         if (benchmarkArg != null) {
             var benchmarkRuns = benchmarkArg.toInt()
-            // capping runs for some days to avoid long running benchmarks
-            if (hardcodedRunLimits.containsKey(solverSource)) {
+            // capping runs for some days to avoid long-running benchmarks
+            val override = overrideLimits != null && overrideLimits == "true"
+            if (hardcodedRunLimits.containsKey(solverSource) && !override) {
                 benchmarkRuns = minOf(benchmarkRuns, hardcodedRunLimits[solverSource]!!)
             }
             val day = if (solverSource.ordinal < 9) "0${solverSource.ordinal + 1}" else solverSource.ordinal + 1
@@ -60,11 +62,7 @@ fun main(args: Array<String>) {
 private fun Duration.formatToSeconds() = this.toString(DurationUnit.SECONDS, 3)
 private fun Duration.formatToMs() = this.toString(DurationUnit.MILLISECONDS, 3)
 
-private fun runBenchmark(
-    source: StaticSolverSelector.SolverSource,
-    input: List<String>,
-    benchmarkRuns: Int,
-): Pair<Duration, Duration> {
+private fun runBenchmark(source: SolverSource, input: List<String>, benchmarkRuns: Int): Pair<Duration, Duration> {
     val p1Times = mutableListOf<Long>()
     val p2Times = mutableListOf<Long>()
 
