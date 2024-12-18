@@ -126,16 +126,34 @@ jobs:
       - name: Benchmark
         run: |
           mkdir -p results
-          output_file="results/benchmark-results.txt"
-          > $output_file
-          echo "-------------------------------------------------" | tee -a $output_file
-          for day in $(echo "${{ inputs.days }}" | tr "," "\n"); do
-            ./gradlew run --args="-day $day -benchmark ${{ inputs.runs }} -input inputs/$day -f ${{ inputs.override-limits }}" --quiet | tee -a $output_file
-            echo "-------------------------------------------------" | tee -a $output_file
-          done
+          markdown_summary="results/benchmark-results.md"
+          > $markdown_summary
+          echo "# Benchmark results" >> $markdown_summary
+          echo "Generated at $(date)" >> $markdown_summary
+          echo "" >> $markdown_summary
+          echo "| Day | Part 1 (ms) | Part 2 (ms) | Total Runs | Total time (s) |" >> $markdown_summary
+          echo "|-----|-------------|-------------|------------|----------------|" >> $markdown_summary
 
-      - name: Upload results as artifacts
-        uses: actions/upload-artifact@v4
+          for day in $(echo "${{ inputs.days }}" | tr "," "\n"); do
+            result=$(./gradlew run --args="-day $day -benchmark ${{ inputs.runs }} -input inputs/$day -f ${{ inputs.override-limits }} -q true" -q)
+            
+            # output string (e.g., "Day 07,1.025 ms,1.025 ms,1000,1 s")
+            day_num=$(echo "$result" | cut -d ',' -f 1 | awk '{print $2}')
+            part1=$(echo "$result" | cut -d ',' -f 2 | tr -d 'ms')
+            part2=$(echo "$result" | cut -d ',' -f 3 | tr -d 'ms')
+            total_runs=$(echo "$result" | cut -d ',' -f 4)
+            total_time=$(echo "$result" | cut -d ',' -f 5 | tr -d 's')
+
+            # Append the parsed results to the Markdown table
+            echo "| Day $day_num | $part1 | $part2 | $total_runs | $total_time |" >> $markdown_summary
+           done
+
+      - name: Update markdown summary
+        uses: actions/github-script@v6
         with:
-          name: benchmark-results
-          path: results/benchmark-results.txt
+          script: |
+            const fs = require('fs');
+            const path = './results/benchmark-results.md';
+            const summary = fs.readFileSync(path, 'utf8');
+            core.summary.addRaw(summary).write();
+        

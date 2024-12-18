@@ -67,7 +67,7 @@ fun main(args: Array<String>) {
         val solution = solverSource.solver.solve(input)
         log(" Part 1 solution in ${solution.part1.time.formatToSeconds()}: \"${solution.part1.result}\"")
         log(" Part 2 solution in ${solution.part2.time.formatToSeconds()}: \"${solution.part2.result}\"")
-        val answer = "Day${solverSource.ordinal + 1},${solution.part1.time.formatToMs()},${solution.part2.time.formatToMs()}"
+        val answer = "Day ${solverSource.ordinal + 1},${solution.part1.time.formatToMs()},${solution.part2.time.formatToMs()}"
         log(answer, isQuietAnswer = true)
     }
 }
