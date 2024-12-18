@@ -15,7 +15,11 @@ class Day18 : Solver {
 
     private data class QueueEntry(val position: Pair<Int, Int>, val cost: Int)
 
-    private fun getDistance(badBytes: List<BooleanArray>, max: Int): Int {
+    private fun getDistance(input: List<String>, cycles: Int, max: Int): Int {
+        val badBytesInput = input.subList(0, cycles).map { it.split(",").map { it.toInt() }.let { (x, y) -> x to y } }
+        val badBytes = List<BooleanArray>(max + 1) { BooleanArray(max + 1) }
+        badBytesInput.forEach { (x, y) -> badBytes[y][x] = true }
+
         // BFS
         val queue = ArrayDeque<QueueEntry>().apply { add(QueueEntry(0 to 0, 0)) }
         queue.add(QueueEntry(0 to 0, 0))
@@ -46,45 +50,34 @@ class Day18 : Solver {
     override fun part1(input: List<String>) = part1(input, 1024)
     fun part1(input: List<String>, cycles: Int): String {
         var max = 0
-        val badBytesInput = mutableListOf<Pair<Int, Int>>()
-        for ((i, line) in input.withIndex()) {
-            if (i >= cycles) break
-            line.split(",").map { it.toInt() }.let { (x, y) ->
-                // This max tracking is bad, it counts on max value appearing in the n of cycles
-                // but seems to work fine with the inputs
-                if (x > max) max = x
-                if (y > max) max = y
-                badBytesInput.add(x to y)
-            }
-        }
-        // We don't read more bytes than cycle count so all are valid
-        val badBytes = List<BooleanArray>(max + 1) { BooleanArray(max + 1) }
-        badBytesInput.forEach { (x, y) -> badBytes[y][x] = true }
-
-        return getDistance(badBytes, max).toString()
-    }
-
-    override fun part2(input: List<String>): String {
-        var max = 0
-        val badBytesInput = ArrayDeque<Pair<Int, Int>>()
         for (line in input) {
             line.split(",").map { it.toInt() }.let { (x, y) ->
                 if (x > max) max = x
                 if (y > max) max = y
-                badBytesInput.add(x to y)
+            }
+        }
+        return getDistance(input, cycles, max).toString()
+    }
+
+    override fun part2(input: List<String>): String {
+        var max = 0
+        for (line in input) {
+            line.split(",").map { it.toInt() }.let { (x, y) ->
+                if (x > max) max = x
+                if (y > max) max = y
             }
         }
 
-        val badBytes = List<BooleanArray>(max + 1) { BooleanArray(max + 1) }
-
-        while (badBytesInput.isNotEmpty()) {
-            val (bx, by) = badBytesInput.removeFirst()
-            badBytes[by][bx] = true
-            val dist = getDistance(badBytes, max)
-            if (dist == -1) return "$bx,$by"
+        // binary search
+        var low = 0
+        var high = input.size - 1
+        while (low < high) {
+            val mid = (low + high) / 2
+            if (getDistance(input, mid + 1, max) >= 0) low = mid + 1
+            else high = mid
         }
 
-        return "all valid"
+        return input[low]
     }
 
 }
