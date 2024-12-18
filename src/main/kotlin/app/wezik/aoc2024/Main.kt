@@ -23,9 +23,17 @@ fun main(args: Array<String>) {
     val inputArg = argsMap["-input"]
     val benchmarkArg = argsMap["-benchmark"]
     val overrideLimits = argsMap["-f"]
+    val quietMode = argsMap["-q"]
+
+    fun log(message: String, isQuietAnswer: Boolean = false) {
+        return when (quietMode) {
+            "true" -> if (isQuietAnswer) println(message) else return
+            else -> if (!isQuietAnswer) println(message) else return
+        }
+    }
 
     val solvers = if (day == null) {
-        println("Running all days in order")
+        log("Running all days in order")
         StaticSolverSelector().selectAll()
     } else {
         listOf(StaticSolverSelector().select(day))
@@ -42,20 +50,25 @@ fun main(args: Array<String>) {
                 benchmarkRuns = minOf(benchmarkRuns, hardcodedRunLimits[solverSource]!!)
             }
             val day = if (solverSource.ordinal < 9) "0${solverSource.ordinal + 1}" else solverSource.ordinal + 1
+            var answer = ""
             val totalTime = time {
-                println("[Day $day]:")
+                log("[Day $day]:")
                 val (p1Time, p2Time) = runBenchmark(solverSource, input, benchmarkRuns)
-                println("  Part 1 average: ${p1Time.formatToMs()}")
-                println("  Part 2 average: ${p2Time.formatToMs()}")
+                log("  Part 1 average: ${p1Time.formatToMs()}")
+                log("  Part 2 average: ${p2Time.formatToMs()}")
+                answer += "Day$day,${p1Time.formatToMs()},${p2Time.formatToMs()}"
             }.toNanoDuration()
-            println("  Total runs: $benchmarkRuns")
-            println("  Total time: $totalTime (${totalTime.formatToSeconds()})")
+            log("  Total runs: $benchmarkRuns")
+            log("  Total time: $totalTime (${totalTime.formatToSeconds()})")
+            answer += ",$benchmarkRuns,${totalTime.formatToSeconds()}"
+            log(answer, isQuietAnswer = true)
             return@forEach
         }
-        println()
         val solution = solverSource.solver.solve(input)
-        println(" Part 1 solution in ${solution.part1.time.formatToSeconds()}: \"${solution.part1.result}\"")
-        println(" Part 2 solution in ${solution.part2.time.formatToSeconds()}: \"${solution.part2.result}\"")
+        log(" Part 1 solution in ${solution.part1.time.formatToSeconds()}: \"${solution.part1.result}\"")
+        log(" Part 2 solution in ${solution.part2.time.formatToSeconds()}: \"${solution.part2.result}\"")
+        val answer = "Day${solverSource.ordinal + 1},${solution.part1.time.formatToMs()},${solution.part2.time.formatToMs()}"
+        log(answer, isQuietAnswer = true)
     }
 }
 
