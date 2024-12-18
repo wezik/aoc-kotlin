@@ -131,22 +131,28 @@ jobs:
           echo "# Benchmark results" >> $markdown_summary
           echo "Generated at $(date)" >> $markdown_summary
           echo "" >> $markdown_summary
-          echo "| Day | Part 1 (ms) | Part 2 (ms) | Total Runs | Total time (s) |" >> $markdown_summary
-          echo "|-----|-------------|-------------|------------|----------------|" >> $markdown_summary
+          echo "| Day | Part 1 | Part 2 | Total Runs | Total time |" >> $markdown_summary
+          echo "|-----|--------|--------|------------|------------|" >> $markdown_summary
 
           for day in $(echo "${{ inputs.days }}" | tr "," "\n"); do
             result=$(./gradlew run --args="-day $day -benchmark ${{ inputs.runs }} -input inputs/$day -f ${{ inputs.override-limits }} -q true" -q)
+            echo "$result"
             
             # output string (e.g., "Day 07,1.025 ms,1.025 ms,1000,1 s")
-            day_num=$(echo "$result" | cut -d ',' -f 1 | awk '{print $2}')
+            day_num=$(echo "$result" | cut -d ',' -f 1 | sed 's/Day\([0-9]*\)/Day \1/')
             part1=$(echo "$result" | cut -d ',' -f 2 | tr -d 'ms')
+            part1="$part1 ms"
             part2=$(echo "$result" | cut -d ',' -f 3 | tr -d 'ms')
+            part2="$part2 ms"
             total_runs=$(echo "$result" | cut -d ',' -f 4)
             total_time=$(echo "$result" | cut -d ',' -f 5 | tr -d 's')
+            total_time="$total_time s"
 
             # Append the parsed results to the Markdown table
-            echo "| Day $day_num | $part1 | $part2 | $total_runs | $total_time |" >> $markdown_summary
+            echo "| $day_num | $part1 | $part2 | $total_runs | $total_time |" >> $markdown_summary
            done
+          
+          echo "" >> $markdown_summary
 
       - name: Update markdown summary
         uses: actions/github-script@v6
