@@ -3,8 +3,17 @@ name: Gradle
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'src/**'
+      - 'gradle/**'
+      - 'build.gradle.kts'
+
   pull_request:
     branches: [ "master" ]
+    paths:
+      - 'src/**'
+      - 'gradle/**'
+      - 'build.gradle.kts'
 
 jobs:
   build:
