@@ -22,5 +22,5 @@ Available arguments:
 | `-format markdown`| Outputs a markdown file with results.
 | `-input [path\|0]`   | Comma-separated list of inputs, in the same order as days, use 0 for default location
 | `-benchmark [runs]` | Run benchmarks instead of solving the solutions, pass in amount of solves per day
-| `-force [true\|false]` | Usable only with `-benchmark` on true lets you skip the hardcoded limits for benchmarks for certain days
+| `-override [true\|false]` | Usable only with `-benchmark` on true lets you skip the hardcoded limits for benchmarks for certain days
 | `-q [true\|false]`| (Planned for removal) Quiet mode, simplifies output and doesn't print logs.  
