@@ -73,6 +73,7 @@ jobs:
       contents: write
 
     steps:
+
       - name: Check if the branch is master
         run: |
           if [[ "${GITHUB_REF}" != "refs/heads/master" ]]; then
@@ -88,6 +89,21 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+
+      - name: Setup benchmark branch
+        run: |
+          git fetch origin
+          if git rev-parse --verify origin/benchmarks; then
+            git checkout benchmarks
+            git reset --hard origin/master
+          else
+            git checkout -b benchmarks
+          fi
 
       - name: Decode input files
         run: |
@@ -138,7 +154,7 @@ jobs:
           # make sure it exists
           > results.md
           # Should generate a markdown file with results at ./results.md
-          ./gradlew run --args="-days ${{ inputs.days }} -benchmark ${{ inputs.runs }} -force ${{ inputs.override-limits }} -format markdown"
+          ./gradlew run --args="-days ${{ inputs.days }} -benchmark ${{ inputs.runs }} -override ${{ inputs.override-limits }} -format markdown -q true"
 
       - name: Update markdown summary
         uses: actions/github-script@v6
@@ -149,24 +165,10 @@ jobs:
             const summary = fs.readFileSync(path, 'utf8');
             core.summary.addRaw(summary).write();
 
-      - name: Configure Git
-        run: |
-          git config --global user.name 'GitHub Actions'
-          git config --global user.email 'actions@github.com'
-
       - name: Commit and push benchmark results
         run: |
-          git fetch origin
-          if git rev-parse --verify origin/benchmarks; then
-            git checkout benchmarks
-          else
-            git checkout -b benchmarks
-          fi
-          
-          git merge origin/master
           git add results.md
           git commit -m "Update benchmark results $(date)" || echo "No changes to commit"
-
-          git push origin benchmarks
+          git push origin benchmarks --force
 
 
