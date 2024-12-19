@@ -70,9 +70,15 @@ jobs:
   benchmark:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
 
     steps:
+      - name: Check if the branch is master
+        run: |
+          if [[ "${GITHUB_REF}" != "refs/heads/master" ]]; then
+            echo "This workflow can only be triggered from the 'master' branch.";
+            exit 1;  # Exit if not on master
+          fi
       - uses: actions/checkout@v4
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -83,17 +89,21 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
-      - name: Decode and save input files
+      - name: Decode input files
         run: |
           mkdir -p inputs
-          for day in $(echo "${{ inputs.days }}" | tr "," "\n"); do
+          for day in {1..25}; do
+            # Pad the day number with leading zeros (e.g., 1 -> 01)
+            day_padded=$(printf "%02d" "$day")
+
+            # Secrets are stored as base64 strings
             secret_name="DAY$day"
             if [ -n "${!secret_name}" ]; then
               # Create an input file for days with input data
-              echo "${!secret_name}" | tr -d '\n' | base64 --decode > inputs/$day
+              echo "${!secret_name}" | tr -d '\n' | base64 --decode > inputs/day$day_padded
             else
               # Create an empty input file for days with no input data
-              echo "Empty input for day $day" > inputs/$day
+              echo "Empty input for day $day" > inputs/day$day_padded
             fi
           done
         env:
@@ -125,41 +135,38 @@ jobs:
 
       - name: Benchmark
         run: |
-          mkdir -p results
-          markdown_summary="results/benchmark-results.md"
-          > $markdown_summary
-          echo "# Benchmark results" >> $markdown_summary
-          echo "Generated at $(date)" >> $markdown_summary
-          echo "" >> $markdown_summary
-          echo "| Day | Part 1 | Part 2 | Total Runs | Total time |" >> $markdown_summary
-          echo "|-----|--------|--------|------------|------------|" >> $markdown_summary
-
-          for day in $(echo "${{ inputs.days }}" | tr "," "\n"); do
-            result=$(./gradlew run --args="-day $day -benchmark ${{ inputs.runs }} -input inputs/$day -f ${{ inputs.override-limits }} -q true" -q)
-            echo "$result"
-            
-            # output string (e.g., "Day 07,1.025 ms,1.025 ms,1000,1 s")
-            day_num=$(echo "$result" | cut -d ',' -f 1 | sed 's/Day\([0-9]*\)/Day \1/')
-            part1=$(echo "$result" | cut -d ',' -f 2 | tr -d 'ms')
-            part1="$part1 ms"
-            part2=$(echo "$result" | cut -d ',' -f 3 | tr -d 'ms')
-            part2="$part2 ms"
-            total_runs=$(echo "$result" | cut -d ',' -f 4)
-            total_time=$(echo "$result" | cut -d ',' -f 5 | tr -d 's')
-            total_time="$total_time s"
-
-            # Append the parsed results to the Markdown table
-            echo "| $day_num | $part1 | $part2 | $total_runs | $total_time |" >> $markdown_summary
-           done
-          
-          echo "" >> $markdown_summary
+          # make sure it exists
+          > results.md
+          # Should generate a markdown file with results at ./results.md
+          ./gradlew run --args="-days ${{ inputs.days }} -benchmark ${{ inputs.runs }} -force ${{ inputs.override-limits }} -format markdown"
 
       - name: Update markdown summary
         uses: actions/github-script@v6
         with:
           script: |
             const fs = require('fs');
-            const path = './results/benchmark-results.md';
+            const path = './results.md';
             const summary = fs.readFileSync(path, 'utf8');
             core.summary.addRaw(summary).write();
-        
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+
+      - name: Commit and push benchmark results
+        run: |
+          git fetch origin
+          if git rev-parse --verify origin/benchmarks; then
+            git checkout benchmarks
+          else
+            git checkout -b benchmarks
+          fi
+          
+          git merge origin/master
+          git add results.md
+          git commit -m "Update benchmark results $(date)" || echo "No changes to commit"
+
+          git push origin benchmarks
+
+

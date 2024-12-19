@@ -33,7 +33,6 @@ class Day19 : Solver {
         fun possibilities(design: String): Long {
             if (design in cache) return cache[design]!!
             var count = 0L
-            if (design in cache) return cache[design]!!
             for (i in 0..min(design.length, maxLength)) {
                 if (design.substring(0, i) in patterns) {
                     count += possibilities(design.substring(i))

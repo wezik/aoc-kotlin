@@ -32,9 +32,8 @@ class StaticSolverSelector {
         DAY25(Day25(), "inputs/day25"),
     }
 
-    fun select(day: String): SolverSource {
-        val i = day.toInt() - 1
-        val entries = SolverSource.entries.getOrNull(i)
+    fun select(day: Int): SolverSource {
+        val entries = SolverSource.entries.getOrNull(day - 1)
         if (entries == null) error("Day $day does not exist")
         return entries
     }
