@@ -28,7 +28,7 @@ jobs:
       override-limits: ${{ inputs.override-limits }}
     name: Run benchmark
     permissions:
-      contents: read
+      contents: write
     secrets:
       DAY1: ${{ secrets.DAY1 }}
       DAY2: ${{ secrets.DAY2 }}

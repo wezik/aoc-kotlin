@@ -70,9 +70,15 @@ jobs:
   benchmark:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
 
     steps:
+      - name: Check if the branch is master
+        run: |
+          if [[ "${GITHUB_REF}" != "refs/heads/master" ]]; then
+            echo "This workflow can only be triggered from the 'master' branch.";
+            exit 1;  # Exit if not on master
+          fi
       - uses: actions/checkout@v4
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -142,4 +148,25 @@ jobs:
             const path = './results.md';
             const summary = fs.readFileSync(path, 'utf8');
             core.summary.addRaw(summary).write();
-        
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+
+      - name: Commit and push benchmark results
+        run: |
+          git fetch origin
+          if git rev-parse --verify origin/benchmarks; then
+            git checkout benchmarks
+          else
+            git checkout -b benchmarks
+          fi
+          
+          git merge origin/master
+          git add results.md
+          git commit -m "Update benchmark results $(date)" || echo "No changes to commit"
+
+          git push origin benchmarks
+
+
