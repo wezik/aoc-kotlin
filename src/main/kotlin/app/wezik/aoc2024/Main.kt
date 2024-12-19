@@ -1,94 +1,125 @@
 package app.wezik.aoc2024
 
-import app.wezik.aoc2024.solution.StaticSolverSelector
-import app.wezik.aoc2024.solution.StaticSolverSelector.SolverSource
-import app.wezik.aoc2024.utils.readFrom
 import app.wezik.aoc2024.utils.time
 import app.wezik.aoc2024.utils.toNanoDuration
+import java.io.File
+import kotlin.math.min
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
-// some are just slow unfortunately
-private val hardcodedRunLimits = mapOf(
-    SolverSource.DAY06 to 10,
-    SolverSource.DAY11 to 500,
-    SolverSource.DAY14 to 100,
-    SolverSource.DAY16 to 100,
-)
+private fun Duration.formatToSeconds() = this.toString(DurationUnit.SECONDS, 3).replace("s", " s")
+private fun Duration.formatToMs() = this.toString(DurationUnit.MILLISECONDS, 3).replace("ms", " ms")
 
 fun main(args: Array<String>) {
-    val argsMap = args.toList().chunked(2).associate { it[0] to it[1] }
-    val day = argsMap["-day"]
-    val inputArg = argsMap["-input"]
-    val benchmarkArg = argsMap["-benchmark"]
-    val overrideLimits = argsMap["-f"]
-    val quietMode = argsMap["-q"]
+    val config = Config(args)
 
-    fun log(message: String, isQuietAnswer: Boolean = false) {
-        return when (quietMode) {
-            "true" -> if (isQuietAnswer) println(message) else return
-            else -> if (!isQuietAnswer) println(message) else return
+    //@formatter:off
+    fun logln(message: String) = if (!config.quietMode) println(message) else {}
+    fun log(message: String) = if (!config.quietMode) print(message) else {}
+    fun logAnswer(message: String) = if (config.quietMode) println(message) else {}
+    //@formatter:on
+
+    for ((source, inputPath) in config.solversToRun) {
+        val file = File(inputPath)
+        if (!file.exists()) {
+            error("File does not exist: $inputPath")
         }
-    }
 
-    val solvers = if (day == null) {
-        log("Running all days in order")
-        StaticSolverSelector().selectAll()
-    } else {
-        listOf(StaticSolverSelector().select(day))
-    }
+        val input = file.readLines() // TODO change to plain string
 
-    solvers.forEach { solverSource ->
-        val inputPath = inputArg ?: solverSource.path
-        val input = readFrom(inputPath)
-        if (benchmarkArg != null) {
-            var benchmarkRuns = benchmarkArg.toInt()
-            // capping runs for some days to avoid long-running benchmarks
-            val override = overrideLimits != null && overrideLimits == "true"
-            if (hardcodedRunLimits.containsKey(solverSource) && !override) {
-                benchmarkRuns = minOf(benchmarkRuns, hardcodedRunLimits[solverSource]!!)
+        // Default run
+        val day = if (source.ordinal < 9) "0${source.ordinal + 1}" else source.ordinal + 1
+        log("Day $day:")
+        when (config.runMode) {
+            RunMode.DEFAULT -> {
+                // part 1
+                var p1Solution = ""
+                val p1Time = time {
+                    p1Solution = source.solver.part1(input)
+                }.toNanoDuration().formatToSeconds()
+                logln("\u001b[J Part 1 ($p1Time): $p1Solution")
+
+                // part 2
+                var p2Solution = ""
+                val p2Time = time {
+                    p2Solution = source.solver.part2(input)
+                }.toNanoDuration().formatToSeconds()
+                logln("        Part 2 ($p2Time): $p2Solution")
+
+                if (config.format) {
+                    config.formatter.appendSolution("Day $day", "$p1Solution ($p1Time)", "$p2Solution ($p2Time)")
+                }
+
+                // I am neither using nor have an idea for quiet answer to a regular solution mode
+                // There is also an issue that I use commas to separate values and day 17 part 1 uses commas in the output
+                // logAnswer("Day ${source.ordinal + 1},${p1Solution},${p2Solution},${p1Time},${p2Time}")
             }
-            val day = if (solverSource.ordinal < 9) "0${solverSource.ordinal + 1}" else solverSource.ordinal + 1
-            var answer = ""
-            val totalTime = time {
-                log("[Day $day]:")
-                val (p1Time, p2Time) = runBenchmark(solverSource, input, benchmarkRuns)
-                log("  Part 1 average: ${p1Time.formatToMs()}")
-                log("  Part 2 average: ${p2Time.formatToMs()}")
-                answer += "Day$day,${p1Time.formatToMs()},${p2Time.formatToMs()}"
-            }.toNanoDuration()
-            log("  Total runs: $benchmarkRuns")
-            log("  Total time: $totalTime (${totalTime.formatToSeconds()})")
-            answer += ",$benchmarkRuns,${totalTime.formatToSeconds()}"
-            log(answer, isQuietAnswer = true)
-            return@forEach
+
+            RunMode.BENCHMARK -> {
+
+                val testCount = if (config.overrideLimits) {
+                    config.benchmarkRuns
+                } else {
+                    min(config.benchmarkRuns, config.getRunLimit(source))
+                }
+
+                val start = System.nanoTime()
+                val warmup = 5
+
+                // warmup part 1
+                log("\r\u001b[JDay $day Part 1 warming up...")
+                repeat(warmup) {
+                    source.solver.part1(input)
+                }
+
+                // part 1
+                log("\r\u001b[JDay $day Part 1 running...")
+                val p1Times = mutableListOf<Long>()
+                repeat(testCount) {
+                    val p1Time = time {
+                        source.solver.part1(input)
+                    }
+                    p1Times.add(p1Time)
+                }
+                val p1Time = p1Times.average().toLong().toNanoDuration().formatToMs()
+                logln("\r\u001b[JDay $day Part 1 average: $p1Time")
+
+                // warmup part 2
+                log("       Part 2 warming up...")
+                repeat(warmup) {
+                    source.solver.part2(input)
+                }
+
+                // part 2
+                log("\r\u001b[J       Part 2 running...")
+                val p2Times = mutableListOf<Long>()
+                repeat(testCount) {
+                    val p2Time = time {
+                        source.solver.part2(input)
+                    }
+                    p2Times.add(p2Time)
+                }
+                val p2Time = p2Times.average().toLong().toNanoDuration().formatToMs()
+                logln("\r\u001b[J       Part 2 average: $p2Time")
+
+                // summary
+                logln("       Total runs: $testCount")
+                val totalTime = (System.nanoTime() - start).toNanoDuration().formatToSeconds()
+                logln("       Total time: $totalTime")
+
+                if (config.format) {
+                    config.formatter.appendBenchmark("Day $day", p1Time, p2Time, testCount, totalTime)
+                }
+
+                logAnswer("Day ${source.ordinal + 1},${p1Time},${p2Time},$testCount,$totalTime")
+            }
+
         }
-        val solution = solverSource.solver.solve(input)
-        log(" Part 1 solution in ${solution.part1.time.formatToSeconds()}: \"${solution.part1.result}\"")
-        log(" Part 2 solution in ${solution.part2.time.formatToSeconds()}: \"${solution.part2.result}\"")
-        val answer = "Day ${solverSource.ordinal + 1},${solution.part1.time.formatToMs()},${solution.part2.time.formatToMs()}"
-        log(answer, isQuietAnswer = true)
+
     }
-}
-
-private fun Duration.formatToSeconds() = this.toString(DurationUnit.SECONDS, 3)
-private fun Duration.formatToMs() = this.toString(DurationUnit.MILLISECONDS, 3)
-
-private fun runBenchmark(source: SolverSource, input: List<String>, benchmarkRuns: Int): Pair<Duration, Duration> {
-    val p1Times = mutableListOf<Long>()
-    val p2Times = mutableListOf<Long>()
-
-    // warmup
-    repeat(5) { source.solver.solve(input) }
-
-    (0 until benchmarkRuns).forEach {
-        source.solver.solve(input).let {
-            p1Times.add(it.part1.time.inWholeNanoseconds)
-            p2Times.add(it.part2.time.inWholeNanoseconds)
-        }
+    if (config.format) {
+        logln("Formatting results...")
+        config.formatter.build("results")
     }
-    val p1Time = p1Times.average().toDuration(DurationUnit.NANOSECONDS)
-    val p2Time = p2Times.average().toDuration(DurationUnit.NANOSECONDS)
-    return p1Time to p2Time
+
 }
