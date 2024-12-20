@@ -1,5 +1,5 @@
 # Advent of Code 2024
-My solutions to [2024 Advent of Code puzzles] (https://adventofcode.com/2024)
+My solutions to [2024 Advent of Code puzzles](https://adventofcode.com/2024)  
 [benchmarks](https://github.com/wezik/aoc-2024/blob/benchmarks/results.md) of runtimes without IO 
 
 ## Requirements
