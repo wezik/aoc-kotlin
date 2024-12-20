@@ -7,20 +7,52 @@ import io.kotest.matchers.shouldBe
 class Day20Spec : FreeSpec({
     val solver = Day20()
 
-    "part 1 - " {
+    "part 1 - race condition single picosecond cheat" {
         // given
-        val input = listOf("")
+        val input = listOf(
+            "###############",
+            "#...#...#.....#",
+            "#.#.#.#.#.###.#",
+            "#S#...#.#.#...#",
+            "#######.#.#.###",
+            "#######.#.#...#",
+            "#######.#.###.#",
+            "###..E#...#...#",
+            "###.#######.###",
+            "#...###...#...#",
+            "#.#####.#.###.#",
+            "#.#...#.#.#...#",
+            "#.#.#.#.#.#.###",
+            "#...#...#...###",
+            "###############",
+        )
 
         // expect
-        solver.part1(input) shouldBe ""
+        solver.part1(input, 2) shouldBe "44"
     }
 
-    "part 2 - " {
+    "part 2 - race condition cheats up to 20 picoseconds" {
         // given
-        val input = listOf("")
+        val input = listOf(
+            "###############",
+            "#...#...#.....#",
+            "#.#.#.#.#.###.#",
+            "#S#...#.#.#...#",
+            "#######.#.#.###",
+            "#######.#.#...#",
+            "#######.#.###.#",
+            "###..E#...#...#",
+            "###.#######.###",
+            "#...###...#...#",
+            "#.#####.#.###.#",
+            "#.#...#.#.#...#",
+            "#.#.#.#.#.#.###",
+            "#...#...#...###",
+            "###############",
+        )
 
         // expect
-        solver.part2(input) shouldBe ""
+        solver.part2(input, 70) shouldBe "41"
     }
 
 })

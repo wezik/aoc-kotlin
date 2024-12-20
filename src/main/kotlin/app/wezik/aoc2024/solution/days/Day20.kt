@@ -4,7 +4,8 @@ import app.wezik.aoc2024.solution.Solver
 
 class Day20 : Solver {
 
-    override fun part1(input: List<String>): String {
+    override fun part1(input: List<String>) = part1(input, 100)
+    fun part1(input: List<String>, threshold: Int): String {
         val height = input.size
         val width = input[0].length
         val grid = Array(height) { BooleanArray(width) }
@@ -50,7 +51,7 @@ class Day20 : Solver {
                 for ((nx, ny) in listOf(x to y - 2, x + 2 to y, x to y + 2, x - 2 to y)) {
                     if (nx !in 0 until width || ny !in 0 until height) continue
                     if (grid[ny][nx]) continue
-                    if (seen[y][x] - seen[ny][nx] >= 102) count++
+                    if (seen[y][x] - seen[ny][nx] >= threshold + 2) count++
                 }
             }
         }
@@ -58,7 +59,8 @@ class Day20 : Solver {
         return count.toString()
     }
 
-    override fun part2(input: List<String>): String {
+    override fun part2(input: List<String>) = part2(input, 100)
+    fun part2(input: List<String>, threshold: Int): String {
         val height = input.size
         val width = input[0].length
         val grid = Array(height) { BooleanArray(width) }
@@ -112,7 +114,7 @@ class Day20 : Solver {
                         )) {
                             if (!(nx to ny).isValid()) continue
                             if (grid[ny][nx]) continue
-                            if (seen[y][x] - seen[ny][nx] >= 100 + radius) count++
+                            if (seen[y][x] - seen[ny][nx] >= threshold + radius) count++
                         }
                     }
                 }
