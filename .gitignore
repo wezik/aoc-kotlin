@@ -49,3 +49,5 @@ bin/
 
 inputs/*
 !inputs/.gitkeep
+
+.envrc
