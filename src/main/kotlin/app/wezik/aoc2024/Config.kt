@@ -30,6 +30,7 @@ class Config(args: Array<String>) {
         SolverSource.DAY14 -> 100
         SolverSource.DAY16 -> 100
         SolverSource.DAY20 -> 100
+        SolverSource.DAY22 -> 5
         else -> 1000
     }
 
