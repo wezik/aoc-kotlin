@@ -1,8 +1,8 @@
 package app.wezik.aoc2024.solution.days
 
 import app.wezik.aoc2024.solution.Solver
+import arrow.core.memoize
 import kotlin.collections.ArrayDeque
-
 
 class Day21 : Solver {
 
@@ -17,76 +17,100 @@ class Day21 : Solver {
         DIRECTIONAL(listOf(
             listOf(null, '^', 'A'),
             listOf('<', 'v', '>'),
-        ))
+        ));
         //@formatter:on
-    }
 
-    private fun List<List<Char?>>.toCordsMap(): Map<Char, Pair<Int, Int>> {
-        val result = HashMap<Char, Pair<Int, Int>>()
-        for (y in 0 until this.size) {
-            for (x in 0 until this[y].size) {
-                val button = this[y].getOrNull(x) ?: continue
-                result[button] = x to y
+        // map of a button to its position, more of a convenience
+        val positions = this.flatMapPositions()
+        private fun flatMapPositions(): Map<Char, Pair<Int, Int>> {
+            val positions = HashMap<Char, Pair<Int, Int>>()
+            for (y in 0 until this.buttons.size) {
+                for (x in 0 until this.buttons[y].size) {
+                    val btn = this.buttons[y].getOrNull(x) ?: continue
+                    positions[btn] = x to y
+                }
             }
+            return positions
         }
-        return result
     }
 
-    private fun Pair<Int, Int>.neighbourCandidates(): List<Triple<Int, Int, Char>> {
-        val (x, y) = this
-        return listOf(
-            Triple(x - 1, y, '<'),
-            Triple(x + 1, y, '>'),
-            Triple(x, y - 1, '^'),
-            Triple(x, y + 1, 'v'),
-        )
+    // pre-computed numeric keypad sequences
+    private val numSequence = findAllSequences(Keypad.NUMERIC)
+    // pre-computed directional keypad sequences
+    private val dirSequence = findAllSequences(Keypad.DIRECTIONAL)
+    // cache of the shortest length between two directional buttons
+    private val dirCache = dirSequence.entries.map { (it.key to it.value.first().length.toLong()) }.toMap()
+
+    // entry point!!! code is a mess but it somehow reads from top to bottom
+    override fun part1(input: List<String>) = common(input, 2)
+    override fun part2(input: List<String>) = common(input, 25)
+    private fun common(input: List<String>, depth: Int): String {
+        var total = 0L
+        for (line in input) {
+            val inputs = solveNumpad(line, numSequence)
+            val length = inputs.map { solveMemoized(it, depth) }.min()
+            total += length * line.substring(0 until line.length - 1).toLong()
+        }
+        return total.toString()
     }
 
-    private fun Map<Char, Pair<Int, Int>>.findAllSequences(keypad: List<List<Char?>>): Map<Pair<Char, Char>, List<String>> {
-        // key: origin, destination, value: list of possible sequences
-        val sequences = mutableMapOf<Pair<Char, Char>, List<String>>()
-        for (origin in this.keys) {
-            for (destination in this.keys) {
-                // If the same just enter input
-                if (origin == destination) {
-                    sequences[origin to destination] = listOf("A")
-                    continue
-                }
-                // Compute all possible sequences
-                val possibilities = mutableListOf<String>()
-                // BFS, queue with cords and acc sequence
-                val queue = ArrayDeque(listOf(this[origin]!! to ""))
-                var best = Int.MAX_VALUE
-                bfs@ while (queue.isNotEmpty()) {
-                    val (cords, acc) = queue.removeFirst()
-                    // neighbour (x, y, move)
-                    for ((nx, ny, nm) in cords.neighbourCandidates()) {
-                        if (ny !in 0 until keypad.size || nx !in 0 until keypad[ny].size) continue
-                        val button = keypad[ny].getOrNull(nx) ?: continue
-                        if (button == destination) {
-                            if (best < acc.length + 1) break@bfs
-                            best = acc.length + 1
-                            possibilities.add((acc + nm + 'A').toString())
-                        } else {
-                            queue.add(Pair(nx to ny, (acc + nm).toString()))
-                        }
-                    }
-                }
-                sequences[origin to destination] = possibilities
+    // normal solve returning all possible sequences (still needed for numpad -> directional)
+    private fun solveNumpad(code: String, sequences: Map<Pair<Char, Char>, List<String>>): List<String> {
+        // append A to the code to include move from A to first position
+        val possible = "A$code".zip(code).map { (a, b) -> sequences[a to b] ?: error("Wrong sequence") }
+        return cartesianProduct(possible)
+    }
+
+    // calculating and storing only the length of the shortest possibles sequence
+    private val solveMemoized = ::solve.memoize()
+    private fun solve(sequence: String, depth: Int): Long {
+        if (depth == 1) return "A$sequence".zip(sequence).sumOf { (a, b) -> dirCache[a to b]!! }
+        var length = 0L
+        for ((a, b) in "A$sequence".zip(sequence)) {
+            length += dirSequence[a to b]!!.map { solveMemoized(it, depth - 1) }.min()
+        }
+        return length
+    }
+
+    private fun findAllSequences(keypad: Keypad): Map<Pair<Char, Char>, List<String>> {
+        val sequences = HashMap<Pair<Char, Char>, List<String>>()
+        // find all possible sequences for matrix of positions
+        for (source in keypad.positions.keys) {
+            for (destination in keypad.positions.keys) {
+                sequences[source to destination] = bfsFindSequences(source, destination, keypad)
             }
         }
         return sequences
     }
 
-
-    private fun Map<Pair<Char, Char>, List<String>>.computePaths(code: String): List<String> {
-        val steps = mutableListOf<List<String>>()
-        var previous = 'A'
-        for (c in code) {
-            steps.add(this[previous to c]!!)
-            previous = c
+    // compute all possible sequences between two buttons with BFS
+    private fun bfsFindSequences(src: Char, dest: Char, keypad: Keypad): List<String> {
+        // if the same just confirm
+        if (src == dest) return listOf("A")
+        val possible = mutableListOf<String>()
+        val queue = ArrayDeque(listOf(keypad.positions[src]!! to ""))
+        var best = Int.MAX_VALUE
+        bfs@ while (queue.isNotEmpty()) {
+            val (pos, acc) = queue.removeFirst()
+            // next X, Y, move
+            for ((nx, ny, nm) in pos.neighbourCandidates()) {
+                if (ny !in 0 until keypad.buttons.size || nx !in 0 until keypad.buttons[ny].size) continue
+                val btn = keypad.buttons[ny].getOrNull(nx) ?: continue
+                if (btn == dest) {
+                    if (best < acc.length + 1) break@bfs
+                    best = acc.length + 1
+                    possible += acc + nm + 'A'
+                } else {
+                    queue += Pair(nx to ny, acc + nm)
+                }
+            }
         }
-        return cartesianProduct(steps)
+        return possible
+    }
+
+    private fun Pair<Int,Int>.neighbourCandidates(): List<Triple<Int, Int, Char>> {
+        val (x, y) = this
+        return listOf(Triple(x - 1, y, '<'), Triple(x + 1, y, '>'), Triple(x, y - 1, '^'), Triple(x, y + 1, 'v'))
     }
 
     private fun cartesianProduct(list: List<List<String>>): List<String> {
@@ -98,39 +122,5 @@ class Day21 : Solver {
         }
         return result
     }
-
-    private fun solveCode(code: String, keypad: List<List<Char?>>): List<String> {
-        // I hate this obfuscation but it helps to separate thoughts for now
-        val cordsMap = keypad.toCordsMap()
-        val sequences = cordsMap.findAllSequences(keypad)
-        val paths = sequences.computePaths(code)
-        return paths
-    }
-
-    override fun part1(input: List<String>): String {
-        var total = 0L
-        for (line in input) {
-            // Robot 1
-            val robot1 = solveCode(line, Keypad.NUMERIC.buttons)
-
-            var next = robot1
-            repeat(2) {
-                val possibleNext = mutableListOf<String>()
-                for (seq in next) {
-                    possibleNext += solveCode(seq, Keypad.DIRECTIONAL.buttons)
-                }
-                val minLength = possibleNext.minOf { it.length }
-                next = possibleNext.filter { it.length == minLength }
-            }
-            val length = next.first().length
-            val complexity = length * line.substring(0 until line.length - 1).toLong()
-            total += complexity
-            println("Solved $line")
-        }
-
-        return total.toString()
-    }
-
-    override fun part2(input: List<String>) = ""
 
 }

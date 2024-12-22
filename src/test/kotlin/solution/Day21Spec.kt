@@ -21,7 +21,7 @@ class Day21Spec : FreeSpec({
         solver.part1(input) shouldBe "126384"
     }
 
-    "part 2 - " {
+    "part 2 - Keypad conundrum with depth of 25" {
         // given
         val input = listOf(
             "029A",
@@ -32,7 +32,7 @@ class Day21Spec : FreeSpec({
         )
 
         // expect
-        solver.part2(input) shouldBe ""
+        solver.part2(input) shouldBe "154115708116294"
     }
 
 })
