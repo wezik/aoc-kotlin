@@ -51,3 +51,4 @@ inputs/*
 !inputs/.gitkeep
 
 .envrc
+.env
