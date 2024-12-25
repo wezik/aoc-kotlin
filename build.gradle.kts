@@ -1,18 +1,18 @@
 plugins {
-    kotlin("jvm") version "2.1.0"
+    kotlin("jvm") version "2.0.0"
 
     id("com.adarshr.test-logger") version "4.0.0"
     application
 }
 
-group = "app.wezik.aoc2024"
+group = "app.wezik.aoc"
 
 repositories {
     mavenCentral()
 }
 
 application {
-    mainClass = "app.wezik.aoc2024.MainKt"
+    mainClass = "app.wezik.aoc.MainKt"
 }
 
 val kotestVersion = "5.9.0"
@@ -22,6 +22,7 @@ dependencies {
     implementation(platform("io.arrow-kt:arrow-stack:1.2.4"))
     implementation("io.arrow-kt:arrow-core")
     implementation("io.arrow-kt:arrow-fx-coroutines")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     // KoTest
     testImplementation(kotlin("test"))

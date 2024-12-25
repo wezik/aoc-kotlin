@@ -6,7 +6,7 @@
 
 aoc() {
   if [[ "$#" -eq 0 ]]; then
-    echo "Usage: aoc <day> [<input>]"
+    echo "Usage: aoc <day> [<year>] [<input>]"
     return 1
   fi
   ./run.sh "$@"
