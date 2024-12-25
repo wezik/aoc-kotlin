@@ -30,6 +30,6 @@ class Day25 : Day {
         }
         return "$result"
     }
-    override fun part2(input: File) = ""
+    override fun part2(input: File) = "It's a secret! You can't find it! :>"
 
 }
