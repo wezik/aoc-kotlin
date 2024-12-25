@@ -22,7 +22,11 @@ fi
 
 input="inputs/$year/Day$padded_day.txt"
 if [[ "$#" -gt 0 ]]; then
-  input="$1"
+  if [[ "$1" == "test" ]]; then
+    input="inputs/$year/example/Day$padded_day.txt"
+  else
+    input="$1"
+  fi
 elif [[ ! -f "$input" ]]; then
   echo "Fetching input for $day $year"
   mkdir -p "inputs/$year"

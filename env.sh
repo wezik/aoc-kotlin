@@ -5,17 +5,17 @@
 # export SESSION_COOKIE="..."
 
 aoc() {
-  if [[ "$#" -eq 0 ]]; then
+  if [[ "$#" -gt 0 ]]; then
+    ./run.sh "$@"
+  else
     echo "Usage: aoc <day> [<year>] [<input>]"
-    return 1
   fi
-  ./run.sh "$@"
 }
 
 aot() {
-  if [[ "$#" -eq 1 ]]; then
+  if [[ "$#" -gt 0 ]]; then
     ./run.sh "$@" test
   else
-    ./run.sh 0 test
+    echo "Usage: aot <day> [<year>]"
   fi
 }

@@ -46,9 +46,12 @@ bin/
 .DS_Store
 
 .kotlin/
+kls_database.db
 
-inputs/*
-!inputs/.gitkeep
+inputs/*.txt
+inputs/*/*.txt
+!inputs/*/example/
+!inputs/*/example/**
 
 .envrc
 .env
