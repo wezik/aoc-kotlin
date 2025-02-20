@@ -157,7 +157,7 @@ jobs:
           ./gradlew run --args="-days ${{ inputs.days }} -benchmark ${{ inputs.runs }} -override ${{ inputs.override-limits }} -format markdown -q true"
 
       - name: Update markdown summary
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
