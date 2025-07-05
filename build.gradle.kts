@@ -17,7 +17,6 @@ dependencies {
     // ArrowKT
     implementation(platform("io.arrow-kt:arrow-stack:2.1.2"))
     implementation("io.arrow-kt:arrow-core")
-
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 }
 
