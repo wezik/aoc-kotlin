@@ -2,14 +2,14 @@ name: Gradle
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "develop" ]
     paths:
       - 'src/**'
       - 'gradle/**'
       - 'build.gradle.kts'
 
   pull_request:
-    branches: [ "master" ]
+    branches: [ "develop" ]
     paths:
       - 'src/**'
       - 'gradle/**'
@@ -17,6 +17,7 @@ on:
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     permissions:
       contents: read
