@@ -2,8 +2,8 @@ package app.wezik.aoc.y2024
 
 import app.wezik.aoc.Day
 import java.io.File
-import arrow.core.memoize
 import kotlin.collections.ArrayDeque
+import arrow.core.MemoizedDeepRecursiveFunction
 
 class Day21 : Day {
 
@@ -33,6 +33,7 @@ class Day21 : Day {
             }
             return positions
         }
+
     }
 
     // pre-computed numeric keypad sequences
@@ -49,7 +50,7 @@ class Day21 : Day {
     override fun part2(input: File) = common(input.readLines(), 25)
     private fun common(input: List<String>, depth: Int): String {
         var total = 0L
-        solve = ::solveWorker.memoize() // reset cache for benchmarks
+
         for (line in input) {
             val inputs = solveNumpad(line, numSequence)
             val length = inputs.map { solve(it, depth) }.min()
@@ -66,15 +67,14 @@ class Day21 : Day {
     }
 
     // calculating and storing only the length of the shortest possibles sequence
-    // note: tried MemoizedDeepRecursiveFunction, but it's annoying to set up and achieves the same thing
-    private var solve = ::solveWorker.memoize()
-    private fun solveWorker(sequence: String, depth: Int): Long {
-        if (depth == 1) return "A$sequence".zip(sequence).sumOf { (a, b) -> dirCache[a to b]!! }
+    fun solve(sequence: String, depth: Int) = solveWorker(sequence to depth)
+    private var solveWorker = MemoizedDeepRecursiveFunction<Pair<String, Int>, Long>{ (sequence, depth) ->
+        if (depth == 1) return@MemoizedDeepRecursiveFunction "A$sequence".zip(sequence).sumOf { (a, b) -> dirCache[a to b]!! }
         var length = 0L
         for ((a, b) in "A$sequence".zip(sequence)) {
-            length += dirSequence[a to b]!!.map { solve(it, depth - 1) }.min()
+            length += dirSequence[a to b]!!.map { callRecursive(it to depth - 1) }.min()
         }
-        return length
+        return@MemoizedDeepRecursiveFunction length
     }
 
     private fun findAllSequences(keypad: Keypad): Map<Pair<Char, Char>, List<String>> {
