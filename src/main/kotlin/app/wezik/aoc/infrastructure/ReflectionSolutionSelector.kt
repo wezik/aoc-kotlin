@@ -1,8 +1,8 @@
 package app.wezik.aoc.infrastructure
 
 import app.wezik.aoc.domain.Solution
-import app.wezik.aoc.domain.SolutionSelector
 import app.wezik.aoc.domain.SolutionPart
+import app.wezik.aoc.domain.SolutionSelector
 import java.io.File
 
 class ReflectionSolutionSelector : SolutionSelector {

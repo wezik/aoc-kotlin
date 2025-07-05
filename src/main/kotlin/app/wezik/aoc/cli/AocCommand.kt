@@ -5,6 +5,7 @@ import app.wezik.aoc.domain.SolutionSelector
 import app.wezik.aoc.infrastructure.AocInputLoader
 import app.wezik.aoc.infrastructure.ReflectionSolutionSelector
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.UsageError
 import com.github.ajalt.clikt.core.main
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
@@ -36,23 +37,14 @@ private object AocCommand : CliktCommand("aoc") {
         val year = year ?: mostRecentYear()
 
         val solution = selector.select(day, year) ?: let {
-            echo("Day $day/$year is not implemented")
-            return
+            throw UsageError("Day $day of $year is not implemented")
         }
 
         val input = inputLoader.load(day, year) ?: let {
-            echo("Failed to load input for $day/$year")
-            return
+            throw UsageError("Failed to load input for day $day of $year")
         }
 
-        solution.part1?.let { fn ->
-            val answer = fn(input)
-            echo("Part 1: $answer")
-        } ?: echo("Part 1 not implemented")
-        
-        solution.part2?.let { fn ->
-            val answer = fn(input)
-            echo("Part 2: $answer")
-        } ?: echo("Part 2 not implemented")
+        solution.part1?.let { fn -> echo("Part 1: ${fn(input)}") } ?: echo("Part 1 not implemented")
+        solution.part2?.let { fn -> echo("Part 2: ${fn(input)}") } ?: echo("Part 2 not implemented")
     }
 }
