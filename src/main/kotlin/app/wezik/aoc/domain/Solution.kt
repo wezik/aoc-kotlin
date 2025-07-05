@@ -2,11 +2,10 @@ package app.wezik.aoc.domain
 
 import java.io.File
 
-data class Solution(
-    val day: Int,
-    val year: Int,
-    val part1: SolutionPart?,
-    val part2: SolutionPart?
-)
+// NOTE: wrapper class that should make it easier to extend later
+open class SolutionInput(val file: File)
 
-typealias SolutionPart = (File) -> String
+open class Solution(val day: Int, val year: Int) {
+    open fun part1(input: SolutionInput) = ""
+    open fun part2(input: SolutionInput) = ""
+}

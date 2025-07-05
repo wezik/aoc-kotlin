@@ -1,12 +1,15 @@
-package app.wezik.aoc.y2024
+package app.wezik.aoc.solutions.y2024
 
-import app.wezik.aoc.Day
-import java.io.File
+import app.wezik.aoc.domain.Solution
+import app.wezik.aoc.domain.SolutionInput
 
-class Day22 : Day {
+object Day22 : Solution (
+    day = 22,
+    year = 2024,
+) {
 
-    override fun part1(input: File): String {
-        return input.readLines().map { line ->
+    override fun part1(input: SolutionInput): String {
+        return input.file.readLines().map { line ->
             (0 until 2000).fold(line.toLong()) { acc, _ ->
                 var acc = acc xor (acc * 64) % 16777216
                 acc = acc xor (acc / 32) % 16777216
@@ -15,9 +18,9 @@ class Day22 : Day {
         }.sum().toString()
     }
 
-    override fun part2(input: File): String {
+    override fun part2(input: SolutionInput): String {
         val result = mutableMapOf<List<Long>, Long>()
-        input.readLines().forEach { line ->
+        input.file.readLines().forEach { line ->
 
             val buyer = mutableListOf(line.toLong() % 10)
             (0 until 2000).fold(line.toLong()) { acc, _ ->

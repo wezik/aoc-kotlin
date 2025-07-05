@@ -1,11 +1,13 @@
-package app.wezik.aoc.y2024
+package app.wezik.aoc.solutions.y2024
 
-import app.wezik.aoc.Day
-import java.io.File
-import kotlin.collections.ArrayDeque
+import app.wezik.aoc.domain.Solution
+import app.wezik.aoc.domain.SolutionInput
 import arrow.core.MemoizedDeepRecursiveFunction
 
-class Day21 : Day {
+object Day21 : Solution (
+    day = 21,
+    year = 2024,
+) {
 
     private enum class Keypad(val buttons: List<List<Char?>>) {
         //@formatter:off
@@ -46,8 +48,8 @@ class Day21 : Day {
     private val dirCache = dirSequence.entries.map { (it.key to it.value.first().length.toLong()) }.toMap()
 
     // entry point!!! code is a mess, but it somehow reads from top to bottom
-    override fun part1(input: File) = common(input.readLines(), 2)
-    override fun part2(input: File) = common(input.readLines(), 25)
+    override fun part1(input: SolutionInput) = common(input.file.readLines(), 2)
+    override fun part2(input: SolutionInput) = common(input.file.readLines(), 25)
     private fun common(input: List<String>, depth: Int): String {
         var total = 0L
 

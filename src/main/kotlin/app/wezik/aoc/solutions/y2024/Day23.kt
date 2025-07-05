@@ -1,13 +1,16 @@
-package app.wezik.aoc.y2024
+package app.wezik.aoc.solutions.y2024
 
-import app.wezik.aoc.Day
-import java.io.File
+import app.wezik.aoc.domain.Solution
+import app.wezik.aoc.domain.SolutionInput
 
-class Day23 : Day {
+object Day23 : Solution (
+    day = 23,
+    year = 2024,
+) {
 
-    override fun part1(input: File): String {
+    override fun part1(input: SolutionInput): String {
         val connections = HashMap<String, MutableSet<String>>()
-        input.readLines().forEach {
+        input.file.readLines().forEach {
             val (a, b) = it.split('-')
             connections.getOrPut(a) { mutableSetOf() } += b
             connections.getOrPut(b) { mutableSetOf() } += a
@@ -38,9 +41,9 @@ class Day23 : Day {
         return total.toString()
     }
 
-    override fun part2(input: File): String {
+    override fun part2(input: SolutionInput): String {
         val connections = HashMap<String, MutableSet<String>>()
-        input.readLines().forEach {
+        input.file.readLines().forEach {
             val (a, b) = it.split('-')
             connections.getOrPut(a) { mutableSetOf() } += b
             connections.getOrPut(b) { mutableSetOf() } += a

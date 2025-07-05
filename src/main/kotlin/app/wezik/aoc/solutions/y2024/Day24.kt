@@ -1,13 +1,16 @@
-package app.wezik.aoc.y2024
+package app.wezik.aoc.solutions.y2024
 
-import app.wezik.aoc.Day
-import java.io.File
-import java.util.PriorityQueue
+import app.wezik.aoc.domain.Solution
+import app.wezik.aoc.domain.SolutionInput
+import java.util.*
 
-class Day24 : Day {
+object Day24 : Solution (
+    day = 24,
+    year = 2024,
+) {
     
-    override fun part1(input: File): String {
-        val input = input.readLines()
+    override fun part1(input: SolutionInput): String {
+        val input = input.file.readLines()
         val variables = mutableMapOf<String, Int>()
         var blankLine = 0
         for (line in input) {
@@ -58,6 +61,4 @@ class Day24 : Day {
 
         return resultBinary.toLong(2).toString()
     }
-    override fun part2(input: File) = ""
-
 }

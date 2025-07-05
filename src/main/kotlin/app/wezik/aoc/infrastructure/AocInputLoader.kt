@@ -1,15 +1,14 @@
 package app.wezik.aoc.infrastructure
 
-import app.wezik.aoc.domain.InputLoader
+import app.wezik.aoc.domain.FileLoader
 import java.io.File
 
 // TODO: this implementation is temporary and should be replaced with a proper solution soon
-class AocInputLoader : InputLoader {
+class AocFileLoader : FileLoader {
     private object Sources {
         const val EXAMPLE_SOURCE_FORMAT = "https://github.com/wezik/aoc-kotlin/blob/develop/inputs/%s/example/Day%02d.txt"
         const val AOC_SOURCE_FORMAT = "https://adventofcode.com/%s/day/%d/input"
-        const val CACHE_SOURCE_FORMAT = ".cache/%s/Day%02d.txt"
-        // const val CACHE_EXAMPLE_SOURCE_FORMAT = ".cache/%s/example/Day%02d.txt"
+        const val CACHE_SOURCE_FORMAT = "inputs/%s/Day%02d.txt"
         const val CACHE_EXAMPLE_SOURCE_FORMAT = "inputs/%s/example/Day%02d.txt"
     }
 

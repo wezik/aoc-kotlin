@@ -1,16 +1,31 @@
-package app.wezik.aoc.y2024
+package app.wezik.aoc.solutions.y2024
 
-import app.wezik.aoc.Day
-import java.io.File
+import app.wezik.aoc.domain.Solution
+import app.wezik.aoc.domain.SolutionInput
 import java.util.PriorityQueue
+import kotlin.collections.ArrayDeque
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
+import kotlin.collections.List
+import kotlin.collections.MutableSet
+import kotlin.collections.distinctBy
+import kotlin.collections.first
+import kotlin.collections.isNotEmpty
+import kotlin.collections.listOf
+import kotlin.collections.mutableMapOf
+import kotlin.collections.mutableSetOf
+import kotlin.collections.set
 
-class Day16 : Day {
+object Day16 : Solution(
+    day = 16,
+    year = 2024,
+) {
 
     private operator fun Pair<Int, Int>.plus(other: Pair<Int, Int>) = first + other.first to second + other.second
     private data class QueueEntry(val cost: Int, val position: Pair<Int, Int>, val direction: Pair<Int, Int>)
 
-    override fun part1(input: File): String {
-        val input = input.readLines()
+    override fun part1(input: SolutionInput): String {
+        val input = input.file.readLines()
         // start and end are the same on every input
         var start = 1 to input.size - 2
         var end = input.first().length - 2 to 1
@@ -54,8 +69,8 @@ class Day16 : Day {
         return result.toString()
     }
 
-    override fun part2(input: File): String {
-        val input = input.readLines()
+    override fun part2(input: SolutionInput): String {
+        val input = input.file.readLines()
         // start and end are the same on every input
         var start = 1 to input.size - 2
         var end = input.first().length - 2 to 1

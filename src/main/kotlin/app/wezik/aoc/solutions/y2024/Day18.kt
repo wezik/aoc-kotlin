@@ -1,18 +1,19 @@
-package app.wezik.aoc.y2024
+package app.wezik.aoc.solutions.y2024
 
-import app.wezik.aoc.Day
-import java.io.File
+import app.wezik.aoc.domain.Solution
+import app.wezik.aoc.domain.SolutionInput
 
-class Day18 : Day {
+object Day18 : Solution (
+    day = 18,
+    year = 2024,
+) {
 
-    private companion object {
-        val DIRECTIONS = listOf(
-            Pair(0, -1), // Up
-            Pair(0, 1),  // Down
-            Pair(-1, 0), // Left
-            Pair(1, 0),  // Right
-        )
-    }
+    val DIRECTIONS = listOf(
+        Pair(0, -1), // Up
+        Pair(0, 1),  // Down
+        Pair(-1, 0), // Left
+        Pair(1, 0),  // Right
+    )
 
     private data class QueueEntry(val position: Pair<Int, Int>, val cost: Int)
 
@@ -48,7 +49,8 @@ class Day18 : Day {
         return -1
     }
 
-    override fun part1(input: File) = part1(input.readLines(), 1024)
+    override fun part1(input: SolutionInput) = part1(input.file.readLines(), 1024)
+
     fun part1(input: List<String>, cycles: Int): String {
         var max = 0
         for (line in input) {
@@ -60,8 +62,8 @@ class Day18 : Day {
         return getDistance(input, cycles, max).toString()
     }
 
-    override fun part2(input: File): String {
-        val input = input.readLines()
+    override fun part2(input: SolutionInput): String {
+        val input = input.file.readLines()
         var max = 0
         for (line in input) {
             line.split(",").map { it.toInt() }.let { (x, y) ->

@@ -1,9 +1,12 @@
-package app.wezik.aoc.y2024
+package app.wezik.aoc.solutions.y2024
 
-import app.wezik.aoc.Day
-import java.io.File
+import app.wezik.aoc.domain.Solution
+import app.wezik.aoc.domain.SolutionInput
 
-class Day11 : Day {
+object Day11 : Solution(
+    day = 11,
+    year = 2024,
+) {
 
     private data class StoneEntry(val value: Long, val blinks: Int)
 
@@ -35,13 +38,13 @@ class Day11 : Day {
         return StoneEntry(stoneEntry.value * 2024, stoneEntry.blinks - 1) to null
     }
 
-    override fun part1(input: File): String {
-        val ctx = input.readLines().parse()
+    override fun part1(input: SolutionInput): String {
+        val ctx = input.file.readLines().parse()
         return ctx.stones.map { ctx.count(StoneEntry(it, 25)) }.sum().toString()
     }
 
-    override fun part2(input: File): String {
-        val ctx = input.readLines().parse()
+    override fun part2(input: SolutionInput): String {
+        val ctx = input.file.readLines().parse()
         return ctx.stones.map { ctx.count(StoneEntry(it, 75)) }.sum().toString()
     }
 }

@@ -1,15 +1,18 @@
-package app.wezik.aoc.y2024
+package app.wezik.aoc.solutions.y2024
 
-import app.wezik.aoc.Day
-import java.io.File
+import app.wezik.aoc.domain.Solution
+import app.wezik.aoc.domain.SolutionInput
 
-class Day09 : Day {
+object Day09 : Solution(
+    day = 9,
+    year = 2024,
+) {
 
-    override fun part1(input: File): String {
+    override fun part1(input: SolutionInput): String {
         // Parse
         var fileId = 0
         val disk = mutableListOf<Int>()
-        for ((i, x) in input.readLines().first().withIndex()) {
+        for ((i, x) in input.file.readLines().first().withIndex()) {
             if (i % 2 != 0) repeat(x.digitToInt()) { disk.add(-1) }
             else {
                 repeat(x.digitToInt()) { disk.add(fileId) }
@@ -29,13 +32,13 @@ class Day09 : Day {
         return disk.withIndex().map { (i, x) -> (i * x).toLong() }.sum().toString()
     }
 
-    override fun part2(input: File): String {
+    override fun part2(input: SolutionInput): String {
         // Parse
         var fileId = 0
         var pos = 0
         val freeSpace = mutableListOf<Pair<Int, Int>>()
         val files = mutableMapOf<Int, Pair<Int, Int>>()
-        for ((i, x) in input.readLines().first().withIndex()) {
+        for ((i, x) in input.file.readLines().first().withIndex()) {
             val x = x.digitToInt()
             if (i % 2 == 0) {
                 files[fileId] = pos to x

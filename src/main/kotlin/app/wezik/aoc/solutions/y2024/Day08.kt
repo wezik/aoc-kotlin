@@ -1,9 +1,12 @@
-package app.wezik.aoc.y2024
+package app.wezik.aoc.solutions.y2024
 
-import app.wezik.aoc.Day
-import java.io.File
+import app.wezik.aoc.domain.Solution
+import app.wezik.aoc.domain.SolutionInput
 
-class Day08 : Day {
+object Day08 : Solution(
+    day = 8,
+    year = 2024,
+) {
 
     private data class Context(val antennas: List<Antenna>, val dimensions: Vector2D)
     private data class Antenna(val id: Char, val vector: Vector2D)
@@ -24,13 +27,13 @@ class Day08 : Day {
         return Context(antennas, dimensions)
     }
 
-    override fun part1(input: File): String {
-        val context = input.readLines().parse()
+    override fun part1(input: SolutionInput): String {
+        val context = input.file.readLines().parse()
         return context.findAntiNodes().size.toString()
     }
 
-    override fun part2(input: File): String {
-        val context = input.readLines().parse()
+    override fun part2(input: SolutionInput): String {
+        val context = input.file.readLines().parse()
         return context.findAntiNodes(part2 = true).size.toString()
     }
 

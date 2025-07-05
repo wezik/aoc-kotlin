@@ -1,13 +1,16 @@
-package app.wezik.aoc.y2024
+package app.wezik.aoc.solutions.y2024
 
+import app.wezik.aoc.domain.Solution
+import app.wezik.aoc.domain.SolutionInput
 import kotlin.math.min
-import app.wezik.aoc.Day
-import java.io.File
 
-class Day19 : Day {
+object Day19 : Solution (
+    day = 19,
+    year = 2024,
+) {
 
-    override fun part1(input: File): String {
-        val input = input.readLines()
+    override fun part1(input: SolutionInput): String {
+        val input = input.file.readLines()
         val patterns = input[0].split(", ").toSet()
         val maxLength = patterns.maxOf { it.length }
 
@@ -27,8 +30,8 @@ class Day19 : Day {
         return input.drop(2).filter { canObtain(it) }.count().toString()
     }
 
-    override fun part2(input: File): String {
-        val input = input.readLines()
+    override fun part2(input: SolutionInput): String {
+        val input = input.file.readLines()
         val patterns = input[0].split(", ").toSet()
         val maxLength = patterns.maxOf { it.length }
 

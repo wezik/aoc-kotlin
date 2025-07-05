@@ -1,30 +1,31 @@
-package app.wezik.aoc.y2024
+package app.wezik.aoc.solutions.y2024
 
-import app.wezik.aoc.Day
-import java.io.File
+import app.wezik.aoc.domain.Solution
+import app.wezik.aoc.domain.SolutionInput
 
-class Day15 : Day {
+object Day15 : Solution (
+    day = 15,
+    year = 2024,
+) {
 
-    private companion object {
-        val directions = mapOf(
-            '^' to Pair(0, -1),
-            'v' to Pair(0, 1),
-            '>' to Pair(1, 0),
-            '<' to Pair(-1, 0),
-        )
+    val directions = mapOf(
+        '^' to Pair(0, -1),
+        'v' to Pair(0, 1),
+        '>' to Pair(1, 0),
+        '<' to Pair(-1, 0),
+    )
 
-        val expansion = mapOf(
-            "#" to "##",
-            "O" to "[]",
-            "." to "..",
-            "@" to "@.",
-        )
-    }
+    val expansion = mapOf(
+        "#" to "##",
+        "O" to "[]",
+        "." to "..",
+        "@" to "@.",
+    )
 
     private operator fun Pair<Int, Int>.plus(other: Pair<Int, Int>) = first + other.first to second + other.second
 
-    override fun part1(input: File): String {
-        val input = input.readLines()
+    override fun part1(input: SolutionInput): String {
+        val input = input.file.readLines()
         // parse
         val splitIndex = input.withIndex().first { it.value.isEmpty() }.index
         val grid = input.subList(0, splitIndex).map { line -> line.toMutableList() }
@@ -80,8 +81,8 @@ class Day15 : Day {
         return coordinatesSum.toString()
     }
 
-    override fun part2(input: File): String {
-        val input = input.readLines()
+    override fun part2(input: SolutionInput): String {
+        val input = input.file.readLines()
         // parse
         val splitIndex = input.withIndex().first { it.value.isEmpty() }.index
         val grid = input.subList(0, splitIndex).map { line ->

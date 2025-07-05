@@ -1,9 +1,12 @@
-package app.wezik.aoc.y2024
+package app.wezik.aoc.solutions.y2024
 
-import app.wezik.aoc.Day
-import java.io.File
+import app.wezik.aoc.domain.Solution
+import app.wezik.aoc.domain.SolutionInput
 
-class Day05 : Day {
+object Day05 : Solution(
+    day = 5,
+    year = 2024,
+) {
 
     private data class Rule(val value: Int, val before: Int)
     private data class Update(val pages: List<Int>)
@@ -27,8 +30,8 @@ class Day05 : Day {
         return rules to updates
     }
 
-    override fun part1(input: File): String {
-        val (rules, updates) = input.readLines().parse()
+    override fun part1(input: SolutionInput): String {
+        val (rules, updates) = input.file.readLines().parse()
         return updates.filter { it.isValid(rules) }.map { it.pages[it.pages.size / 2] }.sum().toString()
     }
 
@@ -44,8 +47,8 @@ class Day05 : Day {
         return true
     }
 
-    override fun part2(input: File): String {
-        val (rules, updates) = input.readLines().parse()
+    override fun part2(input: SolutionInput): String {
+        val (rules, updates) = input.file.readLines().parse()
         return updates.filter { !it.isValid(rules) }.map { it.toFixed(rules).pages[it.pages.size / 2] }.sum().toString()
     }
 

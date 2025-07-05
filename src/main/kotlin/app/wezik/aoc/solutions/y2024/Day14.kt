@@ -1,17 +1,18 @@
-package app.wezik.aoc.y2024
+package app.wezik.aoc.solutions.y2024
 
-import app.wezik.aoc.Day
-import java.io.File
+import app.wezik.aoc.domain.Solution
+import app.wezik.aoc.domain.SolutionInput
 
-class Day14 : Day {
+object Day14 : Solution(
+    day = 14,
+    year = 2024,
+) {
 
-    private companion object {
-        // constants mentioned in the puzzle description
-        private const val HEIGHT = 103
-        private const val WIDTH = 101
-    }
+    // constants mentioned in the puzzle description
+    private const val HEIGHT = 103
+    private const val WIDTH = 101
 
-    override fun part1(input: File) = part1Custom(input.readLines(), WIDTH, HEIGHT)
+    override fun part1(input: SolutionInput) = part1Custom(input.file.readLines(), WIDTH, HEIGHT)
     fun part1Custom(input: List<String>, width: Int, height: Int): String {
         val robots = input.map {
             val numbers = Regex("""-?\d+""").findAll(it).map { it.value.toInt() }.toList()
@@ -51,7 +52,7 @@ class Day14 : Day {
         return score.toString()
     }
 
-    override fun part2(input: File) = part2Custom(input.readLines(), WIDTH, HEIGHT)
+    override fun part2(input: SolutionInput) = part2Custom(input.file.readLines(), WIDTH, HEIGHT)
     fun part2Custom(input: List<String>, width: Int, height: Int): String {
         val robots = input.map {
             val numbers = Regex("""-?\d+""").findAll(it).map { it.value.toInt() }.toList()

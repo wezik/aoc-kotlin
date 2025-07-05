@@ -1,11 +1,13 @@
-package app.wezik.aoc.y2024
+package app.wezik.aoc.solutions.y2024
 
-import kotlin.text.isDigit
-import app.wezik.aoc.Day
-import java.io.File
+import app.wezik.aoc.domain.Solution
+import app.wezik.aoc.domain.SolutionInput
 
 // YES, this is NO REGEX solution!!!
-class Day03 : Day {
+object Day03 : Solution(
+    day = 3,
+    year = 2024,
+) {
 
     data class Slider(private val value: List<String>) {
 
@@ -31,12 +33,11 @@ class Day03 : Day {
     data class MutInstructionResult(val sum: Int) : InstructionResult
     data class DoInstructionResult(val block: Boolean) : InstructionResult
 
-    private companion object {
-        private var isBlocked = false
-    }
+    private var isBlocked = false
 
-    override fun part1(input: File) = runSolution(input.readLines()).toString()
-    override fun part2(input: File) = runSolution(input.readLines(), allowBlocking = true).toString()
+    override fun part1(input: SolutionInput) = runSolution(input.file.readLines()).toString()
+
+    override fun part2(input: SolutionInput) = runSolution(input.file.readLines(), allowBlocking = true).toString()
 
     private fun runSolution(input: List<String>, allowBlocking: Boolean = false): Int {
         var sum = 0

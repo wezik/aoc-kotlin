@@ -1,10 +1,13 @@
-package app.wezik.aoc.y2024
+package app.wezik.aoc.solutions.y2024
 
-import app.wezik.aoc.Day
+import app.wezik.aoc.domain.Solution
+import app.wezik.aoc.domain.SolutionInput
 import kotlin.math.abs
-import java.io.File
 
-class Day02 : Day {
+object Day02 : Solution(
+    day = 2,
+    year = 2024,
+) {
 
     private data class Report(var levels: List<Int>)
 
@@ -16,11 +19,11 @@ class Day02 : Day {
         return this.split(' ').map { it.toInt() }.let { Report(it) }
     }
 
-    override fun part1(input: File) = input.readLines().toReports().filter {
+    override fun part1(input: SolutionInput) = input.file.readLines().toReports().filter {
         isSafe(it.levels, false)
     }.size.toString()
 
-    override fun part2(input: File) = input.readLines().toReports().filter {
+    override fun part2(input: SolutionInput) = input.file.readLines().toReports().filter {
         isSafe(it.levels, true)
     }.size.toString()
 

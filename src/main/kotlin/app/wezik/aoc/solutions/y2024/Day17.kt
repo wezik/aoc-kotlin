@@ -1,9 +1,12 @@
-package app.wezik.aoc.y2024
+package app.wezik.aoc.solutions.y2024
 
-import app.wezik.aoc.Day
-import java.io.File
+import app.wezik.aoc.domain.Solution
+import app.wezik.aoc.domain.SolutionInput
 
-class Day17 : Day {
+object Day17 : Solution (
+    day = 17,
+    year = 2024,
+) {
 
     private fun runProgram(program: List<Int>, a: Long): List<Int> {
         var a = a
@@ -40,15 +43,15 @@ class Day17 : Day {
         return output
     }
 
-    override fun part1(input: File): String {
-        val input = input.readLines()
+    override fun part1(input: SolutionInput): String {
+        val input = input.file.readLines()
         var a = input[0].split(": ")[1].toLong()
         val program = input[4].split(": ")[1].split(",").map { it.toInt() }
         return runProgram(program, a).joinToString(",")
     }
 
-    override fun part2(input: File): String {
-        val input = input.readLines()
+    override fun part2(input: SolutionInput): String {
+        val input = input.file.readLines()
         val program = input[4].split(": ")[1].split(",").map { it.toInt() }
         // Recursively reconstructs the correct input for register A
         // Checks values in reversed order calculating A range and then shifting 3 bits left for next recursion

@@ -1,11 +1,14 @@
-package app.wezik.aoc.y2024
+package app.wezik.aoc.solutions.y2024
 
-import app.wezik.aoc.Day
-import java.io.File
+import app.wezik.aoc.domain.Solution
+import app.wezik.aoc.domain.SolutionInput
 
-class Day20 : Day {
+object Day20 : Solution (
+    day = 20,
+    year = 2024,
+) {
 
-    override fun part1(input: File) = part1(input.readLines(), 100)
+    override fun part1(input: SolutionInput) = part1(input.file.readLines(), 100)
     fun part1(input: List<String>, threshold: Int): String {
         val height = input.size
         val width = input[0].length
@@ -60,7 +63,7 @@ class Day20 : Day {
         return count.toString()
     }
 
-    override fun part2(input: File) = part2(input.readLines(), 100)
+    override fun part2(input: SolutionInput) = part2(input.file.readLines(), 100)
     fun part2(input: List<String>, threshold: Int): String {
         val height = input.size
         val width = input[0].length

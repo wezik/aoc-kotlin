@@ -1,9 +1,12 @@
-package app.wezik.aoc.y2024
+package app.wezik.aoc.solutions.y2024
 
-import app.wezik.aoc.Day
-import java.io.File
+import app.wezik.aoc.domain.Solution
+import app.wezik.aoc.domain.SolutionInput
 
-class Day12 : Day {
+object Day12 : Solution(
+    day = 12,
+    year = 2024,
+) {
 
     private data class InputWrapper(val grid: List<String>) {
         val rows = grid.size
@@ -13,20 +16,18 @@ class Day12 : Day {
 
     private fun InputWrapper.isValid(x: Int, y: Int) = y in 0 until rows && x in 0 until cols
 
-    private companion object {
-        val DIRECTIONS = listOf(
-            Pair(0, -1), // Up
-            Pair(0, 1),  // Down
-            Pair(-1, 0), // Left
-            Pair(1, 0),  // Right
-        )
-        val CORNER_OFFSETS = listOf(
-            Pair(-0.5, -0.5), // Up Left
-            Pair(0.5, -0.5),  // Up Right
-            Pair(0.5, 0.5),   // Down Right
-            Pair(-0.5, 0.5),  // Down Left
-        )
-    }
+    val DIRECTIONS = listOf(
+        Pair(0, -1), // Up
+        Pair(0, 1),  // Down
+        Pair(-1, 0), // Left
+        Pair(1, 0),  // Right
+    )
+    val CORNER_OFFSETS = listOf(
+        Pair(-0.5, -0.5), // Up Left
+        Pair(0.5, -0.5),  // Up Right
+        Pair(0.5, 0.5),   // Down Right
+        Pair(-0.5, 0.5),  // Down Left
+    )
 
     private fun InputWrapper.getRegionPrice(x: Int, y: Int, discount: Boolean): Long {
         var edges = 0
@@ -105,7 +106,8 @@ class Day12 : Day {
         return totalPrice
     }
 
-    override fun part1(input: File) = input.readLines().getPrice().toString()
-    override fun part2(input: File) = input.readLines().getPrice(discount = true).toString()
+    override fun part1(input: SolutionInput) = input.file.readLines().getPrice().toString()
+
+    override fun part2(input: SolutionInput) = input.file.readLines().getPrice(discount = true).toString()
 
 }

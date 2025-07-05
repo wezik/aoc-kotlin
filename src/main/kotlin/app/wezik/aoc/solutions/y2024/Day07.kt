@@ -1,9 +1,12 @@
-package app.wezik.aoc.y2024
+package app.wezik.aoc.solutions.y2024
 
-import app.wezik.aoc.Day
-import java.io.File
+import app.wezik.aoc.domain.Solution
+import app.wezik.aoc.domain.SolutionInput
 
-class Day07 : Day {
+object Day07 : Solution(
+    day = 7,
+    year = 2024,
+) {
 
     fun List<Long>.canObtain(target: Long, part2: Boolean = false): Boolean {
         if (size == 1) return target == first()
@@ -20,9 +23,9 @@ class Day07 : Day {
         return trimmedList.canObtain(trimmedTarget, true)
     }
 
-    override fun part1(input: File): String {
+    override fun part1(input: SolutionInput): String {
         var total = 0L
-        for (line in input.readLines()) {
+        for (line in input.file.readLines()) {
             val (left, right) = line.split(": ")
             val target = left.toLong()
             val numbers = right.split(' ').map { it.toLong() }
@@ -33,9 +36,9 @@ class Day07 : Day {
         return total.toString()
     }
 
-    override fun part2(input: File): String {
+    override fun part2(input: SolutionInput): String {
         var total = 0L
-        for (line in input.readLines()) {
+        for (line in input.file.readLines()) {
             val (left, right) = line.split(": ")
             val target = left.toLong()
             val numbers = right.split(' ').map { it.toLong() }

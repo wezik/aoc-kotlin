@@ -1,12 +1,15 @@
-package app.wezik.aoc.y2024
+package app.wezik.aoc.solutions.y2024
 
-import app.wezik.aoc.Day
-import java.io.File
+import app.wezik.aoc.domain.Solution
+import app.wezik.aoc.domain.SolutionInput
 
-class Day04 : Day {
-
-    override fun part1(input: File): String {
-        val input = input.readLines()
+object Day04 : Solution (
+    day = 4,
+    year = 2024,
+) {
+ 
+    override fun part1(input: SolutionInput): String {
+        val input = input.file.readLines()
         var sum = 0
         for (y in 0 until input.size) {
             for (x in 0 until input[y].length) {
@@ -18,8 +21,8 @@ class Day04 : Day {
         return sum.toString()
     }
 
-    override fun part2(input: File): String {
-        val input = input.readLines()
+    override fun part2(input: SolutionInput): String {
+        val input = input.file.readLines()
         var sum = 0
         // We can start from index 1 since 'A' has to be in the middle of the cross
         // Same rule applies to maximum value
@@ -75,9 +78,7 @@ class Day04 : Day {
         return sum
     }
 
-    companion object {
-        private const val XMAS = "XMAS"
-    }
+    private const val XMAS = "XMAS"
 
     // Don't pass possible out of bounds values and ranges other than 3!!!
     private fun List<String>.checkRangeForXmas(xRange: IntProgression, yRange: IntProgression): Int {

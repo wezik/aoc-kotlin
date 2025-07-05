@@ -1,9 +1,12 @@
-package app.wezik.aoc.y2024
+package app.wezik.aoc.solutions.y2024
 
-import app.wezik.aoc.Day
-import java.io.File
+import app.wezik.aoc.domain.Solution
+import app.wezik.aoc.domain.SolutionInput
 
-class Day06 : Day {
+object Day06 : Solution(
+    day = 6,
+    year = 2024,
+) {
 
     private data class Guard(var x: Int, var y: Int)
 
@@ -31,8 +34,8 @@ class Day06 : Day {
         return Board(grid) to guard
     }
 
-    override fun part1(input: File): String {
-        var (board, guard) = input.readLines().parse()
+    override fun part1(input: SolutionInput): String {
+        var (board, guard) = input.file.readLines().parse()
         val visited = mutableSetOf<Pair<Int, Int>>()
         visited.add(guard.x to guard.y)
         while (true) {
@@ -62,9 +65,7 @@ class Day06 : Day {
         override fun next(guard: Guard) = Guard(guard.x + 1, guard.y)
     }
 
-    companion object {
-        private var currentDirection: Direction = Up
-    }
+    private var currentDirection: Direction = Up
 
     private fun Guard.turnRight() {
         currentDirection = when (currentDirection) {
@@ -99,9 +100,9 @@ class Day06 : Day {
         }
     }
 
-    override fun part2(input: File): String {
+    override fun part2(input: SolutionInput): String {
         currentDirection = Up
-        var (board, guard) = input.readLines().parse()
+        var (board, guard) = input.file.readLines().parse()
         val visited = mutableSetOf<PosWrapper>()
         visited.add(PosWrapper(guard.x to guard.y, currentDirection))
         while (true) {
