@@ -66,11 +66,13 @@ private object AocCommand : CliktCommand("aoc") {
 
             if (cache != null) return@file cache
 
-            echo("Downloading input for day $day of $year")
 
             if (example) {
+                echo("Downloading example input for day $day of $year")
                 return@file fileDownloader.downloadExample(day, year) ?: throw UsageError("failed to download example")
             }
+
+            echo("Downloading input for day $day of $year")
 
             if (sessionCookie.isNullOrBlank()) {
                 val message = "session cookie is required if not running against example or custom input \n" + 
