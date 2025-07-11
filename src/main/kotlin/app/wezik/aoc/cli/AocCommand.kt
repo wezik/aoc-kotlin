@@ -18,6 +18,9 @@ import com.github.ajalt.clikt.parameters.types.path
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.io.File
+import app.wezik.aoc.domain.Solution
+import java.nio.file.Path
+import app.wezik.aoc.domain.InputResolver
 
 // entry point for the cli
 fun start(args: Array<String>) = AocCommand.main(args)
@@ -25,8 +28,10 @@ fun start(args: Array<String>) = AocCommand.main(args)
 private object AocCommand : CliktCommand("aoc") {
     // manual DI
     private val selector: SolutionSelector = ReflectionSolutionSelector()
-    private val fileLoader: FileLoader = AocFileLoader()
-    private val fileDownloader: FileDownloader = AocFileDownloader()
+    private val inputResolver = InputResolver(
+        fileLoader = AocFileLoader(),
+        fileDownloader = AocFileDownloader(),
+    ) { msg -> echo(msg) }
 
     // options
     private val day by option("-d", "--day", help = "Day").int().required()
@@ -47,45 +52,14 @@ private object AocCommand : CliktCommand("aoc") {
     override fun run() {
         val year = year ?: mostRecentYear()
 
-        if (example && path != null) {
-            throw UsageError("cannot use both --test and --path options")
+        if (example && path != null) throw UsageError("cannot use both --test and --path options")
+
+        val solution = selector.select(day, year) ?: throw UsageError("day $day of $year is not implemented")
+        val input = when {
+            example -> inputResolver.fetchExampleInput(day, year)
+            path != null -> inputResolver.fetchCustomInput(day, year, path.toString())
+            else -> inputResolver.fetchAdventInput(day, year, sessionCookie ?: System.getenv("ADVENT_COOKIE"))
         }
-
-        val solution = selector.select(day, year) ?: let {
-            throw UsageError("day $day of $year is not implemented")
-        }
-
-        val sessionCookie = sessionCookie ?: let { System.getenv("ADVENT_COOKIE") }
-
-        val fileFn: () -> File = file@ {
-            val cache = when {
-                example -> fileLoader.loadExample(day, year)
-                path != null -> fileLoader.loadCustom(path.toString())
-                else -> fileLoader.loadInput(day, year)
-            }
-
-            if (cache != null) return@file cache
-
-
-            if (example) {
-                echo("Downloading example input for day $day of $year")
-                return@file fileDownloader.downloadExample(day, year) ?: throw UsageError("failed to download example")
-            }
-
-            echo("Downloading input for day $day of $year")
-
-            if (sessionCookie.isNullOrBlank()) {
-                val message = "session cookie is required if not running against example or custom input \n" + 
-                    "use --session-cookie (-s) option to provide it or set ADVENT_COOKIE environment variable"
-                throw UsageError(message)
-            }
-
-            return@file fileDownloader.downloadInput(day, year, sessionCookie) ?: throw UsageError("failed to download input")
-        }
-
-        val file = fileFn()
-
-        val input = SolutionInput(file)
 
         val p1 = solution.part1(input)
         if (p1.isBlank()) echo("Part 1 not implemented") else echo("Part 1: $p1")
