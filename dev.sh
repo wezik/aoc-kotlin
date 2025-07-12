@@ -1,5 +1,9 @@
 #!/usr/bin/sh
 
 function aoc() {
-	./gradlew run --args="$*" -q
+	./gradlew runAoc --args="$*" -q
+}
+
+function aot() {
+	./gradlew runAot --args="$*" -q
 }

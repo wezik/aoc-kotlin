@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     kotlin("jvm") version "2.2.0"
     id("com.gradleup.shadow") version "8.3.8"
@@ -11,7 +13,56 @@ repositories {
 }
 
 application {
-    mainClass = "app.wezik.aoc.MainKt"
+    // fallback
+    mainClass = "app.wezik.aoc.cli.aoc.AocCommandKt"
+}
+
+
+// NOTE: splits regular CLI and test runner CLI into 2 separate jars, one for each entrypoint
+tasks {
+    val aocJar by registering(ShadowJar::class) {
+        archiveBaseName.set("aoc")
+        archiveClassifier.set("")
+        archiveVersion.set("")
+
+        manifest {
+            attributes["Main-Class"] = "app.wezik.aoc.cli.aoc.AocCommandKt"
+        }
+
+        from(sourceSets.main.get().output)
+        configurations = listOf(project.configurations.runtimeClasspath.get())
+    }
+
+    val aotJar by registering(ShadowJar::class) {
+        archiveBaseName.set("aot")
+        archiveClassifier.set("")
+        archiveVersion.set("")
+
+        manifest {
+            attributes["Main-Class"] = "app.wezik.aoc.cli.aot.AotCommandKt"
+        }
+
+        from(sourceSets.main.get().output)
+        configurations = listOf(project.configurations.runtimeClasspath.get())
+    }
+
+    register("buildFat") {
+        dependsOn(aocJar, aotJar)
+    }
+
+    val runAoc by registering(JavaExec::class) {
+        group = "application"
+        description = "Run the AOC CLI"
+        mainClass.set("app.wezik.aoc.cli.aoc.AocCommandKt")
+        classpath = sourceSets.main.get().runtimeClasspath
+    }
+
+    val runAot by registering(JavaExec::class) {
+        group = "application"
+        description = "Run the AOT CLI"
+        mainClass.set("app.wezik.aoc.cli.aot.AotCommandKt")
+        classpath = sourceSets.main.get().runtimeClasspath
+    }
 }
 
 dependencies {

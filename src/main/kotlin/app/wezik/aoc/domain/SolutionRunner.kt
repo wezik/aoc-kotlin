@@ -17,22 +17,22 @@ class SolutionRunner(
 
     fun run(context: DefaultContext) : SolutionResult {
         val (day, year, runP1, runP2, sessionCookie) = context
-        val solution = solutionSelector.select(day, year) ?: throw UsageError("day $day of $year is not implemented")
-        val input = inputResolver.fetchAdventInput(day, year, sessionCookie)
+        val solution = solutionSelector.select(day.value, year.value) ?: throw UsageError("day $day of $year is not implemented")
+        val input = inputResolver.fetchAdventInput(day.value, year.value, sessionCookie)
         return solution.run(runP1, runP2, input)
     }
 
     fun run(context: ExampleContext) : SolutionResult {
         val (day, year, runP1, runP2) = context
-        val solution = solutionSelector.select(day, year) ?: throw UsageError("day $day of $year is not implemented")
-        val input = inputResolver.fetchExampleInput(day, year)
+        val solution = solutionSelector.select(day.value, year.value) ?: throw UsageError("day $day of $year is not implemented")
+        val input = inputResolver.fetchExampleInput(day.value, year.value)
         return solution.run(runP1, runP2, input)
     }
 
     fun run(context: CustomContext) : SolutionResult {
         val (day, year, runP1, runP2, path) = context
-        val solution = solutionSelector.select(day, year) ?: throw UsageError("day $day of $year is not implemented")
-        val input = inputResolver.fetchCustomInput(day, year, path)
+        val solution = solutionSelector.select(day.value, year.value) ?: throw UsageError("day $day of $year is not implemented")
+        val input = inputResolver.fetchCustomInput(day.value, year.value, path)
         return solution.run(runP1, runP2, input)
     }
 
