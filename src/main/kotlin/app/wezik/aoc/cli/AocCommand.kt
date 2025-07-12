@@ -21,17 +21,25 @@ import java.io.File
 import app.wezik.aoc.domain.Solution
 import java.nio.file.Path
 import app.wezik.aoc.domain.InputResolver
+import app.wezik.aoc.domain.SolutionRunner
+import app.wezik.aoc.domain.ExampleContext
+import app.wezik.aoc.domain.DefaultContext
+import app.wezik.aoc.domain.CustomContext
 
 // entry point for the cli
 fun start(args: Array<String>) = AocCommand.main(args)
 
 private object AocCommand : CliktCommand("aoc") {
     // manual DI
-    private val selector: SolutionSelector = ReflectionSolutionSelector()
-    private val inputResolver = InputResolver(
-        fileLoader = AocFileLoader(),
-        fileDownloader = AocFileDownloader(),
-    ) { msg -> echo(msg) }
+    private val solutionRunner = SolutionRunner(
+        solutionSelector = ReflectionSolutionSelector(),
+        inputResolver = InputResolver(
+            fileLoader = AocFileLoader(),
+            fileDownloader = AocFileDownloader(),
+            echo = { msg -> echo(msg) }
+        ),
+        echo = { msg -> echo(msg) }
+    )
 
     // options
     private val day by option("-d", "--day", help = "Day").int().required()
@@ -54,17 +62,27 @@ private object AocCommand : CliktCommand("aoc") {
 
         if (example && path != null) throw UsageError("cannot use both --test and --path options")
 
-        val solution = selector.select(day, year) ?: throw UsageError("day $day of $year is not implemented")
-        val input = when {
-            example -> inputResolver.fetchExampleInput(day, year)
-            path != null -> inputResolver.fetchCustomInput(day, year, path.toString())
-            else -> inputResolver.fetchAdventInput(day, year, sessionCookie ?: System.getenv("ADVENT_COOKIE"))
+        val result = when {
+            example -> solutionRunner.run(ExampleContext(
+                    day = day, 
+                    year = year,
+                    part1 = true, 
+                    part2 = true
+                ))
+            path != null -> solutionRunner.run(CustomContext(
+                    day = day, 
+                    year = year,
+                    part1 = true, 
+                    part2 = true,
+                    path = path.toString()
+                ))
+            else -> solutionRunner.run(DefaultContext(
+                    day = day,
+                    year = year,
+                    part1 = true,
+                    part2 = true, 
+                    sessionCookie = sessionCookie ?: System.getenv("ADVENT_COOKIE"),
+                ))
         }
-
-        val p1 = solution.part1(input)
-        if (p1.isBlank()) echo("Part 1 not implemented") else echo("Part 1: $p1")
-
-        val p2 = solution.part2(input)
-        if (p2.isBlank()) echo("Part 2 not implemented") else echo("Part 2: $p2")
     }
 }
