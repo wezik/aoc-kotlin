@@ -1,5 +1,6 @@
 package app.wezik.aoc.domain
 
+// TODO: usually booleans are code smeels but since I am passing flags here, I am not yet sure, think on it
 sealed interface Context {
     val day: Day
     val year: Year 
