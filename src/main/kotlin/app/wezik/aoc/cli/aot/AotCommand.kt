@@ -11,7 +11,7 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.main
 
 // NOTE: test runner CLI entrypoint, it is separate to simplify the user experience and avoid option conflicts
-fun main(args: Array<String>) = AotCommand.main(args)
+fun main(args: Array<String>): Unit = AotCommand.main(args)
 
 private object AotCommand : CliktCommand("aot") {
     // manual DI

@@ -1,6 +1,6 @@
 package app.wezik.aoc.domain
 
-sealed interface RunContext {
+sealed interface Context {
     val day: Day
     val year: Year 
     val part1: Boolean
@@ -13,14 +13,14 @@ data class DefaultContext(
     override val part1: Boolean = true,
     override val part2: Boolean = true,
     val sessionCookie: String?,
-) : RunContext
+) : Context
 
 data class ExampleContext(
     override val day: Day,
     override val year: Year,
     override val part1: Boolean = true,
     override val part2: Boolean = true,
-) : RunContext
+) : Context
 
 data class CustomContext(
     override val day: Day,
@@ -28,4 +28,4 @@ data class CustomContext(
     override val part1: Boolean = true,
     override val part2: Boolean = true,
     val path: String,
-) : RunContext
+) : Context
