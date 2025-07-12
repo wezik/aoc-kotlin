@@ -2,12 +2,11 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult
+import app.wezik.aoc.domain.SolutionResult.Success
 
 // YES, this is NO REGEX solution!!!
-object Day03 : Solution(
-    day = 3,
-    year = 2024,
-) {
+object Day03 : Solution() {
 
     data class Slider(private val value: List<String>) {
 
@@ -35,11 +34,11 @@ object Day03 : Solution(
 
     private var isBlocked = false
 
-    override fun part1(input: SolutionInput) = runSolution(input.file.readLines()).toString()
+    override fun part1(input: SolutionInput) = runSolution(input.lines)
 
-    override fun part2(input: SolutionInput) = runSolution(input.file.readLines(), allowBlocking = true).toString()
+    override fun part2(input: SolutionInput) = runSolution(input.lines, allowBlocking = true)
 
-    private fun runSolution(input: List<String>, allowBlocking: Boolean = false): Int {
+    private fun runSolution(input: List<String>, allowBlocking: Boolean = false): SolutionResult {
         var sum = 0
 
         val slider = Slider(input)
@@ -53,7 +52,7 @@ object Day03 : Solution(
             }
         }
 
-        return sum
+        return Success(sum.toString())
     }
 
     private fun Slider.check(allowBlocking: Boolean = false): InstructionResult? {

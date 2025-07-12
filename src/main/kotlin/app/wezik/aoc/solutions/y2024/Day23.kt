@@ -2,15 +2,14 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult
+import app.wezik.aoc.domain.SolutionResult.Success
 
-object Day23 : Solution (
-    day = 23,
-    year = 2024,
-) {
+object Day23 : Solution() {
 
-    override fun part1(input: SolutionInput): String {
+    override fun part1(input: SolutionInput): SolutionResult {
         val connections = HashMap<String, MutableSet<String>>()
-        input.file.readLines().forEach {
+        input.lines.forEach {
             val (a, b) = it.split('-')
             connections.getOrPut(a) { mutableSetOf() } += b
             connections.getOrPut(b) { mutableSetOf() } += a
@@ -38,12 +37,12 @@ object Day23 : Solution (
             }
         }
 
-        return total.toString()
+        return Success(total.toString())
     }
 
-    override fun part2(input: SolutionInput): String {
+    override fun part2(input: SolutionInput): SolutionResult {
         val connections = HashMap<String, MutableSet<String>>()
-        input.file.readLines().forEach {
+        input.lines.forEach {
             val (a, b) = it.split('-')
             connections.getOrPut(a) { mutableSetOf() } += b
             connections.getOrPut(b) { mutableSetOf() } += a
@@ -68,7 +67,7 @@ object Day23 : Solution (
             fillSets(cn, setOf(cn))
         }
 
-        return sets.maxBy { it.size }.joinToString(",")
+        return Success(sets.maxBy { it.size }.joinToString(","))
     }
 
 }

@@ -2,11 +2,10 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult
+import app.wezik.aoc.domain.SolutionResult.Success
 
-object Day06 : Solution(
-    day = 6,
-    year = 2024,
-) {
+object Day06 : Solution() {
 
     private data class Guard(var x: Int, var y: Int)
 
@@ -34,15 +33,15 @@ object Day06 : Solution(
         return Board(grid) to guard
     }
 
-    override fun part1(input: SolutionInput): String {
-        var (board, guard) = input.file.readLines().parse()
+    override fun part1(input: SolutionInput): SolutionResult {
+        var (board, guard) = input.lines.parse()
         val visited = mutableSetOf<Pair<Int, Int>>()
         visited.add(guard.x to guard.y)
         while (true) {
             guard = guard.next(board) ?: break
             visited.add(guard.x to guard.y)
         }
-        return visited.size.toString()
+        return Success(visited.size.toString())
     }
 
     private interface Direction {
@@ -100,9 +99,9 @@ object Day06 : Solution(
         }
     }
 
-    override fun part2(input: SolutionInput): String {
+    override fun part2(input: SolutionInput): SolutionResult {
         currentDirection = Up
-        var (board, guard) = input.file.readLines().parse()
+        var (board, guard) = input.lines.parse()
         val visited = mutableSetOf<PosWrapper>()
         visited.add(PosWrapper(guard.x to guard.y, currentDirection))
         while (true) {
@@ -112,7 +111,7 @@ object Day06 : Solution(
 
 
         // Real part 2
-        return visited.map { if (it.willLoop(board)) 1 else 0 }.sum().toString()
+        return Success(visited.map { if (it.willLoop(board)) 1 else 0 }.sum().toString())
     }
 
     private fun PosWrapper.willLoop(board: Board): Boolean {

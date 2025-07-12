@@ -2,15 +2,14 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult
+import app.wezik.aoc.domain.SolutionResult.Success
 import java.util.*
 
-object Day24 : Solution (
-    day = 24,
-    year = 2024,
-) {
+object Day24 : Solution() {
     
-    override fun part1(input: SolutionInput): String {
-        val input = input.file.readLines()
+    override fun part1(input: SolutionInput): SolutionResult {
+        val input = input.lines
         val variables = mutableMapOf<String, Int>()
         var blankLine = 0
         for (line in input) {
@@ -59,6 +58,6 @@ object Day24 : Solution (
             .reversed()
             .joinToString("") { "${it.value}" }
 
-        return resultBinary.toLong(2).toString()
+        return Success(resultBinary.toLong(2).toString())
     }
 }

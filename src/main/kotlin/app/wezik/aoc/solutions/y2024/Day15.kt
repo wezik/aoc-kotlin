@@ -2,11 +2,10 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult
+import app.wezik.aoc.domain.SolutionResult.Success
 
-object Day15 : Solution (
-    day = 15,
-    year = 2024,
-) {
+object Day15 : Solution() {
 
     val directions = mapOf(
         '^' to Pair(0, -1),
@@ -24,8 +23,8 @@ object Day15 : Solution (
 
     private operator fun Pair<Int, Int>.plus(other: Pair<Int, Int>) = first + other.first to second + other.second
 
-    override fun part1(input: SolutionInput): String {
-        val input = input.file.readLines()
+    override fun part1(input: SolutionInput): SolutionResult {
+        val input = input.lines
         // parse
         val splitIndex = input.withIndex().first { it.value.isEmpty() }.index
         val grid = input.subList(0, splitIndex).map { line -> line.toMutableList() }
@@ -78,11 +77,11 @@ object Day15 : Solution (
                 if (value == 'O') coordinatesSum += (100 * y + x).toLong()
             }
         }
-        return coordinatesSum.toString()
+        return Success(coordinatesSum.toString())
     }
 
-    override fun part2(input: SolutionInput): String {
-        val input = input.file.readLines()
+    override fun part2(input: SolutionInput): SolutionResult {
+        val input = input.lines
         // parse
         val splitIndex = input.withIndex().first { it.value.isEmpty() }.index
         val grid = input.subList(0, splitIndex).map { line ->
@@ -141,7 +140,7 @@ object Day15 : Solution (
                 if (value == '[') coordinatesSum += (100 * y + x).toLong()
             }
         }
-        return coordinatesSum.toString()
+        return Success(coordinatesSum.toString())
     }
 
 }

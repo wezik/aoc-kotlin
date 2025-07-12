@@ -2,15 +2,14 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult
+import app.wezik.aoc.domain.SolutionResult.Success
 import kotlin.math.min
 
-object Day19 : Solution (
-    day = 19,
-    year = 2024,
-) {
+object Day19 : Solution() {
 
-    override fun part1(input: SolutionInput): String {
-        val input = input.file.readLines()
+    override fun part1(input: SolutionInput): SolutionResult {
+        val input = input.lines
         val patterns = input[0].split(", ").toSet()
         val maxLength = patterns.maxOf { it.length }
 
@@ -27,11 +26,11 @@ object Day19 : Solution (
             return false
         }
 
-        return input.drop(2).filter { canObtain(it) }.count().toString()
+        return Success(input.drop(2).filter { canObtain(it) }.count().toString())
     }
 
-    override fun part2(input: SolutionInput): String {
-        val input = input.file.readLines()
+    override fun part2(input: SolutionInput): SolutionResult {
+        val input = input.lines
         val patterns = input[0].split(", ").toSet()
         val maxLength = patterns.maxOf { it.length }
 
@@ -48,7 +47,7 @@ object Day19 : Solution (
             return count
         }
 
-        return input.drop(2).map { possibilities(it) }.sum().toString()
+        return Success(input.drop(2).map { possibilities(it) }.sum().toString())
     }
 
 }

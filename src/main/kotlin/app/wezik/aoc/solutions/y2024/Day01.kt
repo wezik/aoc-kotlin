@@ -2,14 +2,12 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult.Success
 import kotlin.math.abs
 
-object Day01 : Solution(
-    day = 1,
-    year = 2024,
-) {
-    override fun part1(input: SolutionInput) = input.file.readLines().getDistance().toString()
-    override fun part2(input: SolutionInput) = input.file.readLines().getSimilarity().toString()
+object Day01 : Solution() {
+    override fun part1(input: SolutionInput) = Success(input.lines.getDistance().toString())
+    override fun part2(input: SolutionInput) = Success(input.lines.getSimilarity().toString())
 
     private fun List<String>.getSimilarity(): Int {
         val split = toSeparate()

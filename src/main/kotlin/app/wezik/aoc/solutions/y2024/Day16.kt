@@ -2,30 +2,18 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult
+import app.wezik.aoc.domain.SolutionResult.Success
 import java.util.PriorityQueue
 import kotlin.collections.ArrayDeque
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
-import kotlin.collections.List
-import kotlin.collections.MutableSet
-import kotlin.collections.distinctBy
-import kotlin.collections.first
-import kotlin.collections.isNotEmpty
-import kotlin.collections.listOf
-import kotlin.collections.mutableMapOf
-import kotlin.collections.mutableSetOf
-import kotlin.collections.set
 
-object Day16 : Solution(
-    day = 16,
-    year = 2024,
-) {
+object Day16 : Solution() {
 
     private operator fun Pair<Int, Int>.plus(other: Pair<Int, Int>) = first + other.first to second + other.second
     private data class QueueEntry(val cost: Int, val position: Pair<Int, Int>, val direction: Pair<Int, Int>)
 
-    override fun part1(input: SolutionInput): String {
-        val input = input.file.readLines()
+    override fun part1(input: SolutionInput): SolutionResult {
+        val input = input.lines
         // start and end are the same on every input
         var start = 1 to input.size - 2
         var end = input.first().length - 2 to 1
@@ -66,11 +54,11 @@ object Day16 : Solution(
             }
         }
 
-        return result.toString()
+        return Success(result.toString())
     }
 
-    override fun part2(input: SolutionInput): String {
-        val input = input.file.readLines()
+    override fun part2(input: SolutionInput): SolutionResult {
+        val input = input.lines
         // start and end are the same on every input
         var start = 1 to input.size - 2
         var end = input.first().length - 2 to 1
@@ -143,7 +131,7 @@ object Day16 : Solution(
             }
         }
 
-        return seen.distinctBy { it.position }.size.toString()
+        return Success(seen.distinctBy { it.position }.size.toString())
     }
 
 }

@@ -2,25 +2,24 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult
+import app.wezik.aoc.domain.SolutionResult.Success
 
-object Day22 : Solution (
-    day = 22,
-    year = 2024,
-) {
+object Day22 : Solution() {
 
-    override fun part1(input: SolutionInput): String {
-        return input.file.readLines().map { line ->
+    override fun part1(input: SolutionInput): SolutionResult {
+        return Success(input.lines.map { line ->
             (0 until 2000).fold(line.toLong()) { acc, _ ->
                 var acc = acc xor (acc * 64) % 16777216
                 acc = acc xor (acc / 32) % 16777216
                 acc xor (acc * 2048) % 16777216
             }
-        }.sum().toString()
+        }.sum().toString())
     }
 
-    override fun part2(input: SolutionInput): String {
+    override fun part2(input: SolutionInput): SolutionResult {
         val result = mutableMapOf<List<Long>, Long>()
-        input.file.readLines().forEach { line ->
+        input.lines.forEach { line ->
 
             val buyer = mutableListOf(line.toLong() % 10)
             (0 until 2000).fold(line.toLong()) { acc, _ ->
@@ -39,7 +38,7 @@ object Day22 : Solution (
             }
 
         }
-        return result.values.max().toString()
+        return Success(result.values.max().toString())
     }
 
 }

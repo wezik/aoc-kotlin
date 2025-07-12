@@ -2,11 +2,10 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult
+import app.wezik.aoc.domain.SolutionResult.Success
 
-object Day17 : Solution (
-    day = 17,
-    year = 2024,
-) {
+object Day17 : Solution() {
 
     private fun runProgram(program: List<Int>, a: Long): List<Int> {
         var a = a
@@ -43,15 +42,15 @@ object Day17 : Solution (
         return output
     }
 
-    override fun part1(input: SolutionInput): String {
-        val input = input.file.readLines()
+    override fun part1(input: SolutionInput): SolutionResult {
+        val input = input.lines
         var a = input[0].split(": ")[1].toLong()
         val program = input[4].split(": ")[1].split(",").map { it.toInt() }
-        return runProgram(program, a).joinToString(",")
+        return Success(runProgram(program, a).joinToString(","))
     }
 
-    override fun part2(input: SolutionInput): String {
-        val input = input.file.readLines()
+    override fun part2(input: SolutionInput): SolutionResult {
+        val input = input.lines
         val program = input[4].split(": ")[1].split(",").map { it.toInt() }
         // Recursively reconstructs the correct input for register A
         // Checks values in reversed order calculating A range and then shifting 3 bits left for next recursion
@@ -74,7 +73,7 @@ object Day17 : Solution (
             }
             return null
         }
-        return find().toString()
+        return Success(find().toString())
     }
 
 }

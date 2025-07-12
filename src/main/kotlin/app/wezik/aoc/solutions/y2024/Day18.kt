@@ -2,11 +2,10 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult
+import app.wezik.aoc.domain.SolutionResult.Success
 
-object Day18 : Solution (
-    day = 18,
-    year = 2024,
-) {
+object Day18 : Solution() {
 
     val DIRECTIONS = listOf(
         Pair(0, -1), // Up
@@ -49,9 +48,9 @@ object Day18 : Solution (
         return -1
     }
 
-    override fun part1(input: SolutionInput) = part1(input.file.readLines(), 1024)
+    override fun part1(input: SolutionInput) = part1(input.lines, 1024)
 
-    fun part1(input: List<String>, cycles: Int): String {
+    fun part1(input: List<String>, cycles: Int): SolutionResult {
         var max = 0
         for (line in input) {
             line.split(",").map { it.toInt() }.let { (x, y) ->
@@ -59,11 +58,11 @@ object Day18 : Solution (
                 if (y > max) max = y
             }
         }
-        return getDistance(input, cycles, max).toString()
+        return Success(getDistance(input, cycles, max).toString())
     }
 
-    override fun part2(input: SolutionInput): String {
-        val input = input.file.readLines()
+    override fun part2(input: SolutionInput): SolutionResult {
+        val input = input.lines
         var max = 0
         for (line in input) {
             line.split(",").map { it.toInt() }.let { (x, y) ->
@@ -81,7 +80,7 @@ object Day18 : Solution (
             else high = mid
         }
 
-        return input[low]
+        return Success(input[low])
     }
 
 }

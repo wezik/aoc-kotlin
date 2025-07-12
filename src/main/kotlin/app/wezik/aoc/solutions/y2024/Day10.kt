@@ -2,11 +2,10 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult
+import app.wezik.aoc.domain.SolutionResult.Success
 
-object Day10 : Solution(
-    day = 10,
-    year = 2024,
-) {
+object Day10 : Solution() {
 
     private data class Vector2D(val x: Int, val y: Int)
 
@@ -72,13 +71,13 @@ object Day10 : Solution(
         return Context(Grid(this.map { it.map { it.digitToInt() } }))
     }
 
-    override fun part1(input: SolutionInput): String {
-        val context = input.file.readLines().parse()
-        return context.getHikeScore().toString()
+    override fun part1(input: SolutionInput): SolutionResult {
+        val context = input.lines.parse()
+        return Success(context.getHikeScore().toString())
     }
 
-    override fun part2(input: SolutionInput): String {
-        val context = input.file.readLines().parse()
-        return context.getHikeScore(part2 = true).toString()
+    override fun part2(input: SolutionInput): SolutionResult {
+        val context = input.lines.parse()
+        return Success(context.getHikeScore(part2 = true).toString())
     }
 }

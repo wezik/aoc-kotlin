@@ -2,11 +2,9 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult.Success
 
-object Day12 : Solution(
-    day = 12,
-    year = 2024,
-) {
+object Day12 : Solution() {
 
     private data class InputWrapper(val grid: List<String>) {
         val rows = grid.size
@@ -106,8 +104,8 @@ object Day12 : Solution(
         return totalPrice
     }
 
-    override fun part1(input: SolutionInput) = input.file.readLines().getPrice().toString()
+    override fun part1(input: SolutionInput) = Success(input.lines.getPrice().toString())
 
-    override fun part2(input: SolutionInput) = input.file.readLines().getPrice(discount = true).toString()
+    override fun part2(input: SolutionInput) = Success(input.lines.getPrice(discount = true).toString())
 
 }

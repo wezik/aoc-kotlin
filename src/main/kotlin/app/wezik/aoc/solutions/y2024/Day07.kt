@@ -2,11 +2,10 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult
+import app.wezik.aoc.domain.SolutionResult.Success
 
-object Day07 : Solution(
-    day = 7,
-    year = 2024,
-) {
+object Day07 : Solution() {
 
     fun List<Long>.canObtain(target: Long, part2: Boolean = false): Boolean {
         if (size == 1) return target == first()
@@ -23,9 +22,9 @@ object Day07 : Solution(
         return trimmedList.canObtain(trimmedTarget, true)
     }
 
-    override fun part1(input: SolutionInput): String {
+    override fun part1(input: SolutionInput): SolutionResult {
         var total = 0L
-        for (line in input.file.readLines()) {
+        for (line in input.lines) {
             val (left, right) = line.split(": ")
             val target = left.toLong()
             val numbers = right.split(' ').map { it.toLong() }
@@ -33,12 +32,13 @@ object Day07 : Solution(
                 total += target
             }
         }
-        return total.toString()
+        return Success(total.toString())
+        
     }
 
-    override fun part2(input: SolutionInput): String {
+    override fun part2(input: SolutionInput): SolutionResult {
         var total = 0L
-        for (line in input.file.readLines()) {
+        for (line in input.lines) {
             val (left, right) = line.split(": ")
             val target = left.toLong()
             val numbers = right.split(' ').map { it.toLong() }
@@ -46,6 +46,6 @@ object Day07 : Solution(
                 total += target
             }
         }
-        return total.toString()
+        return Success(total.toString())
     }
 }

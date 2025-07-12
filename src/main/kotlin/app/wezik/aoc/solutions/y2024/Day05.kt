@@ -2,11 +2,10 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult
+import app.wezik.aoc.domain.SolutionResult.Success
 
-object Day05 : Solution(
-    day = 5,
-    year = 2024,
-) {
+object Day05 : Solution() {
 
     private data class Rule(val value: Int, val before: Int)
     private data class Update(val pages: List<Int>)
@@ -30,9 +29,9 @@ object Day05 : Solution(
         return rules to updates
     }
 
-    override fun part1(input: SolutionInput): String {
-        val (rules, updates) = input.file.readLines().parse()
-        return updates.filter { it.isValid(rules) }.map { it.pages[it.pages.size / 2] }.sum().toString()
+    override fun part1(input: SolutionInput): SolutionResult {
+        val (rules, updates) = input.lines.parse()
+        return Success(updates.filter { it.isValid(rules) }.map { it.pages[it.pages.size / 2] }.sum().toString())
     }
 
     private fun Update.isValid(rules: List<Rule>): Boolean {
@@ -47,9 +46,9 @@ object Day05 : Solution(
         return true
     }
 
-    override fun part2(input: SolutionInput): String {
-        val (rules, updates) = input.file.readLines().parse()
-        return updates.filter { !it.isValid(rules) }.map { it.toFixed(rules).pages[it.pages.size / 2] }.sum().toString()
+    override fun part2(input: SolutionInput): SolutionResult {
+        val (rules, updates) = input.lines.parse()
+        return Success(updates.filter { !it.isValid(rules) }.map { it.toFixed(rules).pages[it.pages.size / 2] }.sum().toString())
     }
 
     private fun Update.toFixed(rules: List<Rule>): Update {

@@ -2,12 +2,11 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult
+import app.wezik.aoc.domain.SolutionResult.Success
 import arrow.core.MemoizedDeepRecursiveFunction
 
-object Day21 : Solution (
-    day = 21,
-    year = 2024,
-) {
+object Day21 : Solution() {
 
     private enum class Keypad(val buttons: List<List<Char?>>) {
         //@formatter:off
@@ -48,9 +47,9 @@ object Day21 : Solution (
     private val dirCache = dirSequence.entries.map { (it.key to it.value.first().length.toLong()) }.toMap()
 
     // entry point!!! code is a mess, but it somehow reads from top to bottom
-    override fun part1(input: SolutionInput) = common(input.file.readLines(), 2)
-    override fun part2(input: SolutionInput) = common(input.file.readLines(), 25)
-    private fun common(input: List<String>, depth: Int): String {
+    override fun part1(input: SolutionInput) = common(input.lines, 2)
+    override fun part2(input: SolutionInput) = common(input.lines, 25)
+    private fun common(input: List<String>, depth: Int): SolutionResult {
         var total = 0L
 
         for (line in input) {
@@ -58,7 +57,7 @@ object Day21 : Solution (
             val length = inputs.map { solve(it, depth) }.min()
             total += length * line.substring(0 until line.length - 1).toLong()
         }
-        return total.toString()
+        return Success(total.toString())
     }
 
     // normal solve returning all possible sequences (still needed for numpad -> directional)

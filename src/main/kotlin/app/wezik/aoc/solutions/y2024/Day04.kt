@@ -2,14 +2,13 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult
+import app.wezik.aoc.domain.SolutionResult.Success
 
-object Day04 : Solution (
-    day = 4,
-    year = 2024,
-) {
+object Day04 : Solution() {
  
-    override fun part1(input: SolutionInput): String {
-        val input = input.file.readLines()
+    override fun part1(input: SolutionInput): SolutionResult {
+        val input = input.lines
         var sum = 0
         for (y in 0 until input.size) {
             for (x in 0 until input[y].length) {
@@ -18,11 +17,11 @@ object Day04 : Solution (
                 }
             }
         }
-        return sum.toString()
+        return Success(sum.toString())
     }
 
-    override fun part2(input: SolutionInput): String {
-        val input = input.file.readLines()
+    override fun part2(input: SolutionInput): SolutionResult {
+        val input = input.lines
         var sum = 0
         // We can start from index 1 since 'A' has to be in the middle of the cross
         // Same rule applies to maximum value
@@ -34,7 +33,7 @@ object Day04 : Solution (
                 }
             }
         }
-        return sum.toString()
+        return Success(sum.toString())
 
     }
 

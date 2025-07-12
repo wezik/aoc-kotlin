@@ -34,7 +34,7 @@ private object AotCommand : CliktCommand("aot") {
         val result = path?.let { runCustomInput() } ?: runExampleInput()
     }
 
-    private fun runCustomInput() : SolutionResult {
+    private fun runCustomInput() : SolutionRunResult {
         val ctx = CustomContext(
             day = Day(day), 
             year = year?.let { Year(it) } ?: Year.recent(),
@@ -44,7 +44,7 @@ private object AotCommand : CliktCommand("aot") {
         return solutionRunner.run(ctx)
     }
 
-    private fun runExampleInput() : SolutionResult {
+    private fun runExampleInput() : SolutionRunResult {
         val ctx = ExampleContext(
             day = Day(day),
             year = year?.let { Year(it) } ?: Year.recent(),

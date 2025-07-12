@@ -2,17 +2,16 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult
+import app.wezik.aoc.domain.SolutionResult.Success
 
-object Day09 : Solution(
-    day = 9,
-    year = 2024,
-) {
+object Day09 : Solution() {
 
-    override fun part1(input: SolutionInput): String {
+    override fun part1(input: SolutionInput): SolutionResult {
         // Parse
         var fileId = 0
         val disk = mutableListOf<Int>()
-        for ((i, x) in input.file.readLines().first().withIndex()) {
+        for ((i, x) in input.lines.first().withIndex()) {
             if (i % 2 != 0) repeat(x.digitToInt()) { disk.add(-1) }
             else {
                 repeat(x.digitToInt()) { disk.add(fileId) }
@@ -29,16 +28,16 @@ object Day09 : Solution(
         }
 
         // Check sum
-        return disk.withIndex().map { (i, x) -> (i * x).toLong() }.sum().toString()
+        return Success(disk.withIndex().map { (i, x) -> (i * x).toLong() }.sum().toString())
     }
 
-    override fun part2(input: SolutionInput): String {
+    override fun part2(input: SolutionInput): SolutionResult {
         // Parse
         var fileId = 0
         var pos = 0
         val freeSpace = mutableListOf<Pair<Int, Int>>()
         val files = mutableMapOf<Int, Pair<Int, Int>>()
-        for ((i, x) in input.file.readLines().first().withIndex()) {
+        for ((i, x) in input.lines.first().withIndex()) {
             val x = x.digitToInt()
             if (i % 2 == 0) {
                 files[fileId] = pos to x
@@ -79,7 +78,7 @@ object Day09 : Solution(
                 checkSum += fileId * x
             }
         }
-        return checkSum.toString()
+        return Success(checkSum.toString())
     }
 
 }

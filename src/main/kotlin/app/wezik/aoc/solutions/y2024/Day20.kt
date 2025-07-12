@@ -2,14 +2,13 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult
+import app.wezik.aoc.domain.SolutionResult.Success
 
-object Day20 : Solution (
-    day = 20,
-    year = 2024,
-) {
+object Day20 : Solution() {
 
-    override fun part1(input: SolutionInput) = part1(input.file.readLines(), 100)
-    fun part1(input: List<String>, threshold: Int): String {
+    override fun part1(input: SolutionInput) = part1(input.lines, 100)
+    fun part1(input: List<String>, threshold: Int): SolutionResult {
         val height = input.size
         val width = input[0].length
         val grid = Array(height) { BooleanArray(width) }
@@ -60,11 +59,11 @@ object Day20 : Solution (
             }
         }
 
-        return count.toString()
+        return Success(count.toString())
     }
 
-    override fun part2(input: SolutionInput) = part2(input.file.readLines(), 100)
-    fun part2(input: List<String>, threshold: Int): String {
+    override fun part2(input: SolutionInput) = part2(input.lines, 100)
+    fun part2(input: List<String>, threshold: Int): SolutionResult {
         val height = input.size
         val width = input[0].length
         val grid = Array(height) { BooleanArray(width) }
@@ -124,6 +123,6 @@ object Day20 : Solution (
                 }
             }
         }
-        return count.toString()
+        return Success(count.toString())
     }
 }

@@ -3,10 +3,13 @@ package app.wezik.aoc.domain
 import com.github.ajalt.clikt.core.UsageError
 import kotlin.system.measureTimeMillis
 import kotlin.time.measureTime
+import app.wezik.aoc.domain.SolutionResult.NotImplemented
+import app.wezik.aoc.domain.SolutionResult.Success
+import app.wezik.aoc.domain.SolutionResult.Failure
 
-data class SolutionResult(
-    val p1: String?,
-    val p2: String?,
+data class SolutionRunResult(
+    val part1: SolutionResult,
+    val part2: SolutionResult,
 )
 
 class SolutionRunner(
@@ -15,48 +18,49 @@ class SolutionRunner(
     private val echo: (Any?) -> Unit,
 ) {
 
-    fun run(context: DefaultContext) : SolutionResult {
+    fun run(context: DefaultContext) : SolutionRunResult {
         val (day, year, runP1, runP2, sessionCookie) = context
-        val solution = solutionSelector.select(day.value, year.value) ?: throw UsageError("day $day of $year is not implemented")
+        val solution = solutionSelector.select(day, year) ?: throw UsageError("day $day of $year is not implemented")
         val input = inputResolver.fetchAdventInput(day.value, year.value, sessionCookie)
         return solution.run(runP1, runP2, input)
     }
 
-    fun run(context: ExampleContext) : SolutionResult {
+    fun run(context: ExampleContext) : SolutionRunResult {
         val (day, year, runP1, runP2) = context
-        val solution = solutionSelector.select(day.value, year.value) ?: throw UsageError("day $day of $year is not implemented")
+        val solution = solutionSelector.select(day, year) ?: throw UsageError("day $day of $year is not implemented")
         val input = inputResolver.fetchExampleInput(day.value, year.value)
         return solution.run(runP1, runP2, input)
     }
 
-    fun run(context: CustomContext) : SolutionResult {
+    fun run(context: CustomContext) : SolutionRunResult {
         val (day, year, runP1, runP2, path) = context
-        val solution = solutionSelector.select(day.value, year.value) ?: throw UsageError("day $day of $year is not implemented")
+        val solution = solutionSelector.select(day, year) ?: throw UsageError("day $day of $year is not implemented")
         val input = inputResolver.fetchCustomInput(day.value, year.value, path)
         return solution.run(runP1, runP2, input)
     }
 
-    private fun Solution.run(runP1: Boolean, runP2: Boolean, input: SolutionInput) : SolutionResult {
-        var part1: String? = null
+    private fun Solution.run(runP1: Boolean, runP2: Boolean, input: SolutionInput) : SolutionRunResult {
+        var p1Result: SolutionResult = NotImplemented
         if (runP1) {
-            val part1Duration = measureTime { part1 = part1(input) }
-            echo("Part 1: $part1 ($part1Duration)")
+            val part1Duration = measureTime { p1Result = part1(input) }
+
+            when (p1Result) {
+                is Success -> echo("Part 1: $p1Result ($part1Duration)")
+                is Failure -> echo("Part 1 failed with error: ${p1Result.error}")
+                is NotImplemented -> echo("Part 1 not implemented")
+            }
         }
 
-        if (part1?.isBlank() == true) {
-            echo("Part 1 not implemented")
-        }
-
-        var part2: String? = null
+        var p2Result: SolutionResult = NotImplemented
         if (runP2) {
-            val part2Duration = measureTime { part2 = part2(input) }
-            echo("Part 2: $part2 ($part2Duration)")
+            val part2Duration = measureTime { p2Result = part2(input) }
+            when (p2Result) {
+                is Success -> echo("Part 2: $p2Result ($part2Duration)")
+                is Failure -> echo("Part 2 failed with error: ${p2Result.error}")
+                is NotImplemented -> echo("Part 2 not implemented")
+            }
         }
 
-        if (part2?.isBlank() == true) {
-            echo("Part 2 not implemented")
-        }
-
-        return SolutionResult(part1, part2)
+        return SolutionRunResult(p1Result, p2Result)
     }
 }

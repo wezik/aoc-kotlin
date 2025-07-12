@@ -2,16 +2,15 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult
+import app.wezik.aoc.domain.SolutionResult.Success
 
-object Day25 : Solution (
-    day = 25,
-    year = 2024,
-) {
+object Day25 : Solution() {
 
-    override fun part1(input: SolutionInput): String {
+    override fun part1(input: SolutionInput): SolutionResult {
         val keys = mutableListOf<List<Int>>()
         val locks = mutableListOf<List<Int>>()
-        input.file.readText().split("\n\n").forEach { section ->
+        input.content.split("\n\n").forEach { section ->
             val lines = section.trim().split("\n")
             val heights = mutableListOf<Int>()
             for (i in 0 until lines.first().length) {
@@ -31,7 +30,7 @@ object Day25 : Solution (
 
             }
         }
-        return "$result"
+        return Success("$result")
     }
     // fun part2(input: SolutionInput) = "It's a secret! You can't find it! :>"
 

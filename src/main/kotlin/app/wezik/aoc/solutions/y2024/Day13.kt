@@ -2,12 +2,10 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult.Success
 import app.wezik.aoc.solutions.y2024.Day13.plus
 
-object Day13 : Solution(
-    day = 13,
-    year = 2024,
-) {
+object Day13 : Solution() {
 
     private operator fun Vector.plus(other: Vector): Vector = Vector(x + other.x, y + other.y)
     private data class Vector(val x: Long, val y: Long)
@@ -43,7 +41,7 @@ object Day13 : Solution(
         return countA.toLong() * 3 + countB.toLong()
     }
 
-    override fun part1(input: SolutionInput) = input.file.readLines().findSolution().toString()
-    override fun part2(input: SolutionInput) = input.file.readLines().findSolution(part2 = true).toString()
+    override fun part1(input: SolutionInput) = Success(input.lines.findSolution().toString())
+    override fun part2(input: SolutionInput) = Success(input.lines.findSolution(part2 = true).toString())
 
 }

@@ -2,18 +2,17 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult
+import app.wezik.aoc.domain.SolutionResult.Success
 
-object Day14 : Solution(
-    day = 14,
-    year = 2024,
-) {
+object Day14 : Solution() {
 
     // constants mentioned in the puzzle description
     private const val HEIGHT = 103
     private const val WIDTH = 101
 
-    override fun part1(input: SolutionInput) = part1Custom(input.file.readLines(), WIDTH, HEIGHT)
-    fun part1Custom(input: List<String>, width: Int, height: Int): String {
+    override fun part1(input: SolutionInput) = part1Custom(input.lines, WIDTH, HEIGHT)
+    fun part1Custom(input: List<String>, width: Int, height: Int): SolutionResult {
         val robots = input.map {
             val numbers = Regex("""-?\d+""").findAll(it).map { it.value.toInt() }.toList()
             Pair(numbers[0], numbers[1]) to Pair(numbers[2], numbers[3])
@@ -49,11 +48,11 @@ object Day14 : Solution(
 
         var score = 1
         quadScore.forEach { score *= it }
-        return score.toString()
+        return Success(score.toString())
     }
 
-    override fun part2(input: SolutionInput) = part2Custom(input.file.readLines(), WIDTH, HEIGHT)
-    fun part2Custom(input: List<String>, width: Int, height: Int): String {
+    override fun part2(input: SolutionInput) = part2Custom(input.lines, WIDTH, HEIGHT)
+    fun part2Custom(input: List<String>, width: Int, height: Int): SolutionResult {
         val robots = input.map {
             val numbers = Regex("""-?\d+""").findAll(it).map { it.value.toInt() }.toList()
             Pair(numbers[0], numbers[1]) to Pair(numbers[2], numbers[3])
@@ -100,7 +99,7 @@ object Day14 : Solution(
                 bestIteration = second
             }
         }
-        return bestIteration.toString()
+        return Success(bestIteration.toString())
     }
 
 }

@@ -2,12 +2,10 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult.Success
 import kotlin.math.abs
 
-object Day02 : Solution(
-    day = 2,
-    year = 2024,
-) {
+object Day02 : Solution() {
 
     private data class Report(var levels: List<Int>)
 
@@ -19,13 +17,13 @@ object Day02 : Solution(
         return this.split(' ').map { it.toInt() }.let { Report(it) }
     }
 
-    override fun part1(input: SolutionInput) = input.file.readLines().toReports().filter {
+    override fun part1(input: SolutionInput) = Success(input.lines.toReports().filter {
         isSafe(it.levels, false)
-    }.size.toString()
+    }.size.toString())
 
-    override fun part2(input: SolutionInput) = input.file.readLines().toReports().filter {
+    override fun part2(input: SolutionInput) = Success(input.lines.toReports().filter {
         isSafe(it.levels, true)
-    }.size.toString()
+    }.size.toString())
 
     private fun isSafe(levels: List<Int>, tolerance: Boolean): Boolean {
         // Calculate if the numbers are growing or shrinking
