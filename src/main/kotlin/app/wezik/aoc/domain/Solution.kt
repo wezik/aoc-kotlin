@@ -29,6 +29,7 @@ class SolutionInput(file: File) {
     val lines = file.readLines()
 }
 
+// NOTE: similar structure to Result but with added context
 sealed interface SolutionResult {
     data class Success(val output: String) : SolutionResult
     data class Failure(val error: Throwable) : SolutionResult
@@ -41,6 +42,9 @@ sealed interface SolutionResult {
 
 
 open class Solution() {
-    open fun part1(input: SolutionInput): SolutionResult = SolutionResult.NotImplemented
-    open fun part2(input: SolutionInput): SolutionResult = SolutionResult.NotImplemented
+    fun part1Runner(input: SolutionInput) = try { part1(input) } catch (e: Throwable) { SolutionResult.Failure(e) }
+    fun part2Runner(input: SolutionInput) = try { part2(input) } catch (e: Throwable) { SolutionResult.Failure(e) }
+
+    open protected fun part1(input: SolutionInput): SolutionResult = SolutionResult.NotImplemented
+    open protected fun part2(input: SolutionInput): SolutionResult = SolutionResult.NotImplemented
 }
