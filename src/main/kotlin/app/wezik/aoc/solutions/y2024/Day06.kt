@@ -4,43 +4,38 @@ import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
 import app.wezik.aoc.domain.SolutionResult
 import app.wezik.aoc.domain.SolutionResult.Success
+import kotlin.math.abs
 
 object Day06 : Solution() {
 
-    // --- data structures and parsing ---
+    // NOTE: this solution is hard to follow, mostly due to it being pretty slow unless heavily optimized
+    // key optimizations done here are:
+    // - (part2) using a pre-computed cache and jump map to skip already seen positions
+    // - (part2) starting calculations from the position just before the candidate for a box
+    // - using very simplified data structures to avoid allocations overhead (it is significant here)
+    // it all reduced part2 runtime (on my setup) from ~900 ms to x ms
 
-    private data class Guard(
-        val pos: Vec,
-        val dir: Vec,
-    )
+    // --- data structures ---
 
-    private data class Vec(val x: Int, val y: Int) {
-        operator fun plus(other: Vec) = Vec(x + other.x, y + other.y)
-
-        companion object {
-            val UP = Vec(0, -1)
-            val DOWN = Vec(0, 1)
-            val LEFT = Vec(-1, 0)
-            val RIGHT = Vec(1, 0)
-        }
-    }
-
+    private enum class Direction { UP, RIGHT, DOWN, LEFT }
     private data class ParseOutput(
         val grid: Array<BooleanArray>,
-        var guard: Guard,
+        var guard: Pair<Int, Int>,
     )
+
+    // --- parsing ---
 
     private fun parse(input: SolutionInput): ParseOutput {
         val height = input.lines.size
         val width = input.lines.first().length
         val grid = Array(height) { BooleanArray(width) }
-        var guard: Guard? = null
+        var guard: Pair<Int, Int>? = null
 
         for (y in 0 until height) {
             for (x in 0 until width) {
                 when (input.lines[y][x]) {
                     '#' -> grid[y][x] = true
-                    '^' -> guard = Guard(Vec(x, y), Vec.UP)
+                    '^' -> guard =  x to y
                 }
             }
         }
@@ -51,99 +46,111 @@ object Day06 : Solution() {
         )
     }
 
+    // --- util functions ---
+
+    private fun Pair<Int, Int>.inBounds(width: Int, height: Int) = first in 0..<width && second in 0..<height
+    private operator fun Pair<Int, Int>.plus(other: Direction) = when (other) {
+        Direction.UP -> first to second - 1
+        Direction.RIGHT -> first + 1 to second
+        Direction.DOWN -> first to second + 1
+        Direction.LEFT -> first - 1 to second
+    }
+    private fun Direction.rotate() = when (this) {
+        Direction.UP -> Direction.RIGHT
+        Direction.RIGHT -> Direction.DOWN
+        Direction.DOWN -> Direction.LEFT
+        Direction.LEFT -> Direction.UP
+    }
+
     // --- solutions ---
 
     override fun part1(input: SolutionInput): SolutionResult {
+        val height = input.lines.size
+        val width = input.lines.first().length
         val (grid, guard) = parse(input)
-        var (pos, dir) = guard
-        val seen = mutableSetOf<Vec>()
 
-        val width = grid[0].size
-        val height = grid.size
-        fun Vec.inBounds() = 0 <= x && x < width && 0 <= y && y < height
-        while (pos.inBounds()) {
-            seen += pos
+        var (pos, dir) = guard to Direction.UP
+        val seen = Array(height) { BooleanArray(width) }
+
+        while (pos.inBounds(width, height)) {
+            seen[pos.second][pos.first] = true
             var newPos = pos + dir
 
-            while (grid.getOrNull(newPos.y)?.getOrNull(newPos.x) == true) {
-                dir = when (dir) {
-                    Vec.UP -> Vec.RIGHT
-                    Vec.RIGHT -> Vec.DOWN
-                    Vec.DOWN -> Vec.LEFT
-                    else -> Vec.UP
-                }
+            while (grid.getOrNull(newPos.second)?.getOrNull(newPos.first) == true) {
+                dir = dir.rotate()
                 newPos = pos + dir
             }
+
             pos = newPos
         }
 
-        val result = seen.size
-        return Success(result)
+        val count = seen.sumOf { it.count { it } }
+        return Success(count)
     }
 
     override fun part2(input: SolutionInput): SolutionResult {
-        val (grid, guard) = parse(input)
-        var (pos, dir) = guard
-        val cache = mutableListOf<Pair<Vec, Vec>>()
+        val height = input.lines.size
+        val width = input.lines.first().length
+        val grid = Array(height) { BooleanArray(width) }
+        var guardOrigin = 0 to 0 to Direction.UP
 
-        // precompute the path with directions
-        val width = grid[0].size
-        val height = grid.size
-        fun Vec.inBounds() = 0 <= x && x < width && 0 <= y && y < height
-        while (pos.inBounds()) {
-            cache += pos to dir
-            var newPos = pos + dir
-
-            while (grid.getOrNull(newPos.y)?.getOrNull(newPos.x) == true) {
-                dir = when (dir) {
-                    Vec.UP -> Vec.RIGHT
-                    Vec.RIGHT -> Vec.DOWN
-                    Vec.DOWN -> Vec.LEFT
-                    else -> Vec.UP
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                when (input.lines[y][x]) {
+                    '#' -> grid[y][x] = true
+                    '^' -> guardOrigin = x to y to Direction.UP
                 }
-                newPos = pos // reset to previous position to cache in place rotation
+            }
+        }
+
+        var (cachePos, cacheDir) = guardOrigin
+
+        val cache = mutableListOf<Pair<Pair<Int, Int>, Direction>>()
+        while (cachePos.inBounds(width, height)) {
+            cache += cachePos to cacheDir
+            var newPos = cachePos + cacheDir
+
+            while (grid.getOrNull(newPos.second)?.getOrNull(newPos.first) == true) {
+                cacheDir = cacheDir.rotate()
+                newPos = cachePos // rotate in place
             }
 
-            pos = newPos
+            cachePos = newPos
         }
 
         var count = 0
-        // skip first position as it's the starting position
         for (i in 1 until cache.size) {
             val (candidate, _) = cache[i]
-            val start = cache[i - 1]
+            var (pos, dir) = cache[i - 1]
 
-            val seen = mutableSetOf<Pair<Vec, Vec>>()
-            // add all previous positions to seen, no need to compute again
-            seen += cache.subList(0, i - 1) 
+            if (candidate == guardOrigin.first) continue // skip original starting position
+            if (candidate == pos) continue // skip if on top of guard
+            val cachedSeen = cache.subList(0, i - 1)
+            if (cachedSeen.any { (pos, _) -> pos == candidate }) continue // skip if already seen
 
-            // skip if already visited, can't place the obstacle in the position guard has already been
-            if (seen.find { (pos, _) -> pos == candidate } != null) continue 
+            val seen = Array(height) { Array(width) { BooleanArray(4) } }
+            // mark already seen positions up to this point
+            for (s in cachedSeen) {
+                seen[s.first.second][s.first.first][s.second.ordinal] = true
+            }
 
-            var (pos, dir) = start
-            while (pos.inBounds()) {
-                // loop detection
-                if (pos to dir in seen) {
+            while (pos.inBounds(width, height)) {
+                if (seen[pos.second][pos.first][dir.ordinal]) {
                     count++
                     break
                 }
 
-                seen += pos to dir
-
+                seen[pos.second][pos.first][dir.ordinal] = true
                 var newPos = pos + dir
 
-                if (grid.getOrNull(newPos.y)?.getOrNull(newPos.x) == true || newPos == candidate) {
-                    dir = when (dir) {
-                        Vec.UP -> Vec.RIGHT
-                        Vec.RIGHT -> Vec.DOWN
-                        Vec.DOWN -> Vec.LEFT
-                        else -> Vec.UP
-                    }
+                if (grid.getOrNull(newPos.second)?.getOrNull(newPos.first) == true || newPos == candidate) {
+                    dir = dir.rotate()
                     newPos = pos // reset to previous position to check in place rotation
                 }
                 pos = newPos
             }
         }
+
         return Success(count)
     }
 }
