@@ -7,62 +7,76 @@ import app.wezik.aoc.domain.SolutionResult.Success
 
 object Day05 : Solution() {
 
-    private data class Rule(val value: Int, val before: Int)
-    private data class Update(val pages: List<Int>)
-
-    private fun List<String>.parse(): Pair<List<Rule>, List<Update>> {
-        val rules = mutableListOf<Rule>()
-        val updates = mutableListOf<Update>()
-
-        val splitLine = this.indexOf("")
-
-        this.subList(0, splitLine).forEach { ruleInput ->
-            val (a, b) = ruleInput.split("|")
-            rules.add(Rule(a.toInt(), b.toInt()))
-        }
-
-        this.subList(splitLine + 1, this.size).forEach { updateInput ->
-            val pages = updateInput.split(",").map { it.toInt() }
-            updates.add(Update(pages))
-        }
-
-        return rules to updates
-    }
-
     override fun part1(input: SolutionInput): SolutionResult {
-        val (rules, updates) = input.lines.parse()
-        return Success(updates.filter { it.isValid(rules) }.map { it.pages[it.pages.size / 2] }.sum().toString())
-    }
+        val (constraints, updates) = parse(input)
 
-    private fun Update.isValid(rules: List<Rule>): Boolean {
-        val applicableRules = rules.filter { it.before in this.pages && it.value in this.pages }
-        val passed = mutableSetOf<Int>()
-        for (page in this.pages) {
-            val pageRules = applicableRules.filter { it.value == page }
-            val isInvalid = pageRules.find { it.before in passed } != null
-            if (isInvalid) return false
-            passed.add(page)
-        }
-        return true
+        val result = updates
+            .filter { isValid(it, constraints) }
+            .sumOf { it[it.size / 2] }
+
+        return Success(result)
     }
 
     override fun part2(input: SolutionInput): SolutionResult {
-        val (rules, updates) = input.lines.parse()
-        return Success(updates.filter { !it.isValid(rules) }.map { it.toFixed(rules).pages[it.pages.size / 2] }.sum().toString())
+        val (constraints, updates) = parse(input)
+
+        fun fix(update: List<Int>): List<Int> {
+            val trimmedConstraints = constraints
+                .filterKeys { it in update }
+                .mapValues { it.value.filter { v -> v in update } }
+
+            // NOTE: we can just sort by the amount of constraints (trimmed to those present in the update)
+            // it works due to trimming indirectly telling us the 'n' of entries required to satisfy the constraint (therefore order)
+            return update.sortedByDescending { trimmedConstraints[it]?.size ?: 0 }
+        }
+
+        val result = updates
+            .filter { !isValid(it, constraints) }
+            .map { fix(it) }
+            .sumOf { it[it.size / 2] }
+
+        return Success(result)
     }
 
-    private fun Update.toFixed(rules: List<Rule>): Update {
-        val leftover = this.pages.toMutableList()
-        val applicableRules = rules.filter { it.before in this.pages && it.value in this.pages }
-        val passed = mutableListOf<Int>()
-        while (leftover.isNotEmpty()) {
-            val nextPage = leftover.withIndex().find { page ->
-                applicableRules.find { it.before == page.value && it.value !in passed } == null
-            }
-            if (nextPage == null) error("Page is null, input is incorrect")
-            leftover.removeAt(nextPage.index)
-            passed.add(nextPage.value)
+    private data class ParseOutput(
+        val constraints: Map<Int, MutableList<Int>>,
+        val updates: List<List<Int>>
+    )
+
+    private fun parse(input: SolutionInput): ParseOutput {
+        val (constraintData, updateData) = input.content.split("\n\n")
+
+        val constraints = mutableMapOf<Int, MutableList<Int>>()
+        for (data in constraintData.lines()) {
+            if (data.isBlank()) continue
+            val (x, y) = data.split('|')
+            constraints.getOrPut(x.toInt()) { mutableListOf() }.add(y.toInt())
         }
-        return Update(passed)
+
+        val updates = mutableListOf<List<Int>>()
+        for (data in updateData.lines()) {
+            if (data.isBlank()) continue
+            updates += data.split(',').map { it.toInt() }
+        }
+
+        return ParseOutput(constraints, updates)
+    }
+
+    fun isValid(update: List<Int>, constraints: Map<Int, MutableList<Int>>): Boolean {
+        val seen = mutableSetOf<Int>()
+
+        // reversing it makes checking for "before" values easier
+        val reversed = update.reversed()
+
+        for (v in reversed) {
+            val constraint = constraints[v] ?: emptyList()
+            for (c in constraint) {
+                if (c in seen) continue
+                if (c in reversed) return false
+            }
+            seen += v
+        }
+
+        return true
     }
 }
