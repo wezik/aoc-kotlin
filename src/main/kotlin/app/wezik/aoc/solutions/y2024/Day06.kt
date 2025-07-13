@@ -4,16 +4,17 @@ import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
 import app.wezik.aoc.domain.SolutionResult
 import app.wezik.aoc.domain.SolutionResult.Success
-import kotlin.math.abs
 
 object Day06 : Solution() {
 
     // NOTE: this solution is hard to follow, mostly due to it being pretty slow unless heavily optimized
     // key optimizations done here are:
-    // - (part2) using a pre-computed cache and jump map to skip already seen positions
+    // - (part2) using a pre-computed cache to skip alrady traversed paths
     // - (part2) starting calculations from the position just before the candidate for a box
     // - using very simplified data structures to avoid allocations overhead (it is significant here)
-    // it all reduced part2 runtime (on my setup) from ~900 ms to x ms
+    // - (part2) using bit set to optimize lookups even further
+    // it all reduced part2 runtime (on my setup) from ~900 ms to ~190ms
+    // TODO: look into introducing reasonable jump maps, unless allocations would be a problem it should improve performance even more
 
     // --- data structures ---
 
@@ -106,6 +107,7 @@ object Day06 : Solution() {
         var (cachePos, cacheDir) = guardOrigin
 
         val cache = mutableListOf<Pair<Pair<Int, Int>, Direction>>()
+
         while (cachePos.inBounds(width, height)) {
             cache += cachePos to cacheDir
             var newPos = cachePos + cacheDir
@@ -119,28 +121,42 @@ object Day06 : Solution() {
         }
 
         var count = 0
+
+        // start at 1 as we don't care about the starting position
         for (i in 1 until cache.size) {
             val (candidate, _) = cache[i]
             var (pos, dir) = cache[i - 1]
 
-            if (candidate == guardOrigin.first) continue // skip original starting position
-            if (candidate == pos) continue // skip if on top of guard
             val cachedSeen = cache.subList(0, i - 1)
             if (cachedSeen.any { (pos, _) -> pos == candidate }) continue // skip if already seen
 
-            val seen = Array(height) { Array(width) { BooleanArray(4) } }
+            // bit set implementation to optimize lookups significantly
+            val seen = LongArray(height * width * 4 / 64 + 1)
+
+            // functions are optimized by compiler
+            fun setBit(pos: Pair<Int, Int>, dir: Direction) {
+                val bit = (pos.second * width + pos.first) * 4 + dir.ordinal
+                seen[bit / 64] = seen[bit / 64] or (1L shl (bit % 64))
+            }
+
+            // functions are optimized by compiler
+            fun isBitSet(pos: Pair<Int, Int>, dir: Direction): Boolean {
+                val bit = (pos.second * width + pos.first) * 4 + dir.ordinal
+                return (seen[bit / 64] and (1L shl (bit % 64))) != 0L
+            }
+
             // mark already seen positions up to this point
-            for (s in cachedSeen) {
-                seen[s.first.second][s.first.first][s.second.ordinal] = true
+            for ((cachedPos, cachedDir) in cachedSeen) {
+                setBit(cachedPos, cachedDir)
             }
 
             while (pos.inBounds(width, height)) {
-                if (seen[pos.second][pos.first][dir.ordinal]) {
+                if (isBitSet(pos, dir)) {
                     count++
                     break
                 }
 
-                seen[pos.second][pos.first][dir.ordinal] = true
+                setBit(pos, dir)
                 var newPos = pos + dir
 
                 if (grid.getOrNull(newPos.second)?.getOrNull(newPos.first) == true || newPos == candidate) {
