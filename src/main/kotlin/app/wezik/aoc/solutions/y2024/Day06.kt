@@ -7,137 +7,143 @@ import app.wezik.aoc.domain.SolutionResult.Success
 
 object Day06 : Solution() {
 
-    private data class Guard(var x: Int, var y: Int)
+    // --- data structures and parsing ---
 
-    // Boolean represents if the cell is blocked or not
-    private data class Board(val grid: List<List<Boolean>>)
+    private data class Guard(
+        val pos: Vec,
+        val dir: Vec,
+    )
 
-    private fun List<String>.parse(): Pair<Board, Guard> {
-        val grid = ArrayList<List<Boolean>>()
-        val guard = Guard(0, 0)
-        forEachIndexed { y, line ->
-            val row = ArrayList<Boolean>()
-            grid.add(row)
-            line.forEachIndexed { x, c ->
-                when (c) {
-                    '#' -> row.add(true)
-                    '.' -> row.add(false)
-                    '^' -> {
-                        row.add(false)
-                        guard.x = x
-                        guard.y = y
-                    }
+    private data class Vec(val x: Int, val y: Int) {
+        operator fun plus(other: Vec) = Vec(x + other.x, y + other.y)
+
+        companion object {
+            val UP = Vec(0, -1)
+            val DOWN = Vec(0, 1)
+            val LEFT = Vec(-1, 0)
+            val RIGHT = Vec(1, 0)
+        }
+    }
+
+    private data class ParseOutput(
+        val grid: Array<BooleanArray>,
+        var guard: Guard,
+    )
+
+    private fun parse(input: SolutionInput): ParseOutput {
+        val height = input.lines.size
+        val width = input.lines.first().length
+        val grid = Array(height) { BooleanArray(width) }
+        var guard: Guard? = null
+
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                when (input.lines[y][x]) {
+                    '#' -> grid[y][x] = true
+                    '^' -> guard = Guard(Vec(x, y), Vec.UP)
                 }
             }
         }
-        return Board(grid) to guard
+
+        return ParseOutput(
+            grid = grid,
+            guard = guard!!,
+        )
     }
+
+    // --- solutions ---
 
     override fun part1(input: SolutionInput): SolutionResult {
-        var (board, guard) = input.lines.parse()
-        val visited = mutableSetOf<Pair<Int, Int>>()
-        visited.add(guard.x to guard.y)
-        while (true) {
-            guard = guard.next(board) ?: break
-            visited.add(guard.x to guard.y)
+        val (grid, guard) = parse(input)
+        var (pos, dir) = guard
+        val seen = mutableSetOf<Vec>()
+
+        val width = grid[0].size
+        val height = grid.size
+        fun Vec.inBounds() = 0 <= x && x < width && 0 <= y && y < height
+        while (pos.inBounds()) {
+            seen += pos
+            var newPos = pos + dir
+
+            while (grid.getOrNull(newPos.y)?.getOrNull(newPos.x) == true) {
+                dir = when (dir) {
+                    Vec.UP -> Vec.RIGHT
+                    Vec.RIGHT -> Vec.DOWN
+                    Vec.DOWN -> Vec.LEFT
+                    else -> Vec.UP
+                }
+                newPos = pos + dir
+            }
+            pos = newPos
         }
-        return Success(visited.size.toString())
-    }
 
-    private interface Direction {
-        fun next(guard: Guard): Guard
-    }
-
-    private object Up : Direction {
-        override fun next(guard: Guard) = Guard(guard.x, guard.y - 1)
-    }
-
-    private object Down : Direction {
-        override fun next(guard: Guard) = Guard(guard.x, guard.y + 1)
-    }
-
-    private object Left : Direction {
-        override fun next(guard: Guard) = Guard(guard.x - 1, guard.y)
-    }
-
-    private object Right : Direction {
-        override fun next(guard: Guard) = Guard(guard.x + 1, guard.y)
-    }
-
-    private var currentDirection: Direction = Up
-
-    private fun Guard.turnRight() {
-        currentDirection = when (currentDirection) {
-            Up -> Right
-            Right -> Down
-            Down -> Left
-            Left -> Up
-            else -> Up
-        }
-    }
-
-    private fun Guard.next(board: Board): Guard? {
-        // Default move up if blocked turn 90 clockwise
-        val next = currentDirection.next(this)
-
-        // Early return if guard has left the board
-        if (0 > next.y || board.grid.size <= next.y) return null
-        if (0 > next.x || board.grid[next.y].size <= next.x) return null
-
-        val isBlocked = board.grid[next.y][next.x]
-        if (isBlocked) {
-            // Turn right and return previous
-            next.turnRight()
-            return this
-        }
-        return next
-    }
-
-    private data class PosWrapper(val pos: Pair<Int, Int>, val direction: Direction) {
-        override fun toString(): String {
-            return "$pos ${direction::class.simpleName}"
-        }
+        val result = seen.size
+        return Success(result)
     }
 
     override fun part2(input: SolutionInput): SolutionResult {
-        currentDirection = Up
-        var (board, guard) = input.lines.parse()
-        val visited = mutableSetOf<PosWrapper>()
-        visited.add(PosWrapper(guard.x to guard.y, currentDirection))
-        while (true) {
-            guard = guard.next(board) ?: break
-            visited.add(PosWrapper(guard.x to guard.y, currentDirection))
-        }
+        val (grid, guard) = parse(input)
+        var (pos, dir) = guard
+        val cache = mutableListOf<Pair<Vec, Vec>>()
 
+        // precompute the path with directions
+        val width = grid[0].size
+        val height = grid.size
+        fun Vec.inBounds() = 0 <= x && x < width && 0 <= y && y < height
+        while (pos.inBounds()) {
+            cache += pos to dir
+            var newPos = pos + dir
 
-        // Real part 2
-        return Success(visited.map { if (it.willLoop(board)) 1 else 0 }.sum().toString())
-    }
-
-    private fun PosWrapper.willLoop(board: Board): Boolean {
-        currentDirection = direction
-
-        // copy and add obstacle
-        val next = direction.next(Guard(pos.first, pos.second))
-        val boardWithObstacle = board.copy(grid = board.grid.mapIndexed { y, row ->
-            row.mapIndexed { x, cell ->
-                if (x == next.x && y == next.y) {
-                    return@mapIndexed true
+            while (grid.getOrNull(newPos.y)?.getOrNull(newPos.x) == true) {
+                dir = when (dir) {
+                    Vec.UP -> Vec.RIGHT
+                    Vec.RIGHT -> Vec.DOWN
+                    Vec.DOWN -> Vec.LEFT
+                    else -> Vec.UP
                 }
-                return@mapIndexed cell
+                newPos = pos // reset to previous position to cache in place rotation
             }
-        })
 
-        var guard = Guard(pos.first, pos.second)
-        val visited = mutableSetOf<PosWrapper>()
-        visited.add(PosWrapper(guard.x to guard.y, currentDirection))
-        while (true) {
-            guard = guard.next(boardWithObstacle) ?: break
-            if (visited.contains(PosWrapper(guard.x to guard.y, currentDirection))) {
-                return true
-            }
-            visited.add(PosWrapper(guard.x to guard.y, currentDirection))
+            pos = newPos
         }
-        return false
+
+        var count = 0
+        // skip first position as it's the starting position
+        for (i in 1 until cache.size) {
+            val (candidate, _) = cache[i]
+            val start = cache[i - 1]
+
+            val seen = mutableSetOf<Pair<Vec, Vec>>()
+            // add all previous positions to seen, no need to compute again
+            seen += cache.subList(0, i - 1) 
+
+            // skip if already visited, can't place the obstacle in the position guard has already been
+            if (seen.find { (pos, _) -> pos == candidate } != null) continue 
+
+            var (pos, dir) = start
+            while (pos.inBounds()) {
+                // loop detection
+                if (pos to dir in seen) {
+                    count++
+                    break
+                }
+
+                seen += pos to dir
+
+                var newPos = pos + dir
+
+                if (grid.getOrNull(newPos.y)?.getOrNull(newPos.x) == true || newPos == candidate) {
+                    dir = when (dir) {
+                        Vec.UP -> Vec.RIGHT
+                        Vec.RIGHT -> Vec.DOWN
+                        Vec.DOWN -> Vec.LEFT
+                        else -> Vec.UP
+                    }
+                    newPos = pos // reset to previous position to check in place rotation
+                }
+                pos = newPos
+            }
+        }
+        return Success(count)
     }
 }
