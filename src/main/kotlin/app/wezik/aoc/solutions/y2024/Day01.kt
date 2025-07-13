@@ -6,24 +6,23 @@ import app.wezik.aoc.domain.SolutionResult.Success
 import kotlin.math.abs
 
 object Day01 : Solution() {
-    override fun part1(input: SolutionInput) = Success(input.lines.getDistance().toString())
-    override fun part2(input: SolutionInput) = Success(input.lines.getSimilarity().toString())
 
-    private fun List<String>.getSimilarity(): Int {
-        val split = toSeparate()
-        val cache = mutableMapOf<Int, Int>()
-        return split.first.sumOf{ a ->
-            cache.getOrPut(a) { a * split.second.count { b -> a == b } }
-        }
-    }
+    override fun part1(input: SolutionInput) = Success (
+        input.lines
+            .map { it.split("   ").map { it.toInt() } } // parse into ints
+            .map { it[0] to it[1] } // create pairs
+            .unzip() // unzip pairs to lists
+            .let { (l, r) -> l.sorted() to r.sorted() } // sort each list
+            .let { (l, r) -> l.zip(r) } // zip lists together
+            .sumOf { (v1, v2) -> abs(v1 - v2) } // sum differences
+    )
 
-    private fun List<String>.getDistance() = this.toSeparate().sortedZip().sumOf { abs(it.first - it.second) }
-
-    private fun Pair<List<Int>, List<Int>>.sortedZip() = this.first.sorted().zip(this.second.sorted())
-
-    private fun List<String>.toSeparate() = map { line ->
-        line.split(' ').filter { it.isNotBlank() }.map { it.toInt() }
-    }.let {
-        Pair(it.map { it[0] }, it.map { it[1] })
-    }
+    override fun part2(input: SolutionInput) = Success (
+        input.lines
+            .map { it.split("   ").map { it.toInt() } } // parse into ints
+            .map { it[0] to it[1] } // create pairs
+            .unzip() // unzip pairs to lists
+            .let { (l, r) -> l.sorted() to r.sorted() } // sort each list
+            .let { (l, r) -> l.sumOf { v -> v * r.count { it == v } } } // sum occurrences from left in the right
+    )
 }

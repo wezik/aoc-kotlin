@@ -2,66 +2,52 @@ package app.wezik.aoc.solutions.y2024
 
 import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
+import app.wezik.aoc.domain.SolutionResult
 import app.wezik.aoc.domain.SolutionResult.Success
-import kotlin.math.abs
 
 object Day02 : Solution() {
 
-    private data class Report(var levels: List<Int>)
+    override fun part1(input: SolutionInput): SolutionResult {
+        // parse data into list of reports (list of level lists)
+        val reports = input.lines
+            .map { it.split(' ').map { it.toInt() } }
 
-    private fun List<String>.toReports(): List<Report> {
-        return this.map { it.toReport() }
+        fun isSafe(levels: List<Int>): Boolean {
+            val diffs = levels.zipWithNext().map { (a, b) -> a - b }
+            return diffs.all { it in 1..3 } or diffs.all { it in -3..-1 }
+        }
+
+        val result = reports.count { isSafe(it) }
+        return Success(result)
     }
 
-    private fun String.toReport(): Report {
-        return this.split(' ').map { it.toInt() }.let { Report(it) }
-    }
+    override fun part2(input: SolutionInput): SolutionResult {
+        val reports = input.lines
+            .map { it.split(' ').map { it.toInt() } }
 
-    override fun part1(input: SolutionInput) = Success(input.lines.toReports().filter {
-        isSafe(it.levels, false)
-    }.size.toString())
+        fun isSafe(levels: List<Int>): Boolean {
+            val diffs = levels.zipWithNext().map { (a, b) -> a - b }
+            return diffs.all { it in 1..3 } or diffs.all { it in -3..-1 }
+        }
 
-    override fun part2(input: SolutionInput) = Success(input.lines.toReports().filter {
-        isSafe(it.levels, true)
-    }.size.toString())
-
-    private fun isSafe(levels: List<Int>, tolerance: Boolean): Boolean {
-        // Calculate if the numbers are growing or shrinking
-        val deviation = (0..2).map { if (levels[it] < levels[it + 1]) 1 else -1 }.sum()
-
-        var a = levels[0]
-        for (i in 1 until levels.size) {
-            var b = levels[i]
-
-            if (isValid(a, b, deviation)) {
-                a = b
+        var count = 0
+        for (levels in reports) {
+             // early return if it is already safe
+            if (isSafe(levels)) {
+                count++
                 continue
-            } else if (tolerance) {
-                // Yes I am brute forcing this, the conditions are a mess for my head;
-                // tldr: retries -1, 0, 1 offsets from the current index
-                (-1..1).map { offset ->
-                    i + offset
-                }.forEach { tryIndex ->
-                    val newLevels = levels.toMutableList()
-                    newLevels.removeAt(tryIndex)
-                    if (isSafe(newLevels, false)) return true
+            }
+
+            for (n in 0 until levels.size) {
+                // remove one by one through the list, brute forcing
+                val trimmed = levels.subList(0, n) + levels.subList(n + 1, levels.size)
+                if (isSafe(trimmed)) {
+                    count++
+                    break
                 }
             }
-            // If we reach this point, it failed validation and retries
-            return false
         }
-        // If we reach this point all levels are valid
-        return true
-    }
 
-    private fun isValid(a: Int, b: Int, deviation: Int): Boolean {
-        val isInRange = abs(a - b) in (1..3)
-        if (!isInRange) return false
-        val isFollowingDirection = when {
-            (b > a && deviation > 0) -> true
-            (b < a && deviation < 0) -> true
-            else -> false
-        }
-        return isFollowingDirection
+        return Success(count)
     }
 }

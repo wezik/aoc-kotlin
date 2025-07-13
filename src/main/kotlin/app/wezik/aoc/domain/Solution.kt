@@ -31,7 +31,7 @@ class SolutionInput(file: File) {
 
 // NOTE: similar structure to Result but with added context
 sealed interface SolutionResult {
-    data class Success(val output: String) : SolutionResult
+    data class Success(val output: Any) : SolutionResult
     data class Failure(val error: Throwable) : SolutionResult
     object NotImplemented : SolutionResult
 

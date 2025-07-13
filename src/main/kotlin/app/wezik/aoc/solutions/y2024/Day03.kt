@@ -5,113 +5,49 @@ import app.wezik.aoc.domain.SolutionInput
 import app.wezik.aoc.domain.SolutionResult
 import app.wezik.aoc.domain.SolutionResult.Success
 
-// YES, this is NO REGEX solution!!!
+// NOTE: I take pride in making this a non-regex solution, idk who asked but I did
 object Day03 : Solution() {
 
-    data class Slider(private val value: List<String>) {
+    override fun part1(input: SolutionInput): SolutionResult {
+        // find all mul(<any>) candidates, dropping the first one since it is not viable
+        val candidates = input.content.split("mul(").drop(1).map { it.substringBefore(')') }
+        val muls = mutableListOf<Pair<Int, Int>>()
 
-        private var index = 0
-        private val chars = value.joinToString("").lowercase().toCharArray()
+        for (candidate in candidates) {
+            val segments = candidate.split(',')
+            if (segments.size != 2) continue
 
-        fun next(): Char? {
-            if (index >= chars.size) return null
-            return chars[index++]
-        }
-
-        fun peek(): Char? {
-            if (index >= chars.size) return null
-            return chars[index]
-        }
-
-        fun previous() {
-            index--
-        }
-    }
-
-    interface InstructionResult
-    data class MutInstructionResult(val sum: Int) : InstructionResult
-    data class DoInstructionResult(val block: Boolean) : InstructionResult
-
-    private var isBlocked = false
-
-    override fun part1(input: SolutionInput) = runSolution(input.lines)
-
-    override fun part2(input: SolutionInput) = runSolution(input.lines, allowBlocking = true)
-
-    private fun runSolution(input: List<String>, allowBlocking: Boolean = false): SolutionResult {
-        var sum = 0
-
-        val slider = Slider(input)
-
-        while (slider.peek() != null) {
-            val instruction = slider.check(allowBlocking)
-            when (instruction) {
-                is MutInstructionResult -> sum += instruction.sum
-                is DoInstructionResult -> isBlocked = instruction.block
-                else -> {}
+            runCatching { 
+                val (a, b) = segments.map { it.toInt() }
+                muls += a to b
             }
         }
 
-        return Success(sum.toString())
+        val result = muls.map { (a, b) -> a * b }.sum()
+        return Success(result)
     }
 
-    private fun Slider.check(allowBlocking: Boolean = false): InstructionResult? {
-        val c = this.next()!! // This is safe, because we're checking for null in main loop
-        return when {
-            c == 'm' && !isBlocked -> this.readMut()
-            c == 'd' && allowBlocking -> this.readDo()
-            else -> null
-        }
-    }
+    // NOTE: state should persist between lines
+    override fun part2(input: SolutionInput): SolutionResult {
+        val allowBlock = input.content.split("do()")
+        val muls = mutableListOf<Pair<Int, Int>>()
 
-    private fun Slider.readMut(): MutInstructionResult? {
-        if (!this.nextAndIsOnString("ul(")) return null
-        val (a, b) = this.getNumbers()
-        if (a == null || b == null) return null
-        if (!this.nextAndIs(')')) return null
-        return MutInstructionResult(a * b)
-    }
+        for (block in allowBlock) {
+            // trim to nearest don't() and map mul(<any>) again same as part1
+            val candidates = block.substringBefore("don't()").split("mul(").drop(1).map { it.substringBefore(')') }
 
-    private fun Slider.readDo(): DoInstructionResult? {
-        if (this.nextAndIsOnString("o()")) return DoInstructionResult(block = false)
-        while (this.peek() != 'd') this.previous()
-        this.next()
-        if (this.nextAndIsOnString("on't()")) return DoInstructionResult(block = true)
-        return null
-    }
+            for (candidate in candidates) {
+                val segments = candidate.split(',')
+                if (segments.size != 2) continue
 
-    private fun Slider.nextAndIs(char: Char): Boolean {
-        val next = next()
-        return next == char
-    }
-
-    private fun Slider.nextAndIsOnString(string: String): Boolean {
-        string.forEach {
-            if (!nextAndIs(it)) {
-                return false
+                runCatching { 
+                    val (a, b) = segments.map { it.toInt() }
+                    muls += a to b
+                }
             }
         }
-        return true
-    }
 
-    private fun Slider.getNumber(): Int? {
-        var c = this.next()
-        var digits = ""
-        while (c != null && c.isDigit()) {
-            digits += c
-            c = this.next()
-        }
-        this.previous()
-        return digits.toIntOrNull()
+        val result = muls.map { (a, b) -> a * b }.sum()
+        return Success(result)
     }
-
-    private fun Slider.getNumbers(): Pair<Int?, Int?> {
-        var a = this.getNumber() ?: return Pair(null, null)
-        if (!this.nextAndIs(',')) {
-            return Pair(a, null)
-        }
-        var b = this.getNumber() ?: return Pair(a, null)
-        return Pair(a, b)
-    }
-
 }

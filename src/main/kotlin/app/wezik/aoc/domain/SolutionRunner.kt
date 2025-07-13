@@ -1,12 +1,8 @@
 package app.wezik.aoc.domain
 
+import app.wezik.aoc.domain.SolutionResult.*
 import com.github.ajalt.clikt.core.UsageError
-import kotlin.system.measureTimeMillis
 import kotlin.time.measureTime
-import app.wezik.aoc.domain.SolutionResult.NotImplemented
-import app.wezik.aoc.domain.SolutionResult.Success
-import app.wezik.aoc.domain.SolutionResult.Failure
-import kotlin.time.Duration
 
 data class SolutionRunResult(
     val part1: SolutionResult,
