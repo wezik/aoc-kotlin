@@ -134,6 +134,7 @@ object Day06 : Solution() {
     }
 
     override fun part2(input: SolutionInput): SolutionResult {
+        // --- precompute cache ---
         val (grid, pos) = parse(input)
 
         val guardOrigin = pos to Direction.UP
@@ -147,17 +148,17 @@ object Day06 : Solution() {
 
             while (grid.isObstacle(newPos)) {
                 cacheDir = cacheDir.rotate()
-                newPos = cachePos // rotate in place
+                newPos = cachePos  + cacheDir
             }
 
             cachePos = newPos
         }
 
-
-        // NOTE: we don't care about candidate direction so we can cut it out of the zip
+        // --- filter out duplicated candidates and zip with guard positions ---
+        // NOTE: don't care about candidate direction so cut it out of the zip
         val guardWithCandidate = cache.zipWithNext().map { (a, b) -> a to b.pos }
 
-        // NOTE: filter guard with candidate zip to only unique candidates with their guard position pair
+        // NOTE: filter zip to only unique candidates with their guard position pair
         val seenBoxes = mutableSetOf<Pair<Int, Int>>()
         val filteredPaths = mutableListOf<Pair<DirectionalPos, Pair<Int, Int>>>()
         for ((guard, candidate) in guardWithCandidate) {
@@ -166,10 +167,10 @@ object Day06 : Solution() {
             }
         }
 
+        // --- count loops ---
         val seen = DirectionalGridBitSet(grid.width, grid.height)
         var count = 0
 
-        // zipped iteration for (candidate and guard) pairs
         filteredPaths.forEachIndexed { i, (guard, candidate) ->
             var (pos, dir) = guard
             seen.clear()
