@@ -135,26 +135,21 @@ object Day06 : Solution() {
         var count = 0
 
         val seen = DirectionalBitSet(width, height)
-        val zippedCache = cache.zipWithNext()
+        val zippedCache = cache.zipWithNext().map { (a, b) -> a to b.pos }
         val seenBoxes = mutableSetOf<Pair<Int, Int>>()
         // NOTE: filtered paths contains only unique candidates with their guard position pair
-        val filteredPaths = mutableListOf<Pair<DirectionalPos, DirectionalPos>>()
+        val filteredPaths = mutableListOf<Pair<DirectionalPos, Pair<Int, Int>>>()
 
         for ((guard, candidate) in zippedCache) {
-            val (boxPos, _) = candidate
-            if (seenBoxes.add(boxPos)) {
+            if (seenBoxes.add(candidate)) {
                 filteredPaths += guard to candidate
             }
         }
 
         // zipped iteration for (candidate and guard) pairs
         filteredPaths.forEachIndexed { i, (guard, candidate) ->
-            val cachedSeen = cache.subList(0, i)
             var (pos, dir) = guard
-            val (candidate, _) = candidate
-
             seen.clear()
-            cachedSeen.forEach { seen.set(it.pos, it.dir) }
 
             while (pos.inBounds(width, height)) {
                 if (seen.isSet(pos, dir)) {
