@@ -1,19 +1,23 @@
 # Advent of Code
-My solutions to [Advent of Code puzzles](https://adventofcode.com/) in Kotlin!
+
+My solutions to [Advent of Code](https://adventofcode.com/) puzzles in Kotlin!
 
 ## Years completed
-2024: 50/50⭐ (not all solutions are implemented in repo yet)
+
+2024: 50/50⭐
+
+Missing implementations:
+
+- Day 24 (part 2): solution is mostly manual, it's difficult to implement in code
 
 ## Requirements to run
+
 - JDK 21
 
-## Setup
-- clone the repo `git clone https://github.com/wezik/aoc-kotlin.git`
-- enter `cd aoc-kotlin` 
-- build fat jar with `./gradlew buildFat`
-- source aliases with `source ./alias.sh`
+## Installation from source
 
-or simply copy and paste in terminal:
+### Linux/macOS
+
 ```bash
 git clone https://github.com/wezik/aoc-kotlin.git
 cd aoc-kotlin
@@ -21,18 +25,52 @@ cd aoc-kotlin
 source ./alias.sh
 ```
 
-now run the CLI (look [below](#how-to-use) for more details)
+### Windows
+
+```ps1
+git clone https://github.com/wezik/aoc-kotlin.git
+cd aoc-kotlin
+.\gradlew buildFat
+```
 
 ## How to use
-This project is split into 2 separate CLI entrypoints:
-- `aoc` core
-- `aot` test runner
+
+This project provides 2 separate CLI entrypoints: [aoc](#aoc) and [aot](#aot).  
+These are executed via shell or batch scripts, allowing you to use them like a regular CLI tool.  
+The entrypoint scripts are:
+
+- [alias.sh](alias.sh) for Linux/macOS - defines `aoc` and `aot` functions
+- [aoc.bat](aoc.bat) for Windows - runs `aoc`
+- [aot.bat](aot.bat) for Windows - runs `aot`
+
+> [!NOTE]
+> These scripts are meant to be run from the project directory,  
+> they *do not install anything globally* or add commands to your system `PATH`.
+
+After building the project (and sourcing aliases for Linux/macOS with `source ./alias.sh`)  
+You can invoke them like:
+
+```bash
+aoc -d 5
+aot -d 3 --path "inputs/Day03.txt"
+```
+
+Or in Powershell:
+
+```ps1
+.\aoc.bat -d 5
+.\aot.bat -d 3 --path "inputs/Day03.txt"
+```
 
 ### AOC
-Serves as the core CLI entrypoint to run solutions
 
-> [!NOTE]  
-> `aoc` entrypoint runs against real advent of code inputs, you have to either export `ADVENT_COOKIE` value from your advent of code session or provide `--session-cookie` option
+Loads inputs directly from Advent of Code website to run solutions against.
+
+> [!IMPORTANT]
+> It runs against advent of code inputs, which requires session cookie, you can either:
+>
+> - export ADVENT_COOKIE ex. `export ADVENT_COOKIE="xxx"`
+> - provide session cookie via option ex. `-s "session_cookie"`
 
 ```bash
 Usage: aoc [<options>]
@@ -45,7 +83,9 @@ Options:
 ```
 
 ### AOT
-Serves as the test runner entrypoint, it will run solutions against example inputs or your custom input file if you provide `--path` option.
+
+Loads inputs from files instead of running solutions against real ones.  
+You can provide `--path` to load custom input, otherwise it will load examples.
 
 ```bash
 Usage: aot [<options>]
@@ -58,4 +98,5 @@ Options:
 ```
 
 ## TODO
+
 - [ ] Introduce releases so it's not necessary to build from source
