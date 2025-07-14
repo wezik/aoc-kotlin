@@ -13,11 +13,32 @@ object Day06 : Solution() {
     // - (part2) starting calculations from the position just before the candidate for a box
     // - using very simplified data structures to avoid allocations overhead (it is significant here)
     // - (part2) using bit set to optimize lookups even further
-    // it all reduced part2 runtime (on my setup) from ~900 ms to ~190ms
+    // - (part2) filtering zipped pairs of candidate to guard to only unique candidate positions
+    // it all reduced part2 runtime (on my setup) from ~5 seconds to ~150ms
     // TODO: look into introducing reasonable jump maps, unless allocations would be a problem it should improve performance even more
 
     // --- data structures ---
 
+    private class DirectionalBitSet(private val width: Int, private val height: Int) {
+        private val size = width * height * Direction.values().size
+        private val bits = LongArray(size / 64 + 1)
+
+        private fun toBit(pos: Pair<Int, Int>, dir: Direction) =
+            (pos.second * width + pos.first) * Direction.values().size + dir.ordinal
+
+        fun clear(): Unit = bits.fill(0L)
+
+        fun set(pos: Pair<Int, Int>, dir: Direction) {
+            val bit = toBit(pos, dir)
+            bits[bit / 64] = bits[bit / 64] or (1L shl (bit % 64))
+        }
+
+        fun isSet(pos: Pair<Int, Int>, dir: Direction): Boolean {
+            val bit = toBit(pos, dir)
+            return (bits[bit / 64] and (1L shl (bit % 64))) != 0L
+        }
+    }
+    private data class DirectionalPos(val pos: Pair<Int, Int>, val dir: Direction)
     private enum class Direction { UP, RIGHT, DOWN, LEFT }
     private data class ParseOutput(
         val grid: Array<BooleanArray>,
@@ -90,26 +111,17 @@ object Day06 : Solution() {
     }
 
     override fun part2(input: SolutionInput): SolutionResult {
-        val height = input.lines.size
-        val width = input.lines.first().length
-        val grid = Array(height) { BooleanArray(width) }
-        var guardOrigin = 0 to 0 to Direction.UP
-
-        for (y in 0 until height) {
-            for (x in 0 until width) {
-                when (input.lines[y][x]) {
-                    '#' -> grid[y][x] = true
-                    '^' -> guardOrigin = x to y to Direction.UP
-                }
-            }
-        }
+        val (grid, guardPos) = parse(input)
+        val height = grid.size
+        val width = grid[0].size
+        val guardOrigin = guardPos to Direction.UP
 
         var (cachePos, cacheDir) = guardOrigin
 
-        val cache = mutableListOf<Pair<Pair<Int, Int>, Direction>>()
+        val cache = mutableListOf<DirectionalPos>()
 
         while (cachePos.inBounds(width, height)) {
-            cache += cachePos to cacheDir
+            cache += DirectionalPos(cachePos, cacheDir)
             var newPos = cachePos + cacheDir
 
             while (grid.getOrNull(newPos.second)?.getOrNull(newPos.first) == true) {
@@ -122,41 +134,35 @@ object Day06 : Solution() {
 
         var count = 0
 
-        // start at 1 as we don't care about the starting position
-        for (i in 1 until cache.size) {
-            val (candidate, _) = cache[i]
-            var (pos, dir) = cache[i - 1]
+        val seen = DirectionalBitSet(width, height)
+        val zippedCache = cache.zipWithNext()
+        val seenBoxes = mutableSetOf<Pair<Int, Int>>()
+        // NOTE: filtered paths contains only unique candidates with their guard position pair
+        val filteredPaths = mutableListOf<Pair<DirectionalPos, DirectionalPos>>()
 
-            val cachedSeen = cache.subList(0, i - 1)
-            if (cachedSeen.any { (pos, _) -> pos == candidate }) continue // skip if already seen
-
-            // bit set implementation to optimize lookups significantly
-            val seen = LongArray(height * width * 4 / 64 + 1)
-
-            // functions are optimized by compiler
-            fun setBit(pos: Pair<Int, Int>, dir: Direction) {
-                val bit = (pos.second * width + pos.first) * 4 + dir.ordinal
-                seen[bit / 64] = seen[bit / 64] or (1L shl (bit % 64))
+        for ((guard, candidate) in zippedCache) {
+            val (boxPos, _) = candidate
+            if (seenBoxes.add(boxPos)) {
+                filteredPaths += guard to candidate
             }
+        }
 
-            // functions are optimized by compiler
-            fun isBitSet(pos: Pair<Int, Int>, dir: Direction): Boolean {
-                val bit = (pos.second * width + pos.first) * 4 + dir.ordinal
-                return (seen[bit / 64] and (1L shl (bit % 64))) != 0L
-            }
+        // zipped iteration for (candidate and guard) pairs
+        filteredPaths.forEachIndexed { i, (guard, candidate) ->
+            val cachedSeen = cache.subList(0, i)
+            var (pos, dir) = guard
+            val (candidate, _) = candidate
 
-            // mark already seen positions up to this point
-            for ((cachedPos, cachedDir) in cachedSeen) {
-                setBit(cachedPos, cachedDir)
-            }
+            seen.clear()
+            cachedSeen.forEach { seen.set(it.pos, it.dir) }
 
             while (pos.inBounds(width, height)) {
-                if (isBitSet(pos, dir)) {
+                if (seen.isSet(pos, dir)) {
                     count++
                     break
                 }
 
-                setBit(pos, dir)
+                seen.set(pos, dir)
                 var newPos = pos + dir
 
                 if (grid.getOrNull(newPos.second)?.getOrNull(newPos.first) == true || newPos == candidate) {
