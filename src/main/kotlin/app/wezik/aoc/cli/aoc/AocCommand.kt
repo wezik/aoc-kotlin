@@ -5,13 +5,12 @@ import app.wezik.aoc.cli.sessionCookieOption
 import app.wezik.aoc.cli.yearOption
 import app.wezik.aoc.domain.SolutionRunContext
 import app.wezik.aoc.domain.SolutionRunner
-import app.wezik.aoc.infrastructure.ReflectionSolutionSelector
 import app.wezik.aoc.infrastructure.aoc.AocInputClient
+import app.wezik.aoc.infrastructure.local.LocalSolutionSelector
 import com.github.ajalt.clikt.core.CliktCommand
-import com.github.ajalt.clikt.core.UsageError
 import com.github.ajalt.clikt.core.main
 
-// NOTE: CLI entrypoint
+// CLI entrypoint
 fun main(args: Array<String>): Unit = AocCommand.main(args)
 
 private object AocCommand : CliktCommand("aoc") {
@@ -30,7 +29,7 @@ private object AocCommand : CliktCommand("aoc") {
 
     // manual DI
     private fun solutionRunner() = SolutionRunner(
-        solutionSelector = ReflectionSolutionSelector(),
+        solutionSelector = LocalSolutionSelector(),
         inputClient = AocInputClient(resolveSessionCookie()),
         echo = { msg -> echo(msg) } // forwards access to echo to domain layer
     )

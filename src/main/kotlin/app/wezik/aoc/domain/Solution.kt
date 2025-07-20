@@ -19,9 +19,9 @@ value class Year(val value: Int) {
     }
 
     companion object {
-        // NOTE: resolves to most up-to-date valid year of advent of code
+        // resolves to most up-to-date valid year of advent of code
         fun recent(): Year {
-            // NOTE: advent of code launches at midnight EST time (1st day of December)
+            // advent of code launches at midnight EST time (1st day of December)
             val estZoneId = ZoneId.of("America/New_York")
             val zonedDateTime = LocalDateTime.now(estZoneId)
             return Year(if (zonedDateTime.monthValue == 12) zonedDateTime.year else zonedDateTime.year - 1)
@@ -30,14 +30,13 @@ value class Year(val value: Int) {
 
 }
 
-// NOTE: wrapper class that should make it easier to extend later, 
-// also preloads the content so it doesnt effect the performance
+// wrapper class that should make it easier to extend later, 
+// preloads the content so it doesnt effect the performance
 class SolutionInput(file: File) {
     val content = file.readText()
     val lines = file.readLines()
 }
 
-// NOTE: similar structure to Result but with added context
 sealed interface SolutionResult {
     data class Success(val output: Any) : SolutionResult
     object NotImplemented : SolutionResult
