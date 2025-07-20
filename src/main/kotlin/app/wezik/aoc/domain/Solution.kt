@@ -1,14 +1,22 @@
 package app.wezik.aoc.domain
 
 import java.io.File
-import java.time.ZoneId
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 @JvmInline
-value class Day(val value: Int)
+value class Day(val value: Int) {
+    init {
+        require(value in 1..25) { "Day must be between 1 and 25" }
+    }
+}
 
 @JvmInline
 value class Year(val value: Int) {
+
+    init {
+        require(value >= 2015) { "Advent of code started in 2015" }
+    }
 
     companion object {
         // NOTE: resolves to most up-to-date valid year of advent of code
@@ -32,19 +40,14 @@ class SolutionInput(file: File) {
 // NOTE: similar structure to Result but with added context
 sealed interface SolutionResult {
     data class Success(val output: Any) : SolutionResult
-    data class Failure(val error: Throwable) : SolutionResult
     object NotImplemented : SolutionResult
 
-    fun isFailure() = this is Failure
     fun isSuccess() = this is Success
     fun isNotImplemented() = this === NotImplemented
 }
 
 
 open class Solution() {
-    fun part1Runner(input: SolutionInput) = try { part1(input) } catch (e: Throwable) { SolutionResult.Failure(e) }
-    fun part2Runner(input: SolutionInput) = try { part2(input) } catch (e: Throwable) { SolutionResult.Failure(e) }
-
-    open protected fun part1(input: SolutionInput): SolutionResult = SolutionResult.NotImplemented
-    open protected fun part2(input: SolutionInput): SolutionResult = SolutionResult.NotImplemented
+    open fun part1(input: SolutionInput): SolutionResult = SolutionResult.NotImplemented
+    open fun part2(input: SolutionInput): SolutionResult = SolutionResult.NotImplemented
 }
