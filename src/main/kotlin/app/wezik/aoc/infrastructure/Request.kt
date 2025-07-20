@@ -5,7 +5,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLConnection
 
-fun URL.streamToFile(file: File, block: (HttpURLConnection) -> Unit = {}) {
+fun URL.streamToFile(file: File, block: PropertyBuilder.() -> Unit = {}) {
     try {
         openConnection().useAsHttp { connection -> 
             // set request properties
@@ -15,8 +15,12 @@ fun URL.streamToFile(file: File, block: (HttpURLConnection) -> Unit = {}) {
                 readTimeout = 15000
             }
 
-            // allows for custom request properties
-            block(connection)
+            // register custom request properties
+            val propBuilder = PropertyBuilder()
+            block(propBuilder)
+            propBuilder.build().forEach { (k, v) ->
+                connection.setRequestProperty(k, v)
+            }
 
             // ensure parent directories exist
             file.parentFile?.mkdirs() 
@@ -31,6 +35,15 @@ fun URL.streamToFile(file: File, block: (HttpURLConnection) -> Unit = {}) {
     } catch (e: Exception) {
         // wrap the exception
         throw RuntimeException("Failed to download file from $this", e)
+    }
+}
+
+// utilized to build custom request properties in nice way
+class PropertyBuilder {
+    private val properties = mutableMapOf<String, String>()
+    fun build() = properties
+    infix fun String.to(value: String) {
+        properties[this] = value
     }
 }
 

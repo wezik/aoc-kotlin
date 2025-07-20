@@ -21,9 +21,9 @@ class AocInputClient(private val sessionCookie: String?) : InputClient {
     private fun download(day: Day, year: Year): File {
         if (sessionCookie == null) throw UsageError("session cookie is required to download input")
         val file = cacheFile(day, year)
-        url(day, year).streamToFile(file) { connection -> connection.apply {
-            setRequestProperty("Cookie", "session=$sessionCookie")
-        }}
+        url(day, year).streamToFile(file) {
+            "Cookie" to "session=$sessionCookie"
+        }
 
         return file
     }
