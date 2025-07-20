@@ -6,35 +6,30 @@ import java.net.URL
 import java.net.URLConnection
 
 fun URL.streamToFile(file: File, block: PropertyBuilder.() -> Unit = {}) {
-    try {
-        openConnection().useAsHttp { connection -> 
-            // set request properties
-            connection.apply {
-                requestMethod = "GET"
-                connectTimeout = 15000
-                readTimeout = 15000
-            }
+    openConnection().useAsHttp { connection -> 
+        // set request properties
+        connection.apply {
+            requestMethod = "GET"
+            connectTimeout = 15000
+            readTimeout = 15000
+        }
 
-            // register custom request properties
-            val propBuilder = PropertyBuilder()
-            block(propBuilder)
-            propBuilder.build().forEach { (k, v) ->
-                connection.setRequestProperty(k, v)
-            }
+        // register custom request properties
+        val propBuilder = PropertyBuilder()
+        block(propBuilder)
+        propBuilder.build().forEach { (k, v) ->
+            connection.setRequestProperty(k, v)
+        }
 
-            // ensure parent directories exist
-            file.parentFile?.mkdirs() 
+        // ensure parent directories exist
+        file.parentFile?.mkdirs() 
 
-            // stream input to output
-            connection.inputStream.use { input ->
-                file.outputStream().use { output ->
-                    input.copyTo(output)
-                }
+        // stream input to output
+        connection.inputStream.use { input ->
+            file.outputStream().use { output ->
+                input.copyTo(output)
             }
         }
-    } catch (e: Exception) {
-        // wrap the exception
-        throw RuntimeException("Failed to download file from $this", e)
     }
 }
 
