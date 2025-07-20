@@ -31,7 +31,7 @@ private object AocCommand : CliktCommand("aoc") {
     private fun solutionRunner() = SolutionRunner(
         solutionSelector = LocalSolutionSelector(),
         inputClient = AocInputClient(resolveSessionCookie()),
-        echo = { msg -> echo(msg) } // forwards access to echo to domain layer
+        echo = { msg -> echo(msg) } // forwards echo access to other layers
     )
 
     private fun resolveSessionCookie() = sessionCookie ?: System.getenv("ADVENT_COOKIE")

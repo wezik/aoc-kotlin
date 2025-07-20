@@ -20,12 +20,11 @@ class SolutionRunner(
         val solution = solutionSelector.select(context.day, context.year)
             ?: throw UsageError("day ${context.day.value} of ${context.year.value} is not implemented")
 
-        val file = runCatching {
-            inputClient.load(context.day, context.year) 
-        }.getOrElse { e ->
-            throw UsageError("failed to load input for day ${context.day.value} of ${context.year.value}: $e")
+        val file = inputClient.load(context.day, context.year).getOrElse { e -> 
+            throw UsageError("failed to load input - ${e.message}")
         }
-        val input = SolutionInput(file = inputClient.load(context.day, context.year))
+
+        val input = SolutionInput(file = file)
 
         if (context.runMode == RunMode.BOTH || context.runMode == RunMode.PART1) {
             echoRun("Part 1") { solution.part1(input) }
