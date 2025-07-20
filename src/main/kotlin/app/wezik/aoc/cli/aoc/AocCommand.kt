@@ -3,27 +3,17 @@ package app.wezik.aoc.cli.aoc
 import app.wezik.aoc.cli.dayOption
 import app.wezik.aoc.cli.sessionCookieOption
 import app.wezik.aoc.cli.yearOption
-import app.wezik.aoc.domain.*
-import app.wezik.aoc.infrastructure.AocFileDownloader
-import app.wezik.aoc.infrastructure.AocFileLoader
-import app.wezik.aoc.infrastructure.ReflectionSolutionSelector
+import app.wezik.aoc.domain.SolutionRunContext
+import app.wezik.aoc.domain.SolutionRunner
+import app.wezik.aoc.infrastructure.aoc.AocInputClient
+import app.wezik.aoc.infrastructure.local.LocalSolutionSelector
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.main
 
-// NOTE: CLI entrypoint
+// CLI entrypoint
 fun main(args: Array<String>): Unit = AocCommand.main(args)
 
 private object AocCommand : CliktCommand("aoc") {
-    // manual DI
-    private val solutionRunner = SolutionRunner(
-        solutionSelector = ReflectionSolutionSelector(),
-        inputResolver = InputResolver(
-            fileLoader = AocFileLoader(),
-            fileDownloader = AocFileDownloader(),
-            echo = { msg -> echo(msg) }
-        ),
-        echo = { msg -> echo(msg) }
-    )
 
     // options
     private val day by dayOption()
@@ -31,12 +21,18 @@ private object AocCommand : CliktCommand("aoc") {
     private val sessionCookie by sessionCookieOption()
 
     override fun run() {
-        val ctx = DefaultContext(
-            day = Day(day),
-            year = year?.let { Year(it) } ?: Year.recent(),
-            sessionCookie = sessionCookie ?: System.getenv("ADVENT_COOKIE"),
-        )
-
-        val result = solutionRunner.run(ctx)
+        val result = solutionRunner().run(SolutionRunContext(
+            day = day,
+            year = year,
+        ))
     }
+
+    // manual DI
+    private fun solutionRunner() = SolutionRunner(
+        solutionSelector = LocalSolutionSelector(),
+        inputClient = AocInputClient(resolveSessionCookie()),
+        echo = { msg -> echo(msg) } // forwards echo access to other layers
+    )
+
+    private fun resolveSessionCookie() = sessionCookie ?: System.getenv("ADVENT_COOKIE")
 }
