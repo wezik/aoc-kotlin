@@ -9,17 +9,21 @@ import kotlin.math.absoluteValue
 
 object Day01 : Solution() {
 
-    override fun part1(input: SolutionInput): SolutionResult {
-        val inputs = input.lines
-            .filter { it.length > 1 }
-            .map {
-                val distance = it.subSequence(1, it.length).toString().toInt()
-                when (it[0]) {
-                    'L' -> -distance
-                    'R' -> distance
-                    else -> throw IllegalArgumentException("invalid direction")
-                }
+    private fun SolutionInput.parse(): List<Int> {
+        return lines
+        .filter { it.length > 1 }
+        .map {
+            val distance = it.subSequence(1, it.length).toString().toInt()
+            when (it[0]) {
+                'L' -> -distance
+                'R' -> distance
+                else -> throw IllegalArgumentException("invalid direction")
             }
+        }
+    }
+
+    override fun part1(input: SolutionInput): SolutionResult {
+        val inputs = input.parse()
 
         // NOTE: Dial starts by pointing at 50
         var dial = 50
@@ -36,16 +40,7 @@ object Day01 : Solution() {
     }
 
     override fun part2(input: SolutionInput): SolutionResult {
-        val inputs = input.lines
-            .filter { it.length > 1 }
-            .map {
-                val distance = it.subSequence(1, it.length).toString().toInt()
-                when (it[0]) {
-                    'L' -> -distance
-                    'R' -> distance
-                    else -> throw IllegalArgumentException("invalid direction")
-                }
-            }
+        val inputs = input.parse()
 
         // NOTE: Dial starts by pointing at 50
         var dial = 50
