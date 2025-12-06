@@ -1,8 +1,8 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
-    kotlin("jvm") version "2.2.10"
-    id("com.gradleup.shadow") version "9.1.0"
+    kotlin("jvm") version "2.2.21"
+    id("com.gradleup.shadow") version "9.3.0"
     application
 }
 
@@ -67,7 +67,7 @@ tasks {
 
 dependencies {
     // ArrowKT
-    implementation(platform("io.arrow-kt:arrow-stack:2.1.2"))
+    implementation(platform("io.arrow-kt:arrow-stack:2.2.0"))
     implementation("io.arrow-kt:arrow-core")
 
     // reflections
