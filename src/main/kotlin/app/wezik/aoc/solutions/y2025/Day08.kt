@@ -20,21 +20,21 @@ object Day08 : Solution() {
         val positions = input.lines.map { it.split(",").map { it.toInt() } }.map { (x, y, z) -> Vec3(x, y, z) }
         val connectionCount = if (input.isTestRun) 10 else 1000
 
-        val lookupIndicies = LinkedList<Pair<Int, Int>>()
+        val lookupIndices = LinkedList<Pair<Int, Int>>()
 
         for (i in 0 until positions.size) {
             for (j in i + 1 until positions.size) {
-                lookupIndicies += i to j
+                lookupIndices += i to j
             }
         }
 
-        lookupIndicies.sortBy { (a, b) -> positions[a].distanceTo(positions[b]) }
+        lookupIndices.sortBy { (a, b) -> positions[a].distanceTo(positions[b]) }
 
         // Pair of connections made and actual connections
         val circuits = mutableListOf<MutableList<Pair<Int, Int>>>()
 
         outer@ for (i in 0..<connectionCount) {
-            val (a, b) = lookupIndicies.removeFirst()
+            val (a, b) = lookupIndices.removeFirst()
 
             val validCircuits = circuits.filter { connections ->
                 connections.any { (ca, cb) -> ca == a || cb == a || ca == b || cb == b }
@@ -65,6 +65,50 @@ object Day08 : Solution() {
     }
 
     override fun part2(input: SolutionInput): SolutionResult {
-        return SolutionResult.Success(0)
+        val positions = input.lines.map { it.split(",").map { it.toInt() } }.map { (x, y, z) -> Vec3(x, y, z) }
+        val lookupIndices = LinkedList<Pair<Int, Int>>()
+
+        for (i in 0 until positions.size) {
+            for (j in i + 1 until positions.size) {
+                lookupIndices += i to j
+            }
+        }
+
+        lookupIndices.sortBy { (a, b) -> positions[a].distanceTo(positions[b]) }
+
+        // Pair of connections made and actual connections
+        val circuits = mutableListOf<MutableList<Pair<Int, Int>>>()
+        var lastUsedCoordinates = lookupIndices.first()
+
+        val unusedIndices = positions.indices.toMutableSet()
+        outer@ while (unusedIndices.isNotEmpty()) {
+            val (a, b) = lookupIndices.removeFirst()
+            lastUsedCoordinates = a to b
+            unusedIndices.remove(a)
+            unusedIndices.remove(b)
+
+            val validCircuits = circuits.filter { connections ->
+                connections.any { (ca, cb) -> ca == a || cb == a || ca == b || cb == b }
+            }
+
+            when (validCircuits.size) {
+                0 -> circuits.add(mutableListOf(a to b))
+                1 -> validCircuits.first().add(a to b)
+                else -> {
+                    // reduce to single connection as they connect to each other from now on
+                    val connections = validCircuits.first()
+                    for (connection in validCircuits.drop(1)) connections.addAll(connection)
+                    connections.add(a to b)
+                    circuits.removeAll { connections ->
+                        connections.any { (ca, cb) -> ca == a || cb == a || ca == b || cb == b }
+                    }
+                    circuits.add(connections)
+                }
+            }
+        }
+
+        val (a, b) = lastUsedCoordinates.let { (aIndex, bIndex) -> positions[aIndex] to positions[bIndex] }
+
+        return SolutionResult.Success(a.x * b.x)
     }
 }
