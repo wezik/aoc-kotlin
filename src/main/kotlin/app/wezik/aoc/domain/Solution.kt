@@ -32,7 +32,7 @@ value class Year(val value: Int) {
 
 // wrapper class that should make it easier to extend later, 
 // preloads the content so it doesnt effect the performance
-class SolutionInput(file: File) {
+class SolutionInput(file: File, val isTestRun: Boolean = false) {
     val content = file.readText()
     val lines = file.readLines()
 }

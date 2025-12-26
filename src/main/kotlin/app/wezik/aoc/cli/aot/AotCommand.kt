@@ -25,6 +25,7 @@ private object AotCommand : CliktCommand("aot") {
         val result = solutionRunner().run(SolutionRunContext(
             day = day,
             year = year,
+            testRun = true,
         ))
     }
 

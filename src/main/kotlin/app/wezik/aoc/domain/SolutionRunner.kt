@@ -6,6 +6,7 @@ data class SolutionRunContext(
     val day: Day,
     val year: Year,
     val runMode: RunMode = RunMode.BOTH,
+    val testRun: Boolean = false,
 )
 
 enum class RunMode { PART1, PART2, BOTH }
@@ -24,7 +25,7 @@ class SolutionRunner(
             throw UsageError("failed to load input - ${e.message}")
         }
 
-        val input = SolutionInput(file = file)
+        val input = SolutionInput(file = file, isTestRun = context.testRun)
 
         if (context.runMode == RunMode.BOTH || context.runMode == RunMode.PART1) {
             echoRun("Part 1") { solution.part1(input) }
@@ -45,7 +46,7 @@ class SolutionRunner(
                 }
             },
             onFailure = { 
-                error -> this.echo("$prefix failed with error: ${error.message} ($duration)").also { error.printStackTrace() }
+                error -> echo("$prefix failed with error: ${error.message} ($duration)").also { error.printStackTrace() }
             }
         )
     }
