@@ -4,8 +4,6 @@ import app.wezik.aoc.domain.Solution
 import app.wezik.aoc.domain.SolutionInput
 import app.wezik.aoc.domain.SolutionResult
 
-import kotlin.concurrent.thread
-
 object Day09 : Solution() {
 
     private fun SolutionInput.parse() = this.lines.map { 
