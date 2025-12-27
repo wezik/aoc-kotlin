@@ -5,6 +5,7 @@ My solutions to [Advent of Code](https://adventofcode.com/) puzzles in Kotlin!
 ## Years completed
 
 2024: 50/50⭐
+2025: 18/24⭐
 
 Missing implementations:
 
