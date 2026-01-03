@@ -5,11 +5,12 @@ My solutions to [Advent of Code](https://adventofcode.com/) puzzles in Kotlin!
 ## Years completed
 
 2024: 50/50⭐
-2025: 18/24⭐
+2025: 21/24⭐
 
 Missing implementations:
 
-- Day 24 (part 2): solution is mostly manual, it's difficult to implement in code
+- 2024 Day 24 (part 2): solution is mostly manual, it's difficult to implement in code
+- 2025 Day 10 (part 2): current approach requires significant optimizations, would probably have to look up alternatives to solving this
 
 ## Requirements to run
 
