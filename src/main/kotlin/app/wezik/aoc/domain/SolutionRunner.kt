@@ -42,7 +42,7 @@ class SolutionRunner(
             onSuccess = { output ->
                 when (output) {
                     is SolutionResult.Success -> echo("$prefix: ${output.output} ($duration)")
-                    is SolutionResult.NotImplemented -> echo("$prefix: not implemented ${output.reason?.let { "reason: $it" }}")
+                    is SolutionResult.NotImplemented -> echo("$prefix: not implemented ${output.reason?.let { "reason: $it" } ?: "" }")
                 }
             },
             onFailure = { 

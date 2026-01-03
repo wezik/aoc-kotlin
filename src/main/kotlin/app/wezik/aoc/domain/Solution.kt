@@ -4,6 +4,7 @@ import java.io.File
 import java.time.LocalDateTime
 import java.time.ZoneId
 
+// TODO: Remodel this part to relfect that since 2025 there are only 12 days per year
 @JvmInline
 value class Day(val value: Int) {
     init {
