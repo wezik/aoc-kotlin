@@ -39,14 +39,14 @@ class SolutionInput(file: File, val isTestRun: Boolean = false) {
 
 sealed interface SolutionResult {
     data class Success(val output: Any) : SolutionResult
-    object NotImplemented : SolutionResult
+    data class NotImplemented(val reason: String? = null) : SolutionResult
 
     fun isSuccess() = this is Success
-    fun isNotImplemented() = this === NotImplemented
+    fun isNotImplemented() = this is NotImplemented
 }
 
 
 open class Solution() {
-    open fun part1(input: SolutionInput): SolutionResult = SolutionResult.NotImplemented
-    open fun part2(input: SolutionInput): SolutionResult = SolutionResult.NotImplemented
+    open fun part1(input: SolutionInput): SolutionResult = SolutionResult.NotImplemented()
+    open fun part2(input: SolutionInput): SolutionResult = SolutionResult.NotImplemented()
 }
